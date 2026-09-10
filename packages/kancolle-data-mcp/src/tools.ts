@@ -47,17 +47,7 @@ export function kcSearch(
       hits = hits.filter((h) => args.types!.includes(h.type));
     }
     if (hits.length === 0) return dataNotFound(["no_match"]);
-    const top = hits[0];
-    // ambiguous if multiple high-score different entities share top score with different refs
-    const topScore = top.score;
-    const tied = hits.filter((h) => h.score === topScore);
-    if (tied.length > 1 && topScore < 100) {
-      const uniqueNames = new Set(tied.map((t) => t.ref));
-      if (uniqueNames.size > 1 && topScore >= 60) {
-        // still return list — caller may pick; flag ambiguous only when query is bare name matching many
-        return dataOk(hits);
-      }
-    }
+    // Ranked hit list is always ok; resolution tools (get/remodel/rules) surface ambiguous.
     return dataOk(hits);
   } catch (e) {
     return dataError("search_failed", String(e));
@@ -359,7 +349,15 @@ export function kcEquipmentRules(
   });
 }
 
-export function kcDataStatus(ctx: ToolContext): DataResult<LoadedDataset> {
+export function kcDataStatus(ctx: ToolContext): DataResult<{
+  name: string;
+  version: string;
+  commit?: string;
+  loaded_at: string;
+  source: string;
+  counts: LoadedDataset["counts"];
+  capabilities: string[];
+}> {
   const { ds } = ctx;
   return dataOk({
     name: ds.name,
@@ -369,11 +367,5 @@ export function kcDataStatus(ctx: ToolContext): DataResult<LoadedDataset> {
     source: ds.source,
     counts: ds.counts,
     capabilities: ds.capabilities,
-    ships: [],
-    equipment: [],
-    quests: [],
-    expeditions: [],
-    maps: [],
-    equipableByCategory: ds.equipableByCategory,
   });
 }

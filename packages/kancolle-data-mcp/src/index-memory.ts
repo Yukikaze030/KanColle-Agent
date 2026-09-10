@@ -82,23 +82,11 @@ export function buildIndex(ds: LoadedDataset): MemoryIndex {
 
   for (const x of ds.expeditions) {
     expeditionsById.set(x.id, x);
-    pushName(new Map(), x.name, x); // name search handled below via expeditionByName if needed
-  }
-
-  const expeditionByName = new Map<string, MasterExpedition[]>();
-  for (const x of ds.expeditions) {
-    pushName(expeditionByName, x.name, x);
-    for (const a of x.alias ?? []) pushName(expeditionByName, a, x);
-    expeditionsById.set(x.id, x);
   }
 
   for (const m of ds.maps) {
     mapsById.set(m.id, m);
   }
-
-  // attach expeditionByName onto mapsById container via side map stored separately
-  (mapsById as Map<string, unknown> & { __expeditionByName?: typeof expeditionByName }).__expeditionByName =
-    expeditionByName;
 
   return {
     shipsById,
@@ -235,11 +223,13 @@ export function remodelChain(index: MemoryIndex, shipId: number): MasterShip[] {
   }
 
   const collected: MasterShip[] = [];
-  const visit = (s: MasterShip) => {
+  const visit = (s: MasterShip, seen: Set<number>) => {
+    if (seen.has(s.id)) return;
+    seen.add(s.id);
     collected.push(s);
-    for (const child of byFrom.get(s.id) ?? []) visit(child);
+    for (const child of byFrom.get(s.id) ?? []) visit(child, seen);
   };
-  visit(root);
+  visit(root, new Set());
 
   // stable order: by remodel_level then id
   collected.sort((a, b) => {

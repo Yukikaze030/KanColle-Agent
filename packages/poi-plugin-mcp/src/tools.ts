@@ -78,6 +78,13 @@ export function poiQueryEquipment(
 ): PoiResult<unknown> {
   const snap = store.get();
   if (!snap.player_logged_in) return withMeta(store, poiError("not_ready", "player not logged in"));
+  if (snap.freshness.find((f) => f.domain === "equipment")?.updated_at == null) {
+    return withMeta(store, {
+      status: "not_ready",
+      data: null,
+      warnings: ["equipment domain not loaded"],
+    });
+  }
   return withMeta(store, okResult(queryEquipment(snap, args)));
 }
 

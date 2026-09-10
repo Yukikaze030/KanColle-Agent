@@ -1,14 +1,25 @@
 ---
 feature: v1-kancolle-agent
-status: designed
+status: delivered
 updated: 2026-01-15
 branch: main
-commits: TBD
+commits: 82308fa..HEAD
 ---
 
 # KanColle Agent V1
 
 ## Report
+
+**What was built** — 按设计文档实现了完整 V1 monorepo：`@kancolle-agent/shared`（Ref/Result/Snapshot 类型）、`@kancolle-agent/data-mcp`（7 个 stdio 工具 + fixtures + 内存索引/任务图/改造树/装备规则）、`poi-plugin-kancolle-mcp`（SnapshotStore、normalize、8 个 localhost MCP 工具、Bearer 鉴权、mock 玩家与 API event 适配）、OpenCode 运行时（kancolle / kcwiki-researcher agents + 7 个 skills + opencode.jsonc）、安装/校验脚本与文档。数据可靠性契约（unknown≠absent、not_loaded≠0）在 Result 层与工具返回中落实。
+
+**Verification** — `npm run build` PASS；`npm test` shared 9 + data-mcp 12 + poi 19 = 40/40 PASS；`npx tsx scripts/verify.ts` PASS；独立 review subagent：Spec compliance PASS，无 critical correctness bug。
+
+**Journey log**
+1. 大型 greenfield 用 fixtures 保证 Data/Poi 可离线测，真实 kancolle-data 可用 `KANCOLLE_DATA_PATH` 替换。
+2. 改造链不能只跟 `remodel_to` 线性走，改二乙是分支，需 `remodel_from` 树 + visited 防环。
+3. `kc_search` 只返回 ranked hits；`ambiguous` 留给解析类工具（get/remodel/rules）。
+4. Review 指出的 medium 项（search 死分支、remodel DFS 环、equipment freshness、data_status 空数组、死代码）已在交付前修复并回归。
+5. 远端推送与 upstream 绑定是 T6 最后一步，见后续 commit。
 
 ## [S1] Problem
 
@@ -61,9 +72,9 @@ User → Main Agent (kancolle)
 
 ## Tasks
 
-- [ ] T1: monorepo + shared types — acceptance: build & typecheck pass (covers: S2)
-- [ ] T2: data-mcp tools + fixtures + tests — acceptance: vitest green (covers: S2; depends: T1)
-- [ ] T3: poi-plugin-mcp snapshot + tools + tests — acceptance: vitest green (covers: S2; depends: T1)
-- [ ] T4: OpenCode agents/skills/config — acceptance: files exist and follow token budget guidance (covers: S2; depends: T1)
-- [ ] T5: scripts + docs — acceptance: verify script exits 0 when packages built (covers: S2; depends: T2,T3)
-- [ ] T6: git commit trail + remote push — acceptance: remote has implementation commits (covers: S2; depends: T1,T2,T3,T4,T5)
+- [x] T1: monorepo + shared types — acceptance: build & typecheck pass (covers: S2)
+- [x] T2: data-mcp tools + fixtures + tests — acceptance: vitest green (covers: S2; depends: T1)
+- [x] T3: poi-plugin-mcp snapshot + tools + tests — acceptance: vitest green (covers: S2; depends: T1)
+- [x] T4: OpenCode agents/skills/config — acceptance: files exist and follow token budget guidance (covers: S2; depends: T1)
+- [x] T5: scripts + docs — acceptance: verify script exits 0 when packages built (covers: S2; depends: T2,T3)
+- [x] T6: git commit trail + remote push — acceptance: remote has implementation commits (covers: S2; depends: T1,T2,T3,T4,T5)
