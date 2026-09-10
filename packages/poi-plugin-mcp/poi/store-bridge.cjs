@@ -1,6 +1,13 @@
 /**
  * Poi renderer bridge — maps Poi Redux / window state into SnapshotStore.
  * Loaded only inside Poi (Electron renderer with nodeIntegration).
+ *
+ * Store paths (verified against Poi app.asar):
+ *   info.ships, info.equips, info.deck, info.basic
+ *   info.resources  → number[]  (lodash.map(api_material, 'api_value'); [0]=fuel)
+ *   info.useitems   → object keyed by item id
+ *   info.repair, info.construction, info.quests
+ * NOTE: info.material does NOT exist.
  */
 /* eslint-disable no-undef */
 
@@ -60,7 +67,6 @@ function readShips(store) {
 function readEquipment(store) {
   const equips = store?.info?.equips || {}
   const constEquips = store?.const?.$equips || {}
-  // map ship slot instances → equipped_on
   const equippedOn = new Map()
   const ships = store?.info?.ships || {}
   for (const s of Object.values(ships)) {
@@ -115,36 +121,63 @@ function readFleets(store) {
   }))
 }
 
+/**
+ * Poi: info.resources is number[] from lodash.map(api_material, 'api_value').
+ * index 0 = api_id 1 (fuel). Return null when not loaded (do NOT invent zeros).
+ */
 function readResources(store) {
   const basic = store?.info?.basic || {}
-  const material = store?.info?.material
-  const mat = {}
-  if (Array.isArray(material)) {
-    for (const m of material) mat[m.api_id] = m.api_value
-  } else if (material && typeof material === 'object') {
-    Object.assign(mat, material)
-  }
-  const get = (id, keys) => {
-    if (mat[id] != null) return mat[id]
-    for (const k of keys) {
-      if (basic[k] != null) return basic[k]
+  const arr = store?.info?.resources
+
+  let values = null
+  if (Array.isArray(arr) && arr.length > 0) {
+    if (typeof arr[0] === 'number') {
+      values = arr
+    } else if (arr[0] && typeof arr[0] === 'object') {
+      values = []
+      for (const m of arr) {
+        if (m && m.api_id != null) values[m.api_id - 1] = m.api_value ?? 0
+      }
     }
-    return 0
   }
+
+  if (!values || values.length === 0) {
+    return null
+  }
+
+  const at = (id) => {
+    const v = values[id - 1]
+    return typeof v === 'number' && Number.isFinite(v) ? v : 0
+  }
+
   return {
-    fuel: get(1, ['api_fuel']),
-    ammo: get(2, ['api_bull']),
-    steel: get(3, ['api_steel']),
-    bauxite: get(4, ['api_bauxite']),
-    bucket: get(5, ['api_bucket']),
-    instant_construction: get(6, ['api_instant']),
-    development_material: get(7, ['api_devmat']),
-    improvement_material: mat[8] ?? 0,
+    fuel: at(1),
+    ammo: at(2),
+    steel: at(3),
+    bauxite: at(4),
+    bucket: at(5),
+    instant_construction: at(6),
+    development_material: at(7),
+    improvement_material: at(8),
     max_fuel: basic.api_max_material,
     max_ammo: basic.api_max_material,
     max_steel: basic.api_max_material,
     max_bauxite: basic.api_max_material,
   }
+}
+
+function readUseItems(store) {
+  const raw = store?.info?.useitems
+  if (!raw || typeof raw !== 'object') return null
+  const list = Object.values(raw)
+    .filter((it) => it && typeof it === 'object')
+    .map((it) => ({
+      master_id: it.api_id ?? it.api_useitem_id ?? 0,
+      name: it.api_name || `item:${it.api_id ?? it.api_useitem_id ?? '?'}`,
+      count: typeof it.api_count === 'number' ? it.api_count : 0,
+    }))
+    .filter((it) => it.master_id)
+  return list.length > 0 ? list : null
 }
 
 function readProfile(store) {
@@ -176,20 +209,23 @@ function readQuests(store) {
 
 function readInventory(store) {
   const res = readResources(store)
+  const useitems = readUseItems(store)
   return {
-    materials: {
-      fuel: res.fuel,
-      ammo: res.ammo,
-      steel: res.steel,
-      bauxite: res.bauxite,
-      bucket: res.bucket,
-      instant_construction: res.instant_construction,
-      development_material: res.development_material,
-      improvement_material: res.improvement_material,
-    },
-    materials_coverage: store?.info?.material ? 'complete' : 'not_loaded',
-    useitems: null,
-    useitems_coverage: 'not_loaded',
+    materials: res
+      ? {
+          fuel: res.fuel,
+          ammo: res.ammo,
+          steel: res.steel,
+          bauxite: res.bauxite,
+          bucket: res.bucket,
+          instant_construction: res.instant_construction,
+          development_material: res.development_material,
+          improvement_material: res.improvement_material,
+        }
+      : null,
+    materials_coverage: res ? 'complete' : 'not_loaded',
+    useitems,
+    useitems_coverage: useitems ? 'complete' : 'not_loaded',
   }
 }
 
@@ -229,7 +265,9 @@ function readSortie(store) {
 /** Full sync from current Poi store into SnapshotStore. */
 function syncFromPoi(snapshotStore, poiState) {
   const store = poiState || getPoiStore()
-  const loggedIn = Boolean(store?.info?.basic?.api_nickname || store?.info?.basic?.api_level || store?.info?.ships)
+  const loggedIn = Boolean(
+    store?.info?.basic?.api_nickname || store?.info?.basic?.api_level || store?.info?.ships,
+  )
   snapshotStore.setOnline(true, loggedIn)
   snapshotStore.setProfile(readProfile(store))
   snapshotStore.setResources(readResources(store))
@@ -251,6 +289,7 @@ module.exports = {
   readEquipment,
   readFleets,
   readResources,
+  readUseItems,
   readProfile,
   readQuests,
   readInventory,

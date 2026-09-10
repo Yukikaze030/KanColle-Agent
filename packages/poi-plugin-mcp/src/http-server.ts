@@ -67,6 +67,12 @@ export async function startPoiHttpServer(
           snapshot_version: snap.version,
           ships: snap.ships.length,
           equipment: snap.equipment.length,
+          resources: snap.resources,
+          resources_coverage: snap.resources
+            ? "complete"
+            : snap.inventory.materials_coverage,
+          materials_coverage: snap.inventory.materials_coverage,
+          useitems_coverage: snap.inventory.useitems_coverage,
           generated_at: snap.generated_at,
         });
         return;

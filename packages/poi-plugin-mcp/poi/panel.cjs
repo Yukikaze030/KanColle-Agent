@@ -32,6 +32,7 @@ class KanColleMcpPanel extends React.Component {
       playerLoggedIn: false,
       shipCount: null,
       equipCount: null,
+      resources: null,
       error: null,
     }
     this.timer = null
@@ -64,6 +65,7 @@ class KanColleMcpPanel extends React.Component {
         playerLoggedIn: Boolean(data.player_logged_in),
         shipCount: data.ships ?? null,
         equipCount: data.equipment ?? null,
+        resources: data.resources ?? null,
       })
     } catch (e) {
       this.setState({
@@ -74,7 +76,7 @@ class KanColleMcpPanel extends React.Component {
   }
 
   render() {
-    const { online, port, snapshotVersion, playerLoggedIn, shipCount, equipCount, error } =
+    const { online, port, snapshotVersion, playerLoggedIn, shipCount, equipCount, resources, error } =
       this.state
     const row = (k, v) =>
       React.createElement(
@@ -106,6 +108,18 @@ class KanColleMcpPanel extends React.Component {
       row('玩家登录', playerLoggedIn ? '是' : '否 / 未进母港'),
       row('舰娘数', shipCount == null ? '—' : String(shipCount)),
       row('装备数', equipCount == null ? '—' : String(equipCount)),
+      row(
+        '四资 油/弹/钢/铝',
+        resources
+          ? `${resources.fuel}/${resources.ammo}/${resources.steel}/${resources.bauxite}`
+          : '未加载',
+      ),
+      row(
+        '桶/开发/改修',
+        resources
+          ? `${resources.bucket}/${resources.development_material}/${resources.improvement_material}`
+          : '未加载',
+      ),
       row('Snapshot 版本', snapshotVersion == null ? '—' : String(snapshotVersion)),
       error ? row('错误', error) : null,
       React.createElement(
