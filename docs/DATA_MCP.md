@@ -36,15 +36,39 @@ Normalized Service
 
 ## 数据源
 
-V1 使用 `packages/kancolle-data-mcp/data/fixtures/kancolle.json`（可测试、可复现）。
+### 正式库（默认）
 
-可通过环境变量替换：
-
+```text
+packages/kancolle-data-mcp/data/official/dataset.json
 ```
+
+由 `npm run fetch:data` 生成：
+
+| 实体 | 来源 |
+|------|------|
+| 舰娘 / 装备 | kcwiki/kancolle-data `db/ship.json` `db/equipment.json` |
+| 任务 | `kcwiki-quest-data` npm |
+| stype / 可装备规则 / 远征 / 海域 | 本地 fixtures overlay（按**名称**合并） |
+
+规模：**舰娘 610 · 装备 583 · 任务 446**。
+
+```bash
+npm run fetch:data   # 刷新正式库
+```
+
+### 回退 fixtures
+
+```bash
+KANCOLLE_DATA_SOURCE=fixture
+# 或指定文件
 KANCOLLE_DATA_PATH=/path/to/dataset.json
 ```
 
-后续可接入 `kcwiki/kancolle-data` npm 数据。
+### 已知限制
+
+- 官方 `db/ship.json` 不含完整 stype；仅名称命中 fixture 的舰体会带 stype。
+- `remodel_from/to` 部分来自日文名启发式；改造等级仅对 overlay 命中项可靠。
+- 以 `game_id` 为准；wiki 编号可能与社区别名不完全一致。
 
 ## Result 语义
 
