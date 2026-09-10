@@ -136,8 +136,11 @@ function pluginWillUnload() {
   stopServer()
 }
 
+const { KanColleMcpPanel } = require('./panel.cjs')
+
 module.exports = {
   pluginDidLoad,
   pluginWillUnload,
   name: PLUGIN_NAME,
+  reactClass: KanColleMcpPanel,
 }
