@@ -13,10 +13,7 @@ import {
   type InventorySnapshot,
 } from "@kancolle-agent/shared";
 import { readFileSync, existsSync } from "node:fs";
-import { dirname, join } from "node:path";
-import { fileURLToPath } from "node:url";
-
-const HERE = dirname(fileURLToPath(import.meta.url));
+import { join } from "node:path";
 
 export type DomainName =
   | "profile"
@@ -258,9 +255,9 @@ export function normalizeEquipment(raw: RawEquipLike, masterName?: string, categ
 
 export function defaultFixturePath(): string {
   const candidates = [
-    join(HERE, "..", "fixtures", "mock-player-A.json"),
-    join(HERE, "..", "..", "fixtures", "mock-player-A.json"),
     join(process.cwd(), "packages", "poi-plugin-mcp", "fixtures", "mock-player-A.json"),
+    join(process.cwd(), "fixtures", "mock-player-A.json"),
+    join(process.cwd(), "poi-plugin-kancolle-mcp", "fixtures", "mock-player-A.json"),
   ];
   for (const p of candidates) if (existsSync(p)) return p;
   return candidates[0];

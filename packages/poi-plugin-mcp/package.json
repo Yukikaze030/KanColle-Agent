@@ -3,9 +3,16 @@
   "version": "1.0.0",
   "description": "Poi plugin exposing KanColle player snapshot as localhost MCP",
   "type": "module",
-  "main": "./dist/plugin.js",
+  "main": "./poi/index.cjs",
+  "poiPlugin": {
+    "title": "KanColle MCP",
+    "description": "Localhost MCP server for KanColle Agent (read-only player snapshot)",
+    "icon": "fa/plug",
+    "priority": 50
+  },
   "scripts": {
-    "build": "tsc -p tsconfig.json",
+    "build": "tsc -p tsconfig.json && npm run bundle:poi",
+    "bundle:poi": "esbuild src/plugin.ts --bundle --platform=node --format=cjs --outfile=dist/poi-bundle.cjs --external:electron",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "vitest run",
     "start": "node dist/server-cli.js"
@@ -14,5 +21,8 @@
     "@kancolle-agent/shared": "*",
     "@modelcontextprotocol/sdk": "^1.6.1",
     "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "esbuild": "^0.28.2"
   }
 }
