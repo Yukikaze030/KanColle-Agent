@@ -18,7 +18,8 @@
     "typecheck": "npm run typecheck -w @kancolle-agent/shared && npm run typecheck -w @kancolle-agent/data-mcp && npm run typecheck -w poi-plugin-kancolle-mcp",
     "verify": "tsx scripts/verify.ts",
     "setup": "tsx scripts/setup-opencode.ts",
-    "install:all": "npm install && npm run build"
+    "install:all": "npm install && npm run build",
+    "fetch:data": "node scripts/fetch-official-data.mjs"
   },
   "devDependencies": {
     "@types/node": "^22.10.0",

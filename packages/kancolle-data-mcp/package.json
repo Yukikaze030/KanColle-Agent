@@ -11,11 +11,14 @@
     "build": "tsc -p tsconfig.json",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "vitest run",
-    "start": "node dist/index.js"
+    "start": "node dist/index.js",
+    "fetch:data": "node ../../scripts/fetch-official-data.mjs"
   },
   "dependencies": {
     "@kancolle-agent/shared": "*",
     "@modelcontextprotocol/sdk": "^1.6.1",
+    "@sakura2333/kancolle-data": "^0.5.49",
+    "kcwiki-quest-data": "^0.8.0",
     "zod": "^3.24.1"
   }
 }

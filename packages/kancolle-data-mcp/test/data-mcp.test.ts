@@ -1,4 +1,4 @@
-import { describe, expect, it, beforeAll } from "vitest";
+import { describe, expect, it, beforeAll, afterEach } from "vitest";
 import { loadDataset } from "../src/data-loader.js";
 import { buildIndex } from "../src/index-memory.js";
 import {
@@ -15,8 +15,14 @@ import {
 let ctx: ToolContext;
 
 beforeAll(() => {
+  // Stable IDs for unit tests — official master IDs differ from fixture samples.
+  process.env.KANCOLLE_DATA_SOURCE = "fixture";
   const ds = loadDataset();
   ctx = { ds, index: buildIndex(ds) };
+});
+
+afterEach(() => {
+  process.env.KANCOLLE_DATA_SOURCE = "fixture";
 });
 
 describe("kc_search", () => {
