@@ -1,0 +1,16 @@
+node_modules/
+dist/
+*.tsbuildinfo
+.DS_Store
+*.log
+.env
+.env.*
+!.env.example
+coverage/
+.worktrees/
+config/kancolle.local.json
+packages/poi-plugin-mcp/token.json
+packages/poi-plugin-mcp/data/
+.idea/
+.vscode/
+*.local.jsonc

@@ -1,0 +1,570 @@
+{
+  "version": 1001,
+  "generated_at": "2026-01-15T12:00:00.000Z",
+  "profile": {
+    "name": "MockAdmiral",
+    "level": 108,
+    "rank": "大将",
+    "ship_slots": 380,
+    "equipment_slots": 1800
+  },
+  "resources": {
+    "fuel": 28450,
+    "ammo": 27120,
+    "steel": 30110,
+    "bauxite": 21540,
+    "bucket": 186,
+    "instant_construction": 92,
+    "development_material": 240,
+    "improvement_material": 48,
+    "max_fuel": 30000,
+    "max_ammo": 30000,
+    "max_steel": 30000,
+    "max_bauxite": 30000
+  },
+  "ships": [
+    {
+      "instance_id": 82341,
+      "master_id": 699,
+      "master_ref": "ship:699",
+      "name": "矢矧改二乙",
+      "level": 98,
+      "exp": 1200000,
+      "hp": 53,
+      "max_hp": 53,
+      "condition": 49,
+      "locked": true,
+      "damage": "healthy",
+      "stype": "轻巡洋舰",
+      "fleet_id": 1,
+      "dock": false,
+      "slot_items": [1001, 1002, 1003, null]
+    },
+    {
+      "instance_id": 82342,
+      "master_id": 699,
+      "master_ref": "ship:699",
+      "name": "矢矧改二乙",
+      "level": 72,
+      "exp": 500000,
+      "hp": 48,
+      "max_hp": 53,
+      "condition": 22,
+      "locked": false,
+      "damage": "shouha",
+      "stype": "轻巡洋舰",
+      "fleet_id": null,
+      "dock": false,
+      "slot_items": [null, null, null, null]
+    },
+    {
+      "instance_id": 82350,
+      "master_id": 553,
+      "master_ref": "ship:553",
+      "name": "伊势改二",
+      "level": 90,
+      "exp": 900000,
+      "hp": 79,
+      "max_hp": 79,
+      "condition": 49,
+      "locked": true,
+      "damage": "healthy",
+      "stype": "航空战列舰",
+      "fleet_id": 1,
+      "dock": false,
+      "slot_items": [1010, 1011, 1012, 1013, 1014]
+    },
+    {
+      "instance_id": 82360,
+      "master_id": 594,
+      "master_ref": "ship:594",
+      "name": "赤城改二",
+      "level": 96,
+      "exp": 1100000,
+      "hp": 78,
+      "max_hp": 78,
+      "condition": 49,
+      "locked": true,
+      "damage": "healthy",
+      "stype": "正规空母",
+      "fleet_id": 1,
+      "dock": false,
+      "slot_items": [1020, 1021, 1022, 1023, 1024]
+    },
+    {
+      "instance_id": 82370,
+      "master_id": 411,
+      "master_ref": "ship:411",
+      "name": "扶桑改二",
+      "level": 88,
+      "exp": 800000,
+      "hp": 60,
+      "max_hp": 78,
+      "condition": 30,
+      "locked": true,
+      "damage": "chuha",
+      "stype": "战列舰",
+      "fleet_id": 2,
+      "dock": true,
+      "slot_items": [1030, 1031, 1032, null]
+    },
+    {
+      "instance_id": 82380,
+      "master_id": 330,
+      "master_ref": "ship:330",
+      "name": "秋月改",
+      "level": 55,
+      "exp": 200000,
+      "hp": 34,
+      "max_hp": 34,
+      "condition": 49,
+      "locked": true,
+      "damage": "healthy",
+      "stype": "驱逐舰",
+      "fleet_id": 1,
+      "dock": false,
+      "slot_items": [1040, 1041, 1042]
+    },
+    {
+      "instance_id": 82390,
+      "master_id": 136,
+      "master_ref": "ship:136",
+      "name": "大和改",
+      "level": 75,
+      "exp": 600000,
+      "hp": 96,
+      "max_hp": 96,
+      "condition": 49,
+      "locked": true,
+      "damage": "healthy",
+      "stype": "战列舰",
+      "fleet_id": 3,
+      "dock": false,
+      "slot_items": [1050, 1051, null, null]
+    },
+    {
+      "instance_id": 82400,
+      "master_id": 697,
+      "master_ref": "ship:697",
+      "name": "矢矧改",
+      "level": 40,
+      "exp": 80000,
+      "hp": 48,
+      "max_hp": 48,
+      "condition": 49,
+      "locked": false,
+      "damage": "healthy",
+      "stype": "轻巡洋舰",
+      "fleet_id": 2,
+      "dock": false,
+      "slot_items": [null, null, null]
+    },
+    {
+      "instance_id": 82410,
+      "master_id": 201,
+      "master_ref": "ship:201",
+      "name": "睦月改",
+      "level": 35,
+      "exp": 50000,
+      "hp": 30,
+      "max_hp": 30,
+      "condition": 15,
+      "locked": false,
+      "damage": "healthy",
+      "stype": "驱逐舰",
+      "fleet_id": 4,
+      "dock": false,
+      "slot_items": [null, null]
+    }
+  ],
+  "equipment": [
+    {
+      "instance_id": 1001,
+      "master_id": 52,
+      "master_ref": "equipment:52",
+      "name": "烈风",
+      "improvement": 0,
+      "proficiency": 7,
+      "locked": true,
+      "equipped_on": 82360,
+      "category": "fighter"
+    },
+    {
+      "instance_id": 1002,
+      "master_id": 52,
+      "master_ref": "equipment:52",
+      "name": "烈风",
+      "improvement": 0,
+      "proficiency": 5,
+      "locked": false,
+      "equipped_on": 82360,
+      "category": "fighter"
+    },
+    {
+      "instance_id": 1003,
+      "master_id": 39,
+      "master_ref": "equipment:39",
+      "name": "零式舰战52型",
+      "improvement": 6,
+      "proficiency": 3,
+      "locked": false,
+      "equipped_on": 82360,
+      "category": "fighter"
+    },
+    {
+      "instance_id": 1004,
+      "master_id": 39,
+      "master_ref": "equipment:39",
+      "name": "零式舰战52型",
+      "improvement": 10,
+      "proficiency": 0,
+      "locked": true,
+      "equipped_on": null,
+      "category": "fighter"
+    },
+    {
+      "instance_id": 1005,
+      "master_id": 169,
+      "master_ref": "equipment:169",
+      "name": "一式陆攻",
+      "improvement": 0,
+      "proficiency": 0,
+      "locked": true,
+      "equipped_on": null,
+      "category": "land_based_attack_aircraft"
+    },
+    {
+      "instance_id": 1006,
+      "master_id": 169,
+      "master_ref": "equipment:169",
+      "name": "一式陆攻",
+      "improvement": 0,
+      "proficiency": 0,
+      "locked": false,
+      "equipped_on": null,
+      "category": "land_based_attack_aircraft"
+    },
+    {
+      "instance_id": 1007,
+      "master_id": 169,
+      "master_ref": "equipment:169",
+      "name": "一式陆攻",
+      "improvement": 6,
+      "proficiency": 0,
+      "locked": true,
+      "equipped_on": null,
+      "category": "land_based_attack_aircraft"
+    },
+    {
+      "instance_id": 1008,
+      "master_id": 169,
+      "master_ref": "equipment:169",
+      "name": "一式陆攻",
+      "improvement": 10,
+      "proficiency": 0,
+      "locked": true,
+      "equipped_on": null,
+      "category": "land_based_attack_aircraft"
+    },
+    {
+      "instance_id": 1009,
+      "master_id": 170,
+      "master_ref": "equipment:170",
+      "name": "一式陆攻(野中队)",
+      "improvement": 0,
+      "proficiency": 0,
+      "locked": true,
+      "equipped_on": null,
+      "category": "land_based_attack_aircraft"
+    },
+    {
+      "instance_id": 1010,
+      "master_id": 47,
+      "master_ref": "equipment:47",
+      "name": "三式水中探信仪",
+      "improvement": 10,
+      "proficiency": 0,
+      "locked": true,
+      "equipped_on": 82341,
+      "category": "sonar"
+    },
+    {
+      "instance_id": 1011,
+      "master_id": 9,
+      "master_ref": "equipment:9",
+      "name": "九四式爆雷投射机",
+      "improvement": 0,
+      "proficiency": 0,
+      "locked": false,
+      "equipped_on": 82341,
+      "category": "depth_charge"
+    },
+    {
+      "instance_id": 1012,
+      "master_id": 22,
+      "master_ref": "equipment:22",
+      "name": "九三式爆雷",
+      "improvement": 0,
+      "proficiency": 0,
+      "locked": false,
+      "equipped_on": 82341,
+      "category": "depth_charge"
+    },
+    {
+      "instance_id": 1013,
+      "master_id": 7,
+      "master_ref": "equipment:7",
+      "name": "甲标的",
+      "improvement": 0,
+      "proficiency": 0,
+      "locked": true,
+      "equipped_on": 82341,
+      "category": "midget_submarine"
+    },
+    {
+      "instance_id": 1014,
+      "master_id": 7,
+      "master_ref": "equipment:7",
+      "name": "甲标的",
+      "improvement": 0,
+      "proficiency": 0,
+      "locked": false,
+      "equipped_on": null,
+      "category": "midget_submarine"
+    },
+    {
+      "instance_id": 1015,
+      "master_id": 7,
+      "master_ref": "equipment:7",
+      "name": "甲标的",
+      "improvement": 0,
+      "proficiency": 0,
+      "locked": false,
+      "equipped_on": null,
+      "category": "midget_submarine"
+    },
+    {
+      "instance_id": 1020,
+      "master_id": 52,
+      "master_ref": "equipment:52",
+      "name": "烈风",
+      "improvement": 0,
+      "proficiency": 7,
+      "locked": false,
+      "equipped_on": null,
+      "category": "fighter"
+    },
+    {
+      "instance_id": 1030,
+      "master_id": 11,
+      "master_ref": "equipment:11",
+      "name": "41cm连装炮",
+      "improvement": 0,
+      "proficiency": 0,
+      "locked": true,
+      "equipped_on": 82370,
+      "category": "main_gun"
+    },
+    {
+      "instance_id": 1040,
+      "master_id": 104,
+      "master_ref": "equipment:104",
+      "name": "25mm对空机枪",
+      "improvement": 0,
+      "proficiency": 0,
+      "locked": false,
+      "equipped_on": 82380,
+      "category": "anti_air_gun"
+    }
+  ],
+  "fleets": [
+    {
+      "id": 1,
+      "name": "第一艦隊",
+      "members": [
+        { "instance_id": 82341, "master_id": 699, "name": "矢矧改二乙", "level": 98, "damage": "healthy" },
+        { "instance_id": 82350, "master_id": 553, "name": "伊势改二", "level": 90, "damage": "healthy" },
+        { "instance_id": 82360, "master_id": 594, "name": "赤城改二", "level": 96, "damage": "healthy" },
+        { "instance_id": 82380, "master_id": 330, "name": "秋月改", "level": 55, "damage": "healthy" }
+      ],
+      "expedition_id": null,
+      "mission_complete_at": null,
+      "is_combined": false,
+      "combined_role": null
+    },
+    {
+      "id": 2,
+      "name": "第二艦隊",
+      "members": [
+        { "instance_id": 82370, "master_id": 411, "name": "扶桑改二", "level": 88, "damage": "chuha" },
+        { "instance_id": 82400, "master_id": 697, "name": "矢矧改", "level": 40, "damage": "healthy" }
+      ],
+      "expedition_id": 37,
+      "mission_complete_at": "2026-01-15T14:00:00.000Z",
+      "is_combined": false,
+      "combined_role": null
+    },
+    {
+      "id": 3,
+      "name": "第三艦隊",
+      "members": [
+        { "instance_id": 82390, "master_id": 136, "name": "大和改", "level": 75, "damage": "healthy" }
+      ],
+      "expedition_id": 5,
+      "mission_complete_at": "2026-01-15T13:30:00.000Z",
+      "is_combined": false,
+      "combined_role": null
+    },
+    {
+      "id": 4,
+      "name": "第四艦隊",
+      "members": [
+        { "instance_id": 82410, "master_id": 201, "name": "睦月改", "level": 35, "damage": "healthy" }
+      ],
+      "expedition_id": null,
+      "mission_complete_at": null,
+      "is_combined": false,
+      "combined_role": null
+    }
+  ],
+  "quests": [
+    {
+      "game_id": 201,
+      "wiki_id": "A1",
+      "name": "はじめての「編成」！",
+      "type": "composition",
+      "state": "observed_completed",
+      "observed_at": "2025-06-01T00:00:00.000Z",
+      "source": "local_observed"
+    },
+    {
+      "game_id": 216,
+      "wiki_id": "A2",
+      "name": "はじめての「出撃」！",
+      "type": "sortie",
+      "state": "observed_completed",
+      "observed_at": "2025-06-01T00:00:00.000Z",
+      "source": "local_observed"
+    },
+    {
+      "game_id": 210,
+      "wiki_id": "A3",
+      "name": "「水雷戦隊」を編成せよ！",
+      "type": "composition",
+      "state": "observed_completed",
+      "observed_at": "2025-06-02T00:00:00.000Z",
+      "source": "local_observed"
+    },
+    {
+      "game_id": 303,
+      "wiki_id": "B4",
+      "name": "「第二艦隊」出撃せよ！",
+      "type": "sortie",
+      "state": "observed_completed",
+      "observed_at": "2025-07-01T00:00:00.000Z",
+      "source": "local_observed"
+    },
+    {
+      "game_id": 342,
+      "wiki_id": "B9",
+      "name": "「水上打撃部隊」突入せよ！",
+      "type": "sortie",
+      "state": "active",
+      "progress": 0.5,
+      "source": "api"
+    },
+    {
+      "game_id": 605,
+      "wiki_id": "D2",
+      "name": "「遠征」を3回成功させよう！",
+      "type": "expedition",
+      "state": "active",
+      "progress": 1,
+      "source": "api"
+    }
+  ],
+  "maps": [
+    { "area": 1, "map": 1, "cleared": true },
+    { "area": 1, "map": 2, "cleared": true },
+    { "area": 1, "map": 3, "cleared": true },
+    { "area": 1, "map": 4, "cleared": true },
+    { "area": 2, "map": 1, "cleared": true },
+    { "area": 2, "map": 2, "cleared": true },
+    { "area": 2, "map": 3, "cleared": true },
+    { "area": 5, "map": 1, "cleared": false },
+    { "area": 5, "map": 5, "cleared": false }
+  ],
+  "inventory": {
+    "materials": {
+      "fuel": 28450,
+      "ammo": 27120,
+      "steel": 30110,
+      "bauxite": 21540,
+      "bucket": 186,
+      "instant_construction": 92,
+      "development_material": 240,
+      "improvement_material": 48
+    },
+    "materials_coverage": "complete",
+    "useitems": [
+      { "master_id": 10, "name": "応急修理要員", "count": 3 },
+      { "master_id": 11, "name": "応急修理女神", "count": 1 }
+    ],
+    "useitems_coverage": "complete"
+  },
+  "repairs": [
+    {
+      "id": 1,
+      "ship_instance_id": 82370,
+      "complete_at": "2026-01-15T13:00:00.000Z",
+      "bucket_used": false
+    },
+    { "id": 2, "ship_instance_id": null, "complete_at": null, "bucket_used": false }
+  ],
+  "constructions": [
+    { "id": 1, "complete_at": null, "is_open": true },
+    { "id": 2, "complete_at": null, "is_open": true },
+    { "id": 3, "complete_at": null, "is_open": false },
+    { "id": 4, "complete_at": null, "is_open": false }
+  ],
+  "operations": {
+    "expeditions": [
+      {
+        "id": 2,
+        "fleet_id": 2,
+        "expedition_master_id": 37,
+        "complete_at": "2026-01-15T14:00:00.000Z"
+      },
+      {
+        "id": 3,
+        "fleet_id": 3,
+        "expedition_master_id": 5,
+        "complete_at": "2026-01-15T13:30:00.000Z"
+      }
+    ],
+    "sortie": {
+      "active": false,
+      "map_ref": null,
+      "fleet_ids": [],
+      "node": null
+    },
+    "last_battle": {
+      "result": "A",
+      "map_ref": "map:5-1",
+      "boss": false,
+      "occurred_at": "2026-01-15T11:00:00.000Z"
+    }
+  },
+  "freshness": [
+    { "domain": "profile", "updated_at": "2026-01-15T12:00:00.000Z", "coverage": "complete" },
+    { "domain": "resources", "updated_at": "2026-01-15T12:00:00.000Z", "coverage": "complete" },
+    { "domain": "ships", "updated_at": "2026-01-15T12:00:00.000Z", "coverage": "complete" },
+    { "domain": "equipment", "updated_at": "2026-01-15T12:00:00.000Z", "coverage": "complete" },
+    { "domain": "fleets", "updated_at": "2026-01-15T12:00:00.000Z", "coverage": "complete" },
+    { "domain": "quests", "updated_at": "2026-01-15T12:00:00.000Z", "coverage": "complete" },
+    { "domain": "inventory", "updated_at": "2026-01-15T12:00:00.000Z", "coverage": "complete" },
+    { "domain": "operations", "updated_at": "2026-01-15T12:00:00.000Z", "coverage": "partial" }
+  ],
+  "online": true,
+  "player_logged_in": true
+}

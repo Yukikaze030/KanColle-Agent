@@ -1,0 +1,32 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "mcp": {
+    "kancolle-data": {
+      "type": "local",
+      "command": ["npx", "tsx", "packages/kancolle-data-mcp/src/index.ts"],
+      "enabled": true
+    },
+    "kancolle-poi": {
+      "type": "remote",
+      "url": "http://127.0.0.1:39271/mcp",
+      "enabled": true,
+      "headers": {
+        "Authorization": "Bearer ${KANCOLLE_POI_MCP_TOKEN}"
+      }
+    }
+  },
+  "agent": {
+    "kancolle": {
+      "mode": "primary",
+      "model": "inherit"
+    },
+    "kcwiki-researcher": {
+      "mode": "subagent",
+      "model": "inherit",
+      "permission": {
+        "edit": "deny",
+        "bash": "deny"
+      }
+    }
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "name": "poi-plugin-kancolle-mcp",
+  "version": "1.0.0",
+  "description": "Poi plugin exposing KanColle player snapshot as localhost MCP",
+  "type": "module",
+  "main": "./dist/plugin.js",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run",
+    "start": "node dist/server-cli.js"
+  },
+  "dependencies": {
+    "@kancolle-agent/shared": "*",
+    "@modelcontextprotocol/sdk": "^1.6.1",
+    "zod": "^3.24.1"
+  }
+}

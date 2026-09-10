@@ -1,0 +1,26 @@
+{
+  "locale": "zh-CN",
+  "wiki": {
+    "primary": "zh",
+    "fallback": ["ja", "en"],
+    "sources": {
+      "zh": "https://zh.kcwiki.cn",
+      "ja": "https://wikiwiki.jp/kancolle",
+      "en": "https://en.kancollewiki.net"
+    }
+  },
+  "poi": {
+    "url": "http://127.0.0.1:39271/mcp",
+    "tokenEnv": "KANCOLLE_POI_MCP_TOKEN"
+  },
+  "dataMcp": {
+    "dataset": "fixtures",
+    "autoUpdate": false
+  },
+  "tokenBudgets": {
+    "shipLimitDefault": 20,
+    "equipmentInstanceLimitDefault": 20,
+    "questLimitDefault": 20,
+    "hardMax": 100
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "name": "@kancolle-agent/data-mcp",
+  "version": "1.0.0",
+  "description": "KanColle static data MCP server (stdio)",
+  "type": "module",
+  "main": "./dist/index.js",
+  "bin": {
+    "kancolle-data-mcp": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run",
+    "start": "node dist/index.js"
+  },
+  "dependencies": {
+    "@kancolle-agent/shared": "*",
+    "@modelcontextprotocol/sdk": "^1.6.1",
+    "zod": "^3.24.1"
+  }
+}

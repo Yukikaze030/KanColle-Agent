@@ -1,0 +1,29 @@
+{
+  "name": "kancolle-agent",
+  "version": "1.0.0",
+  "private": true,
+  "description": "KanColle AI Agent — personal KanColle copilot (Poi MCP + Data MCP + Skills)",
+  "type": "module",
+  "workspaces": [
+    "packages/shared",
+    "packages/kancolle-data-mcp",
+    "packages/poi-plugin-mcp"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "npm run build -w @kancolle-agent/shared && npm run build -w @kancolle-agent/data-mcp && npm run build -w poi-plugin-kancolle-mcp",
+    "test": "npm run test -w @kancolle-agent/shared && npm run test -w @kancolle-agent/data-mcp && npm run test -w poi-plugin-kancolle-mcp",
+    "typecheck": "npm run typecheck -w @kancolle-agent/shared && npm run typecheck -w @kancolle-agent/data-mcp && npm run typecheck -w poi-plugin-kancolle-mcp",
+    "verify": "tsx scripts/verify.ts",
+    "setup": "tsx scripts/setup-opencode.ts",
+    "install:all": "npm install && npm run build"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.8"
+  }
+}
