@@ -297,6 +297,8 @@ export interface MasterMap {
 export interface DatasetStatus {
   name: string;
   version: string;
+  /** Game era this dataset targets. "2" = 二期 (post-2023-05 server migration). */
+  era?: "1" | "2" | string;
   commit?: string;
   loaded_at: string;
   source: string;

@@ -22,6 +22,7 @@ describe("official dataset", () => {
     process.env.KANCOLLE_DATA_SOURCE = "official";
     const ds = loadDataset();
     expect(ds.name).toContain("official");
+    expect(ds.era).toBe("2");
     expect(ds.counts.ships).toBeGreaterThan(500);
     expect(ds.counts.equipment).toBeGreaterThan(500);
     expect(ds.counts.quests).toBeGreaterThan(300);

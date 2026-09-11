@@ -1,8 +1,15 @@
 {
   "locale": "zh-CN",
+  "gameEra": {
+    "id": "2",
+    "name": "二期",
+    "note": "All static data and guides MUST target KanColle 二期 (post-2023 server migration). Reject 一期-only mechanics/numbers.",
+    "periodStart": "2023-05"
+  },
   "wiki": {
     "primary": "zh",
     "fallback": ["ja", "en"],
+    "requireEra": "2",
     "sources": {
       "zh": "https://zh.kcwiki.cn",
       "ja": "https://wikiwiki.jp/kancolle",
@@ -14,7 +21,8 @@
     "tokenEnv": "KANCOLLE_POI_MCP_TOKEN"
   },
   "dataMcp": {
-    "dataset": "fixtures",
+    "dataset": "official",
+    "era": "2",
     "autoUpdate": false
   },
   "tokenBudgets": {

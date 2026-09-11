@@ -26,6 +26,8 @@ export interface RawDataset {
   meta?: {
     name?: string;
     version?: string;
+    era?: string;
+    era_name?: string;
     generated_at?: string;
     sources?: Record<string, string>;
     quest_source?: string;
@@ -82,6 +84,7 @@ function fromRaw(
   return {
     name,
     version,
+    era: raw.meta?.era ?? "2",
     commit,
     loaded_at: new Date().toISOString(),
     source: sourcePath,
@@ -99,6 +102,7 @@ function fromRaw(
       "quest_graph",
       "ship_remodel",
       "equipment_rules",
+      "era:2",
     ],
     ships: raw.ships,
     equipment: raw.equipment,

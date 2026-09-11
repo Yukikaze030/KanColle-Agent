@@ -224,14 +224,18 @@ async function main() {
     meta: {
       name: "kancolle-official-dataset",
       version: "1.0.0-official",
+      era: "2",
+      era_name: "二期",
       generated_at: new Date().toISOString(),
       sources: SOURCES,
       quest_source: "kcwiki-quest-data",
       notes: [
+        "TARGET ERA: KanColle 二期 only (post-2023-05 server migration)",
         "Ships/equipment from kcwiki/kancolle-data",
         "Quests from kcwiki-quest-data npm",
         "stype/equip-rules/expeditions/maps overlaid from local fixtures",
         "remodel_to/from partially heuristic from Japanese names",
+        "Do not mix 一期 legacy mechanics into answers",
       ],
     },
     ships,

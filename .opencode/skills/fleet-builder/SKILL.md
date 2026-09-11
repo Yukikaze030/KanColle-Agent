@@ -5,6 +5,8 @@ description: 配队、舰娘选择、装备选择与替代方案。处理「用�
 
 # Fleet Builder Skill
 
+**时期：配队条件必须来自二期海域/活动。**
+
 ## 触发
 
 配队 / 编成 / 用现有舰娘打某图或活动。
@@ -12,7 +14,7 @@ description: 配队、舰娘选择、装备选择与替代方案。处理「用�
 ## 工作流
 
 1. **攻略需求**
-   - kcwiki-researcher 查询目标海域/活动：路线、条件、制空、索敌、Boss
+   - kcwiki-researcher 查询目标海域/活动：路线、条件、制空、索敌、Boss（era=二期）
 2. **玩家舰娘**
    - Poi `poi_query_ships`（按 stype/等级/损伤过滤，mode=instances）
 3. **静态补全**
