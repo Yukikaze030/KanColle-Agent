@@ -115,11 +115,20 @@ class KanColleMcpPanel extends React.Component {
           : '未加载',
       ),
       row(
-        '桶/开发/改修',
+        '高速建造 / 桶',
         resources
-          ? `${resources.bucket}/${resources.development_material}/${resources.improvement_material}`
+          ? `${resources.instant_construction} / ${resources.bucket}`
           : '未加载',
       ),
+      row(
+        '开发 / 改修',
+        resources
+          ? `${resources.development_material} / ${resources.improvement_material}`
+          : '未加载',
+      ),
+      resources && resources._raw
+        ? row('原始[0..7]', resources._raw.join(','))
+        : null,
       row('Snapshot 版本', snapshotVersion == null ? '—' : String(snapshotVersion)),
       error ? row('错误', error) : null,
       React.createElement(

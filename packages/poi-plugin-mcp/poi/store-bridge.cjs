@@ -150,19 +150,23 @@ function readResources(store) {
     return typeof v === 'number' && Number.isFinite(v) ? v : 0
   }
 
+  // KCSAPI / Poi 0-based indices (verified in Poi resources reducer):
+  // [0]fuel [1]ammo [2]steel [3]bauxite
+  // [4]高速建造 instant  [5]高速修复 bucket  [6]开发资材  [7]改修资材
   return {
     fuel: at(1),
     ammo: at(2),
     steel: at(3),
     bauxite: at(4),
-    bucket: at(5),
-    instant_construction: at(6),
+    instant_construction: at(5),
+    bucket: at(6),
     development_material: at(7),
     improvement_material: at(8),
     max_fuel: basic.api_max_material,
     max_ammo: basic.api_max_material,
     max_steel: basic.api_max_material,
     max_bauxite: basic.api_max_material,
+    _raw: values.slice(0, 8),
   }
 }
 
