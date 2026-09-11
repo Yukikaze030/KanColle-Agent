@@ -5,7 +5,7 @@ description: 配队、舰娘选择、装备选择与替代方案。处理「用�
 
 # Fleet Builder Skill
 
-**时期：配队条件必须来自二期海域/活动。**
+**时期：配队条件必须来自二期海域/活动。** 提及舰娘改造形态前须 Data `kc_ship_remodel`/`kc_search` 核实，禁止编造改二。
 
 ## 触发
 
