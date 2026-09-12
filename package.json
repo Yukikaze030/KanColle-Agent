@@ -19,7 +19,7 @@
     "verify": "tsx scripts/verify.ts",
     "setup": "tsx scripts/setup-opencode.ts",
     "install:all": "npm install && npm run build",
-    "fetch:data": "node scripts/fetch-official-data.mjs"
+    "fetch:data": "tsx scripts/fetch-official-data.mjs"
   },
   "devDependencies": {
     "@types/node": "^22.10.0",

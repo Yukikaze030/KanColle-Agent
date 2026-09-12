@@ -5,13 +5,16 @@
  * Sources:
  * - kcwiki/kancolle-data db/ship.json + db/equipment.json
  * - kcwiki-quest-data (npm)
- * - overlay: fixtures for stype / equip rules / expeditions / maps
+ * - pinned api_start2 + KC3Kai remodel rules (scripts/remodel-sources.json)
+ * - overlay: fixtures for names / equip rules / expeditions / maps
  *
- * Usage: node scripts/fetch-official-data.mjs
+ * Usage: npx tsx scripts/fetch-official-data.mjs
  */
-import { mkdirSync, writeFileSync, readFileSync, existsSync, readdirSync } from "node:fs";
+import { mkdirSync, writeFileSync, readFileSync, existsSync, readdirSync, renameSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+
+import { importRemodelData } from "./remodel-import.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const OUT_DIR = join(ROOT, "packages", "kancolle-data-mcp", "data", "official");
@@ -29,13 +32,7 @@ const SOURCES = {
   equipment: "https://raw.githubusercontent.com/kcwiki/kancolle-data/master/db/equipment.json",
 };
 
-async function fetchJson(url) {
-  const res = await fetch(url, {
-    headers: { "user-agent": "kancolle-agent-data-mcp/1.0" },
-  });
-  if (!res.ok) throw new Error(`fetch ${url} -> ${res.status}`);
-  return res.json();
-}
+import { fetchJson } from "./fetch-json.mjs";
 
 function readLocalJson(name) {
   const p = join(OUT_DIR, name);
@@ -46,7 +43,7 @@ function readLocalJson(name) {
 async function loadOfficialRaw() {
   const rawShips = readLocalJson("ship.json");
   const rawEquips = readLocalJson("equipment.json");
-  if (rawShips && rawEquips) {
+  if (!process.argv.includes("--refresh") && rawShips && rawEquips) {
     console.log("using cached official ship.json / equipment.json");
     return [rawShips, rawEquips];
   }
@@ -67,44 +64,6 @@ function loadQuests() {
       }
     })
     .filter(Boolean);
-}
-
-/** Heuristic remodel chain from Japanese names. */
-function buildRemodelHeuristic(ships) {
-  const byName = new Map();
-  for (const s of ships) {
-    if (!s.name) continue;
-    const base = s.name
-      .replace(/改二[乙丙丁戊己庚辛壬癸]?$/, "")
-      .replace(/改$/, "")
-      .trim();
-    if (!byName.has(base)) byName.set(base, []);
-    byName.get(base).push(s);
-  }
-
-  const links = new Map();
-  const rank = (name) => {
-    if (/改二乙|改二丙|改二丁/.test(name)) return 3;
-    if (/改二/.test(name)) return 2;
-    if (/改$/.test(name)) return 1;
-    return 0;
-  };
-  for (const list of byName.values()) {
-    if (list.length < 2) continue;
-    const sorted = [...list].sort((a, b) => {
-      const d = rank(a.name) - rank(b.name);
-      return d !== 0 ? d : a.id - b.id;
-    });
-    for (let i = 0; i < sorted.length - 1; i++) {
-      const cur = sorted[i];
-      const next = sorted[i + 1];
-      if (rank(next.name) > rank(cur.name)) {
-        links.set(cur.id, { ...(links.get(cur.id) || {}), to: next.id });
-        links.set(next.id, { ...(links.get(next.id) || {}), from: cur.id });
-      }
-    }
-  }
-  return links;
 }
 
 function categoryOf(name = "") {
@@ -137,30 +96,33 @@ async function main() {
 
   // Match overlay by NAME — fixture IDs are not always official master IDs.
   const fixtureShipByName = new Map(fixture.ships.map((s) => [s.name, s]));
-  const remodel = buildRemodelHeuristic(rawShips);
+  const remodel = await importRemodelData(ROOT, OUT_DIR, { refresh: process.argv.includes("--refresh") });
+  const rawById = new Map(rawShips.map(s => [s.id, s]));
+  const typeNames = new Map(remodel.stypes.map(s => [s.api_id, s.api_name]));
+  const incoming = new Map();
+  for (const edge of remodel.transitions) {
+    const id = Number(edge.to.split(":")[1]);
+    incoming.set(id, [...(incoming.get(id) ?? []), edge]);
+  }
 
-  const ships = rawShips.map((s) => {
-    const fx = fixtureShipByName.get(s.name);
-    const link = remodel.get(s.id) || {};
+  const ships = remodel.ships.map(m => {
+    const s = rawById.get(m.api_id) ?? {};
+    const fx = fixtureShipByName.get(m.api_name);
+    const predecessors = incoming.get(m.api_id) ?? [];
+    const levels = predecessors.map(e => e.level).filter(n => n !== null);
     return {
-      id: s.id,
-      name: s.name,
-      yomi: fx?.yomi,
-      stype: fx?.stype,
-      stype_id: fx?.stype_id,
-      remodel_level: fx?.remodel_level ?? null,
-      remodel_from: link.from ?? null,
-      remodel_to: link.to ?? null,
+      id: m.api_id, name: m.api_name, yomi: m.api_yomi,
+      stype: fx?.stype ?? typeNames.get(m.api_stype), stype_id: m.api_stype,
+      remodel_level: levels.length ? Math.min(...levels) : predecessors.length ? null : 0,
+      remodel_from: predecessors.length === 1 ? Number(predecessors[0].from.split(":")[1]) : null,
+      remodel_to: Number(m.api_aftershipid) || null,
       stats: {
-        firepower: s.firepower,
-        torpedo: s.torpedo,
-        aa: s.aa,
-        armor: s.armor,
-        evasion: s.evasion,
-        asw: s.asw,
-        los: s.los,
-        range: s.range,
+        hp: m.api_taik?.[0], firepower: m.api_houg?.[0], torpedo: m.api_raig?.[0],
+        aa: m.api_tyku?.[0], armor: m.api_souk?.[0], luck: m.api_luck?.[0],
+        speed: m.api_soku, range: m.api_leng, slotCount: m.api_slot_num,
+        evasion: s.evasion, asw: s.asw, los: s.los,
       },
+      slots: (m.api_maxeq ?? []).slice(0, m.api_slot_num).map(count => ({ type: "normal", count })),
       alias: fx?.alias,
     };
   });
@@ -223,22 +185,27 @@ async function main() {
   const dataset = {
     meta: {
       name: "kancolle-official-dataset",
-      version: "1.0.0-official",
+      version: "2.0.0-remodel",
+      commit: remodel.sources.master.split("/")[5],
       era: "2",
       era_name: "二期",
       generated_at: new Date().toISOString(),
-      sources: SOURCES,
+      sources: { ...SOURCES, ...remodel.sources },
       quest_source: "kcwiki-quest-data",
       notes: [
         "TARGET ERA: KanColle 二期 only (post-2023-05 server migration)",
         "Ships/equipment from kcwiki/kancolle-data",
         "Quests from kcwiki-quest-data npm",
         "stype/equip-rules/expeditions/maps overlaid from local fixtures",
-        "remodel_to/from partially heuristic from Japanese names",
+        "Remodel transitions from pinned api_start2; costs supplemented by pinned KC3Kai community rules",
+        "Cost coverage describes modeled fields, not independent in-game verification; upstream rules can lag game updates",
+        "Legacy remodel_level is minimum incoming edge level; use transitions[].level for a specific conversion",
         "Do not mix 一期 legacy mechanics into answers",
       ],
     },
     ships,
+    items: remodel.items,
+    remodel_transitions: remodel.transitions,
     equipment,
     quests: mappedQuests,
     expeditions: fixture.expeditions,
@@ -247,7 +214,8 @@ async function main() {
   };
 
   const out = join(OUT_DIR, "dataset.json");
-  writeFileSync(out, JSON.stringify(dataset), "utf8");
+  writeFileSync(out + ".tmp", JSON.stringify(dataset), "utf8");
+  renameSync(out + ".tmp", out);
   console.log(
     `wrote ${out}\n  ships=${ships.length} equips=${equipment.length} quests=${mappedQuests.length}`,
   );

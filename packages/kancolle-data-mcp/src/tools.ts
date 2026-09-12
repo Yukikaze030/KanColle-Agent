@@ -10,6 +10,7 @@ import {
   type MasterQuest,
   type MasterShip,
   type SearchHit,
+  type RemodelTransition,
 } from "@kancolle-agent/shared";
 import { parseRef } from "@kancolle-agent/shared";
 import type { LoadedDataset } from "./data-loader.js";
@@ -42,10 +43,8 @@ export function kcSearch(
   args: { query: string; limit?: number; types?: string[] },
 ): DataResult<SearchHit[]> {
   try {
-    let hits = searchAll(ctx.index, args.query, args.limit ?? 5);
-    if (args.types?.length) {
-      hits = hits.filter((h) => args.types!.includes(h.type));
-    }
+    const hits = searchAll(ctx.index, args.query, args.limit ?? 5, args.types);
+    if (hits.length === 0 && args.types?.includes("item") && !ctx.ds.capabilities.includes("items")) return dataPartial([], ["items_dataset"]);
     if (hits.length === 0) return dataNotFound(["no_match"]);
     // Ranked hit list is always ok; resolution tools (get/remodel/rules) surface ambiguous.
     return dataOk(hits);
@@ -76,8 +75,16 @@ export function kcGet(
         const data: Record<string, unknown> = { ...base };
         if (include.includes("remodel") || include.includes("all")) {
           data.remodel_chain = remodel;
+          const result = kcShipRemodel(ctx, { ship: args.ref });
+          data.remodel = result.data;
+          if (result.status === "partial") return dataPartial(data, result.missing ?? ["remodel"]);
         }
         return dataOk(data);
+      }
+      case "item": {
+        if (!ctx.ds.capabilities.includes("items")) return dataPartial(null, ["items_dataset"]);
+        const item = ctx.index.itemsById.get(Number(parsed.id));
+        return item ? dataOk(item) : dataNotFound();
       }
       case "equipment": {
         const eq = ctx.index.equipmentById.get(Number(parsed.id));
@@ -110,7 +117,6 @@ export function kcGet(
         if (!m) return dataNotFound();
         return dataOk(m);
       }
-      case "item":
       case "enemy":
         return dataNotFound(["entity_type_not_in_v1_dataset"]);
       default:
@@ -124,7 +130,7 @@ export function kcGet(
 export function kcQuery(
   ctx: ToolContext,
   args: {
-    entity: "ship" | "equipment" | "quest" | "expedition" | "map";
+    entity: "ship" | "equipment" | "quest" | "expedition" | "map" | "item";
     filters?: Record<string, unknown>;
     fields?: string[];
     limit?: number;
@@ -135,7 +141,10 @@ export function kcQuery(
     let items: Array<Record<string, unknown>> = [];
     const filters = args.filters ?? {};
 
-    if (args.entity === "ship") {
+    if (args.entity === "item") {
+      if (!ctx.ds.capabilities.includes("items")) return dataPartial([], ["items_dataset"]);
+      items = ctx.ds.items as unknown as Array<Record<string, unknown>>;
+    } else if (args.entity === "ship") {
       items = ctx.ds.ships as unknown as Array<Record<string, unknown>>;
       if (typeof filters.stype === "string") {
         items = items.filter((s) => s.stype === filters.stype);
@@ -180,6 +189,8 @@ export function kcQuery(
       }
     }
 
+    if (Array.isArray(filters.ids)) items = items.filter(i => filters.ids instanceof Array && filters.ids.includes(i.id ?? i.game_id));
+    if (typeof filters.name === "string") items = items.filter(i => i.name === filters.name);
     const { offset, limit } = decodeCursor(args.cursor);
     const effectiveLimit = Math.min(100, Math.max(1, args.limit ?? limit));
     const page = items.slice(offset, offset + effectiveLimit).map((it) =>
@@ -202,7 +213,7 @@ export function kcQuestGraph(
   const quest = resolveQuest(ctx.index, args.quest);
   if (!quest) {
     // try search
-    const hits = searchAll(ctx.index, args.quest, 5).filter((h) => h.type === "quest");
+    const hits = searchAll(ctx.index, args.quest, 5, ["quest"]);
     if (hits.length === 0) return dataNotFound();
     if (hits.length > 1 && hits[0].score < 100) {
       return dataAmbiguous(hits.slice(0, 5));
@@ -259,31 +270,48 @@ export function kcQuestGraph(
   return dataOk({ nodes: [...nodes.values()], edges });
 }
 
+export interface RemodelResult {
+  ship_ref: string;
+  chain: Array<{ ref: string; name: string; remodel_level: number | null }>;
+  transitions: RemodelTransition[];
+  scope: "next" | "family";
+  coverage: "complete" | "partial";
+}
+
 export function kcShipRemodel(
   ctx: ToolContext,
-  args: { ship: string },
-): DataResult<{ ship_ref: string; chain: Array<{ ref: string; name: string; remodel_level: number | null }> }> {
-  const hits = searchAll(ctx.index, args.ship, 10).filter((h) => h.type === "ship");
-  let ship = ctx.index.shipsById.get(Number(parseRef(args.ship)?.id ?? -1));
-  if (!ship && hits.length === 1) {
-    ship = ctx.index.shipsById.get(Number(parseRef(hits[0].ref)?.id));
-  }
-  if (!ship && hits.length > 1) {
-    if (hits[0].score >= 100) {
-      ship = ctx.index.shipsById.get(Number(parseRef(hits[0].ref)?.id));
-    } else {
-      return dataAmbiguous(hits);
-    }
+  args: { ship: string; scope?: "next" | "family" },
+): DataResult<RemodelResult> {
+  const parsed = parseRef(args.ship);
+  if (args.ship.includes(":") && parsed?.type !== "ship") return dataError("invalid_ref", "Expected ship:<master_id>");
+  const hits = searchAll(ctx.index, args.ship, 10, ["ship"]);
+  const explicitId = parsed?.type === "ship" ? Number(parsed.id) : /^\d+$/.test(args.ship) ? Number(args.ship) : null;
+  let ship = explicitId !== null ? ctx.index.shipsById.get(explicitId) : undefined;
+  if (explicitId !== null && !ship) return dataNotFound();
+  if (!ship) {
+    const exact = hits.filter(h => h.score === 100);
+    if (exact.length === 1) ship = ctx.index.shipsById.get(Number(parseRef(exact[0].ref)?.id));
+    else if (hits.length) return dataAmbiguous(exact.length ? exact : hits);
   }
   if (!ship) return dataNotFound();
 
-  const chain = remodelChain(ctx.index, ship.id).map((s) => ({
-    ref: `ship:${s.id}`,
-    name: s.name,
-    remodel_level: s.remodel_level ?? null,
+  const chain = remodelChain(ctx.index, ship.id).map(s => ({
+    ref: `ship:${s.id}`, name: s.name, remodel_level: s.remodel_level ?? null,
   }));
-
-  return dataOk({ ship_ref: `ship:${ship.id}`, chain });
+  const refs = new Set(chain.map(s => s.ref));
+  const scope = args.scope ?? "next";
+  const transitions = (ctx.ds.remodel_transitions ?? []).filter(e =>
+    scope === "next" ? e.from === `ship:${ship.id}` : refs.has(e.from) || refs.has(e.to));
+  const missing = ctx.ds.remodel_transitions === null ? ["remodel_transitions"] : [];
+  for (const edge of transitions) {
+    for (const field of edge.missing) missing.push(`${edge.from}->${edge.to}:${field}`);
+  }
+  const data: RemodelResult = {
+    ship_ref: `ship:${ship.id}`, chain, transitions,
+    scope,
+    coverage: missing.length ? "partial" : "complete",
+  };
+  return missing.length ? dataPartial(data, missing) : dataOk(data);
 }
 
 export function kcEquipmentRules(
@@ -303,7 +331,7 @@ export function kcEquipmentRules(
       args.category ??
       (() => {
         if (!args.equipment) return undefined;
-        const hits = searchAll(ctx.index, args.equipment, 5).filter((h) => h.type === "equipment");
+        const hits = searchAll(ctx.index, args.equipment, 5, ["equipment"]);
         if (hits.length === 1) {
           const eq = ctx.index.equipmentById.get(Number(parseRef(hits[0].ref)?.id));
           return eq?.category;
@@ -321,7 +349,7 @@ export function kcEquipmentRules(
     return dataError("invalid_args", "mode=check requires ship and equipment");
   }
 
-  const shipHits = searchAll(ctx.index, args.ship, 5).filter((h) => h.type === "ship");
+  const shipHits = searchAll(ctx.index, args.ship, 5, ["ship"]);
   let ship = ctx.index.shipsById.get(Number(parseRef(args.ship)?.id ?? -1));
   if (!ship) {
     if (shipHits.length === 0) return dataNotFound(["ship"]);
@@ -332,7 +360,7 @@ export function kcEquipmentRules(
   }
   if (!ship) return dataNotFound(["ship"]);
 
-  const eqHits = searchAll(ctx.index, args.equipment, 5).filter((h) => h.type === "equipment");
+  const eqHits = searchAll(ctx.index, args.equipment, 5, ["equipment"]);
   let eq = ctx.index.equipmentById.get(Number(parseRef(args.equipment)?.id ?? -1));
   if (!eq) {
     if (eqHits.length === 0) return dataNotFound(["equipment"]);
@@ -357,6 +385,9 @@ export function kcDataStatus(ctx: ToolContext): DataResult<{
   source: string;
   counts: LoadedDataset["counts"];
   capabilities: string[];
+  era?: string;
+  provenance?: Record<string, string>;
+  warnings?: string[];
 }> {
   const { ds } = ctx;
   return dataOk({
@@ -367,5 +398,8 @@ export function kcDataStatus(ctx: ToolContext): DataResult<{
     source: ds.source,
     counts: ds.counts,
     capabilities: ds.capabilities,
+    era: ds.era,
+    provenance: ds.provenance,
+    warnings: ds.warnings,
   });
 }

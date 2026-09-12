@@ -4,11 +4,15 @@ import type {
   MasterMap,
   MasterQuest,
   MasterShip,
+  MasterItem,
+  RemodelTransition,
   SearchHit,
 } from "@kancolle-agent/shared";
 import type { LoadedDataset } from "./data-loader.js";
 
 export interface MemoryIndex {
+  itemsById: Map<number, MasterItem>;
+  remodelTransitions: RemodelTransition[] | null;
   shipsById: Map<number, MasterShip>;
   shipsByName: Map<string, MasterShip[]>;
   equipmentById: Map<number, MasterEquipment>;
@@ -89,6 +93,8 @@ export function buildIndex(ds: LoadedDataset): MemoryIndex {
   }
 
   return {
+    itemsById: new Map(ds.items.map(item => [item.id, item])),
+    remodelTransitions: ds.remodel_transitions,
     shipsById,
     shipsByName,
     equipmentById,
@@ -127,7 +133,7 @@ export function scoreMatch(query: string, candidates: string[]): number {
   return best;
 }
 
-export function searchAll(index: MemoryIndex, query: string, limit = 5): SearchHit[] {
+export function searchAll(index: MemoryIndex, query: string, limit = 5, types?: string[]): SearchHit[] {
   const hits: SearchHit[] = [];
   const q = query.trim();
   if (!q) return hits;
@@ -195,13 +201,49 @@ export function searchAll(index: MemoryIndex, query: string, limit = 5): SearchH
     }
   }
 
-  hits.sort((a, b) => b.score - a.score || a.ref.localeCompare(b.ref));
-  return hits.slice(0, Math.min(10, Math.max(1, limit)));
+  for (const item of index.itemsById.values()) {
+    const score = Math.max(scoreMatch(q, [item.name, ...(item.alias ?? [])]),
+      q.toLowerCase() === `item:${item.id}` ? 100 : 0,
+      /^\d+$/.test(q) && item.id === Number(q) ? 95 : 0);
+    if (score >= 40) hits.push({ ref: `item:${item.id}`, name: item.name, type: "item", score });
+  }
+  const filtered = types?.length ? hits.filter(h => types.includes(h.type)) : hits;
+  filtered.sort((a, b) => b.score - a.score || a.ref.localeCompare(b.ref));
+  return filtered.slice(0, Math.min(10, Math.max(1, limit)));
 }
 
 export function remodelChain(index: MemoryIndex, shipId: number): MasterShip[] {
   const target = index.shipsById.get(shipId);
   if (!target) return [];
+
+  if (index.remodelTransitions !== null) {
+    // Undirected component for related forms; transitions retain the actual direction.
+    const ids = new Set([shipId]);
+    let changed = true;
+    while (changed) {
+      changed = false;
+      for (const edge of index.remodelTransitions) {
+        const from = Number(edge.from.split(":")[1]), to = Number(edge.to.split(":")[1]);
+        if (ids.has(from) || ids.has(to)) {
+          for (const id of [from, to]) if (!ids.has(id)) { ids.add(id); changed = true; }
+        }
+      }
+    }
+    const edges = index.remodelTransitions.filter(e => ids.has(Number(e.from.split(":")[1])));
+    const destinations = new Set(edges.map(e => Number(e.to.split(":")[1])));
+    const sorted = [...ids].sort((a, b) => a - b);
+    const roots = sorted.filter(id => !destinations.has(id));
+    const ordered: MasterShip[] = [], visited = new Set<number>();
+    const visit = (id: number) => {
+      if (visited.has(id)) return;
+      visited.add(id);
+      const ship = index.shipsById.get(id);
+      if (ship) ordered.push(ship);
+      for (const edge of edges.filter(e => e.from === `ship:${id}`)) visit(Number(edge.to.split(":")[1]));
+    };
+    for (const id of [...roots, ...sorted]) visit(id);
+    return ordered;
+  }
 
   // walk to root via remodel_from
   let root = target;

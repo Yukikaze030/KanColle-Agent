@@ -38,28 +38,32 @@
 ## Data MCP
 
 ### kc_search
-`query` `limit?`(≤10) `types?`
+`query` `limit?`(≤10) `types?`（ship/equipment/quest/expedition/map/item）
 返回 `{ref,name,type,score}[]`，不返回完整实体。
 
 ### kc_get
 `ref` `include?`（`remodel`|`graph`|`all`）
 
 ### kc_query
-`entity` `filters?` `fields?` `limit?` `cursor?`
+`entity` `filters?` `fields?` `limit?` `cursor?`；支持 item。通用 filters.ids（实体 ID 数组）/name（精确名称）。
 
 ### kc_quest_graph
 `quest` `direction?` `depth?`
 返回 nodes + edges（仅 ID/名称/关系）。
 
 ### kc_ship_remodel
-`ship`
-返回改造链与 remodel_level。
+`ship` `scope?`（默认 `next`，可选 `family`）
+返回 `chain`（相关形态列表，不表示执行顺序）、`transitions`（有向改造及消耗）、`coverage`。
+`next` 仅返回当前形态的直接转换；`family` 返回整个相关系列的转换。
+每条转换含 `from/to/level/resources/items/equipment/coverage/missing/sources`。
+道具 ref 为 `item:N`，消耗装备 ref 为 `equipment:N`；resources 使用与 Poi 相同的键。
+未知消耗为 null 并返回 partial；终点的空 transitions 只有 coverage=complete 时才代表无下一改。
 
 ### kc_equipment_rules
 `ship?` `equipment?` `category?` `mode?`=`check`|`who` `limit?`
 
 ### kc_data_status
-无参数。version / commit / counts / capabilities。
+无参数。version / commit / era / counts / capabilities / provenance / warnings。provenance 将转换的来源键映射为固定提交 URL。
 
 ## Token 预算
 

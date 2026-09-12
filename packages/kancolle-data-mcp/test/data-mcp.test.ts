@@ -103,7 +103,8 @@ describe("kc_quest_graph", () => {
 describe("kc_ship_remodel", () => {
   it("returns Yahagi chain", () => {
     const r = kcShipRemodel(ctx, { ship: "矢矧" });
-    expect(r.status).toBe("ok");
+    expect(r.status).toBe("partial");
+    expect(r.missing).toContain("remodel_transitions");
     const data = r.data as { chain: Array<{ name: string; remodel_level: number | null }> };
     expect(data.chain.map((c) => c.name)).toContain("矢矧改二乙");
   });

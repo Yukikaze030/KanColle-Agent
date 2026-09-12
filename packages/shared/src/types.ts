@@ -232,13 +232,33 @@ export interface MasterShip {
   stype: string;
   stype_id?: number;
   rarity?: number;
-  remodel_level?: number;
+  remodel_level?: number | null;
   remodel_to?: number | null;
   remodel_from?: number | null;
   stats?: ShipStats;
   slots?: Array<{ type: string; count?: number }>;
   alias?: string[];
   reading?: string;
+}
+
+/** Costs belong to directed transitions, not destination ship forms. */
+export interface RemodelTransition {
+  from: string;
+  to: string;
+  level: number | null;
+  resources: Record<string, number | null>;
+  items: Array<{ ref: string; name: string; count: number | null }>;
+  equipment: Array<{ ref: string; name: string; count: number | null }>;
+  coverage: "complete" | "partial";
+  missing: string[];
+  sources: string[];
+}
+
+export interface MasterItem {
+  id: number;
+  name: string;
+  alias?: string[];
+  description?: string;
 }
 
 export interface MasterEquipment {
@@ -308,8 +328,12 @@ export interface DatasetStatus {
     quests: number;
     expeditions: number;
     maps: number;
+    items?: number;
+    remodel_transitions?: number;
   };
   capabilities: string[];
+  provenance?: Record<string, string>;
+  warnings?: string[];
 }
 
 export interface SearchHit {

@@ -1,50 +1,15 @@
 ---
 name: fleet-builder
-description: 配队、舰娘选择、装备选择与替代方案。处理「用我的舰娘配 5-5」「活动 E3 配队」等。
+description: 用玩家现有舰娘与装备配队，校验路线、装备适配并给替代方案。
 ---
 
-# Fleet Builder Skill
+# 配队
 
-**时期：配队条件必须来自二期海域/活动。** 提及舰娘改造形态前须 Data `kc_ship_remodel`/`kc_search` 核实，禁止编造改二。
+遵循已加载的 `kancolle-main` 公共约束；若未加载，先加载。
 
-## 触发
+1. researcher 查询目标图的路线、带路、制空、索敌与 Boss；已有适用资料则复用。
+2. `poi_query_ships` 按舰种/等级/损伤筛选，`mode=instances`；必要时 Data 补舰种与数值。
+3. `poi_query_equipment` 先 `aggregate`，分配具体装备时再取所需实例；`kc_equipment_rules` 校验适配。
+4. 给出编成、等级、配装、路线条件与风险；联合舰队区分一/二队。
 
-配队 / 编成 / 用现有舰娘打某图或活动。
-
-## 工作流
-
-1. **攻略需求**
-   - kcwiki-researcher 查询目标海域/活动：路线、条件、制空、索敌、Boss（era=二期）
-2. **玩家舰娘**
-   - Poi `poi_query_ships`（按 stype/等级/损伤过滤，mode=instances）
-3. **静态补全**
-   - Data `kc_get` / `kc_query` 舰种与数值
-4. **玩家装备**
-   - Poi `poi_query_equipment`（默认 aggregate；配装时再 instances）
-   - Data `kc_equipment_rules` 校验能否装备
-5. **组合**
-   - Main Agent 输出编成 + 装备 + 替代
-
-## 输出模板
-
-```
-推荐编成：
-1. 舰娘名 Lv.X — 装备 A/B/C
-2. …
-
-替代方案：
-装备 A 缺 → 用 B（影响：…）
-
-路线/条件：
-制空约 X / 索敌约 Y / 注意 Z
-
-风险与备注：
-中破进击不可 / 桶数建议 …
-```
-
-## 硬规则
-
-- 禁止推荐玩家没有的装备而不说明「需获取」
-- 缺顶级装备必须给替代：`装备 A → 可替换为 B`
-- 优先使用玩家舰娘等级与损伤状态；重伤/入渠中不进主力
-- 联合舰队问题区分一队/二队
+不把大破/入渠舰列入主力；未持有装备标明「需获取」。缺关键装备给可用替代及影响，不能把同一库存实例重复分配。

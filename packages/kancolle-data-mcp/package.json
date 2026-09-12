@@ -12,7 +12,7 @@
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "vitest run",
     "start": "node dist/index.js",
-    "fetch:data": "node ../../scripts/fetch-official-data.mjs"
+    "fetch:data": "tsx ../../scripts/fetch-official-data.mjs"
   },
   "dependencies": {
     "@kancolle-agent/shared": "*",

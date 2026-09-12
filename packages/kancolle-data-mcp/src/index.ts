@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
+import { pathToFileURL } from "node:url";
 import { z } from "zod";
 import { loadDataset } from "./data-loader.js";
 import { buildIndex } from "./index-memory.js";
@@ -27,12 +28,12 @@ function createServer(ctx: ToolContext): McpServer {
 
   server.tool(
     "kc_search",
-    "Search ships/equipment/quests/expeditions/maps by name, alias, wiki id, game id, or ref. Returns small hit list (ref/name/type/score), not full entities.",
+    "Search ships/equipment/quests/expeditions/maps/useitems by name, alias, wiki id, game id, or ref. Returns small hit list (ref/name/type/score), not full entities.",
     {
       query: z.string().describe("Name, alias, wiki id, game id, or canonical ref"),
       limit: z.number().int().min(1).max(10).optional().describe("Default 5, max 10"),
       types: z
-        .array(z.enum(["ship", "equipment", "quest", "expedition", "map"]))
+        .array(z.enum(["ship", "equipment", "quest", "expedition", "map", "item"]))
         .optional(),
     },
     async (args) => toText(kcSearch(ctx, args)),
@@ -40,7 +41,7 @@ function createServer(ctx: ToolContext): McpServer {
 
   server.tool(
     "kc_get",
-    "Fetch one master entity by canonical ref (ship:N, equipment:N, quest:N, expedition:N, map:A-M). Optional include: remodel|graph|all.",
+    "Fetch one master entity by canonical ref (ship:N, equipment:N, quest:N, expedition:N, map:A-M, item:N). Optional include: remodel|graph|all.",
     {
       ref: z.string(),
       include: z.array(z.string()).optional(),
@@ -52,7 +53,7 @@ function createServer(ctx: ToolContext): McpServer {
     "kc_query",
     "Structured filter over entity type with fields/limit/cursor. Use for lists like 轻巡 or firepower>=10 equipment.",
     {
-      entity: z.enum(["ship", "equipment", "quest", "expedition", "map"]),
+      entity: z.enum(["ship", "equipment", "quest", "expedition", "map", "item"]),
       filters: z.record(z.unknown()).optional(),
       fields: z.array(z.string()).optional(),
       limit: z.number().int().min(1).max(100).optional(),
@@ -74,9 +75,10 @@ function createServer(ctx: ToolContext): McpServer {
 
   server.tool(
     "kc_ship_remodel",
-    "Ship remodel chain with remodel levels (e.g. 矢矧 → 矢矧改 → 矢矧改二乙).",
+    "Directed ship remodel transitions with required level, resource/item/equipment costs, provenance keys, and missing fields. Default scope=next returns only outgoing costs; scope=family includes all related conversions. Costs are per edge; partial is not free. Resolve source URLs via kc_data_status.",
     {
       ship: z.string(),
+      scope: z.enum(["next", "family"]).optional(),
     },
     async (args) => toText(kcShipRemodel(ctx, args)),
   );
@@ -116,10 +118,7 @@ export async function main(): Promise<void> {
   );
 }
 
-const isDirect =
-  process.argv[1] &&
-  (import.meta.url.endsWith(process.argv[1].replace(/\\/g, "/")) ||
-    import.meta.url.includes("kancolle-data-mcp"));
+const isDirect = process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href;
 
 if (isDirect || process.env.KANCOLLE_DATA_MCP_FORCE_START === "1") {
   main().catch((err) => {
