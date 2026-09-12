@@ -25,12 +25,12 @@
 
 （随实现逐步填充）
 
-- [ ] quest-planner/refs/SOURCES.md
-- [ ] event-guide/refs/SOURCES.md
-- [ ] fleet-builder/refs/SOURCES.md
-- [ ] equipment-planner/refs/SOURCES.md
-- [ ] progression-planner/refs/SOURCES.md
-- [ ] combat-knowledge/refs/SOURCES.md
+- [x] quest-planner/refs/SOURCES.md + quest-notes.md
+- [x] event-guide/refs/SOURCES.md
+- [x] fleet-builder/refs/SOURCES.md
+- [x] equipment-planner/refs/SOURCES.md
+- [x] progression-planner/refs/SOURCES.md
+- [x] combat-knowledge/refs/SOURCES.md
 
 ## 抓取约定
 
