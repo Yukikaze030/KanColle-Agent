@@ -16,8 +16,10 @@
 |------|-------|----------|----------|
 | 任务链/前置 | quest-planner | `.opencode/skills/quest-planner/refs/` | `site:zh.kcwiki.cn 任务` |
 | 海域/活动路线 | event-guide, fleet-builder | 各自 `refs/` | `site:wikiwiki.jp/kancolle 海域` |
+| **常规图带路/出击配置** | fleet-builder | `fleet-builder/refs/maps-routing.md` | https://bbs.nga.cn/read.php?tid=23451223 |
 | 改修/装备价值 | equipment-planner | `.opencode/skills/equipment-planner/refs/` | `site:zh.kcwiki.cn 改修` |
 | 练舰/改造价值 | progression-planner | `.opencode/skills/progression-planner/refs/` | 改二是否存在→Data MCP |
+| **舰娘性能概述** | progression-planner | `progression-planner/refs/ship-perf-nga.md` | **MCP 优先**；NGA tid=34119362 可选 |
 | 战斗公式 | combat-knowledge | `.opencode/skills/combat-knowledge/refs/` | 二期公式页 |
 | 路由/系统 | kancolle-main | 本文件 + SKILL | — |
 
