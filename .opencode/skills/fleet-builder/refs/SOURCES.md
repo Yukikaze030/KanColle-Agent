@@ -17,5 +17,6 @@ era: 2 | updated: 2026-09-12
 
 ## 落盘
 
-- [ ] `refs/maps-routing.md` — **待填入 NGA tid=23451223 精简正文**
+- [x] `refs/maps-routing.md` — NGA tid=23451223 第1页精简（任务→推荐海域/编成）
 - [ ] `refs/maps-5-5.md`
+- raw：`docs/guides/_incoming/nga-23451223.txt`（完整正文文本）

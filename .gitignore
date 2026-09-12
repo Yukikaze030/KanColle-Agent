@@ -14,3 +14,4 @@ packages/poi-plugin-mcp/data/
 .idea/
 .vscode/
 *.local.jsonc
+docs/guides/_incoming/*.html
