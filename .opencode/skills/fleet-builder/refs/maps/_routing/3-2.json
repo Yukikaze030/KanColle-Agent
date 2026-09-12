@@ -1,0 +1,9 @@
+{
+  "mapId": "3-2",
+  "source": "https://bbs.nga.cn/read.php?pid=454453344",
+  "source_title": "3-2 キス島沖",
+  "hasRouting": true,
+  "routingChars": 605,
+  "routing": "带路条件(新窗口)R\n\n\n\t\n+ 地图分析 ...\n\n\nboss点陆航/本队制空线\n*实战配置需要考虑敌方空袭基地所造成的损失，陆航制空应比表格中的略高一点\n陆航第一队制空(100%)\n\t陆航第二队制空(99%)\n\t本队制空(99%)\n\n均势：212\n\t均势：171\n\t优势：294\n均势：131\n\n均势：212\n\t劣势：87\n\t优势：324\n均势：144\n\n均势：212\n\t\n\t优势：384\n均势：171\n\n劣势：106\n\t均势：189\n\t优势：324\n均势：144\n\n劣势：106\n\t劣势：95\n\t优势：356\n均势：158\n\n劣势：106\n\t\n\t优势：417\n均势：186\n\n\n\t\n\t优势：468\n均势：208\n\n\n关于陆航使用的战斗机\n理论上讲使用活动图用不上的二线陆战比较好，可以避免来回切换飞机的喷铝问题\n如果常驻6图并且使用空劣配置，某些陆战会逐渐损失熟练度导致制空下降。\n为了避免这种事情经常发生，应尽量选择成长系数6或者更高的陆战。\n成长系数可以参考下面的文档：\nhttps://docs.google.com/spreadsheets/d/1tGEtDid5q7ngve1m07TK5JO2MF2BCTd6OiyObPRpkqU/edit?usp=sharing\n排除掉不足5航程以及活动图的主力机，目前版本6图常驻[一式戦 隼III型甲]、[Spitfire Mk.V]这两架陆战比较好。",
+  "expanded": 209
+}

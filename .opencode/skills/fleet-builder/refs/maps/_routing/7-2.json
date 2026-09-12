@@ -1,0 +1,9 @@
+{
+  "mapId": "7-2",
+  "source": "https://bbs.nga.cn/read.php?pid=454456055",
+  "source_title": "7-2 タウイタウイ泊地沖",
+  "hasRouting": true,
+  "routingChars": 323,
+  "routing": "带路条件(新窗口)R\n\n\n\t\n− 地图分析 ...\n双血条设计，不同阶段的带路会有微妙变化\n血条每个月会回复，但击破后没有任何奖励，意义不明，打不打这张图都无所谓\nP1斩杀后没有补给，司令部等级低的时候也没有(弹性难度)，P2斩杀后没有红泡芙\nboss点掉落质量还不错，P1P2目前都可以捕捞海防\n\n常用攻略路线以及带路：\nP1：\nC-E-G路线：\n2CVL+3DE\nCVL负责水上目标，DE负责水下目标，分工明确\n如果DE不足可以换成1CVL+3DD/DE\nP2：\nB-C-D-I-M路线：\nDD>=2 & CV<=1 & BB系+CV系<=3 & 全队高速\nP2想直接走C只能5船带3DE，没法打boss\ntsu爷不少，想省铝可以考虑罚站空母",
+  "expanded": 29
+}

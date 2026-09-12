@@ -1,0 +1,9 @@
+{
+  "mapId": "2-4",
+  "source": "https://bbs.nga.cn/read.php?pid=454452788",
+  "source_title": "2-4 沖ノ島海域",
+  "hasRouting": true,
+  "routingChars": 823,
+  "routing": "带路条件(新窗口)R\n\n\n\t\n+ 地图分析 ...\n\n\n+ 攻击机安全搭载数 ...\n\n\n+ 海域倍卡 ...\n\n\n攻略流程\n流程\n\t项目\n\t路线\n\t舰种配置\n\n开启7-5\n\t7-4血条击破\n\t\n\t只需要一次，不需要当月完成\n\nP1\n\t血量：2\n\t\n+ 1-A-B-D-F-G-H-K ...\n\t\n+ 1BB系+1CA系+1CLT+1CL+2DD ...\n\n\n+ 萌新：1BB系+1CVL+1CA系/CLT+1CL+2DD ...\n\n解谜开启P3boss点\n\tM点S胜：1次\n\t\n+ 1-A-B-D-F-G-H-I-M ...\n\t直接使用P1配置，能动选H-I即可。\n也可以打完P2再做，为了减少换装次数可以使用P3配置。\n\nP2\n\t血量：3\n\t\n+ 1-A-B-D-F-J-O-Q ...\n\t\n+ 1BB系+1CA系+1CL+3DD ...\n\n\n+ 萌新：1BB系+1CVL+1CL+3DD ...\n\nP3\n\t血量：3\n\t\n+ 1-A-B-D-F-J-O-P-T ...\n\t\n+ 1CVL+2CA系+1CL+2DD ...\n\n\n+ 1BB系+1CA系+1CLT+1CL+2DD，高速 ...\n\n\n+ 1~2CA系+1~2CLT+1CL+2DD，高速 ...\n\n\n\t每月勋章获取 [P1]\n\n\n+ 单方面互殴 ...\n\n\n\t每月勋章获取 [P2]\n\n\n+ PT快乐艇 ...\n\n\n\t每月勋章获取 [P3]\n\n\n+ 沙包大的沙包 ...\n\n\n\t每月勋章获取 [P1]\n\n\n+ 小心铝被to ...\n\n\n\t每月勋章获取 [P2]\n\n\n+ 见好就收 ...\n\n\n\t每月勋章获取 [P3]\n\n\n+ 输出检测器 ...\n\n\n任务ID\n\t任务名称\n\t任务要求\n\t完成条件\n\t推荐配置\n\nB190\n\t改金剛型高速戦艦'榛名改二乙/丙'、抜錨！\n\t榛名改二乙/丙+金刚改二丙+2DD\n\tP3 S胜，1次\n\t\n+ 榛名+金刚+1CVL+1CL+2DD，高速 ...",
+  "expanded": 209
+}
