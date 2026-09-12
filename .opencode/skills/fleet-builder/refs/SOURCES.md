@@ -17,6 +17,8 @@ era: 2 | updated: 2026-09-12
 
 ## 落盘
 
-- [x] `refs/maps-routing.md` — NGA tid=23451223 第1页精简（任务→推荐海域/编成）
-- [ ] `refs/maps-5-5.md`
-- raw：`docs/guides/_incoming/nga-23451223.txt`（完整正文文本）
+- [x] `refs/maps-routing.md` — 任务→推荐海域（第1页精简）
+- [x] `refs/maps-all.md` — 37 图索引
+- [x] `refs/maps/<area>-<n>.md` — 各图楼层正文（1-1 … 6-5）
+- [ ] `refs/maps-5-5.md` —（可选用 maps/5-5.md）
+- raw：`docs/guides/_incoming/nga-23451223.txt`
