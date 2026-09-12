@@ -14,4 +14,4 @@ description: 用玩家现有舰娘与装备配队，校验路线、装备适配�
 
 不把大破/入渠舰列入主力；未持有装备标明「需获取」。缺关键装备给可用替代及影响，不能把同一库存实例重复分配。
 
-附属查阅：`refs/SOURCES.md` 与 `refs/*.md`（路线/制空/索敌精简页）。常规图带路优先 `refs/maps-routing.md`（NGA tid=23451223 落盘版）。
+附属查阅：`refs/SOURCES.md` 与 `refs/*.md`（路线/制空/索敌精简页）。常规图：`refs/maps-routing.md`（任务表）+ `refs/maps/<图号>.md`（分图带路，索引 `refs/maps-all.md`）。

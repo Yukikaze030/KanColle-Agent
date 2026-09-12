@@ -4,10 +4,11 @@ source: "https://bbs.nga.cn/read.php?tid=23451223"
 source_title: "梦美的常规图带路 & 出击配置 v3.0[通常海域强化年度]"
 updated: "2026-09-12"
 source_updated: "2026-09-10"
-summary: "NGA 梦美常规图带路与出击配置精简页（二期）。任务推荐海域/编成来自原帖第1页；单图详细带路见原文与 raw 文本。"
+summary: "NGA 梦美常规图带路与出击配置精简页（二期）。任务推荐海域来自第1页；分图正文见 maps/*.md。"
 raw: "docs/guides/_incoming/nga-23451223.txt"
+maps_index: "refs/maps-all.md"
+maps_dir: "refs/maps/"
 fetch_status: "ok"
-pages_fetched: [1]
 ---
 
 # 常规图带路 & 出击配置（精简）
@@ -17,6 +18,11 @@ pages_fetched: [1]
 > 编成中的改造形态须以 Data MCP `kc_ship_remodel` 核实；本页只转录原帖推荐。
 
 ## 地图目录
+
+**分图正文**（37 图，楼层 `pid` 已抓取）：
+
+- 索引：`maps-all.md`
+- 单图：`maps/1-1.md` … `maps/6-5.md`、`maps/7-1.md` … `maps/7-5.md`
 
 | 海域 | 图 |
 |------|-----|
