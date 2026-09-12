@@ -38,3 +38,10 @@ description: KanColle 玩家状态、静态事实与攻略路由；游戏请求�
 - 先摘要/聚合；只有选具体舰船、分配装备等需要实例时才取实例，避免全库存、全数据库与无关任务链。
 - 给 researcher 明确目标和必要玩家摘要，不传完整库存；只接收相关结论、条件、不确定项与来源。
 - 中文，结论 → 原因 → 下一步；决策明确排序。按问题规模作答，不复述原始工具结果或调用过程（除非用户要求）。
+
+## 攻略附属文档（本仓库）
+
+- 总索引：`docs/guides/INDEX.md`；浏览器预览：`docs/guides/index.html`
+- 专项：`.opencode/skills/<id>/refs/SOURCES.md`（网址）与 `refs/*.md`（精简落盘页）
+- 新增网址或网页转 MD：只收二期；每页必须有 era / source URL / updated / summary；禁止整页 HTML 或一期段落
+- 专项 Skill 在缺 Data 时优先读本 skill 的 `refs/`，再 researcher；refs 不得覆盖「改造须 Data 核实」等硬规则

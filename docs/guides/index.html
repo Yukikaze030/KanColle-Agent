@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>KanColle Skill 攻略索引（二期）</title>
+  <style>
+    :root { color-scheme: light dark; font-family: system-ui, sans-serif; }
+    body { margin: 0; padding: 24px; line-height: 1.5; max-width: 920px; }
+    h1 { font-size: 1.25rem; margin-top: 0; }
+    .era { color: #b45309; font-weight: 600; }
+    table { border-collapse: collapse; width: 100%; font-size: 0.95rem; }
+    th, td { border: 1px solid #8884; padding: 8px 10px; text-align: left; vertical-align: top; }
+    th { background: #8882; }
+    a { color: inherit; }
+    code { font-size: 0.9em; }
+    footer { margin-top: 24px; opacity: 0.7; font-size: 0.85rem; }
+  </style>
+</head>
+<body>
+  <h1>KanColle 攻略附属索引 <span class="era">二期 only</span></h1>
+  <p>本地预览用。详细约定见 <code>docs/guides/README.md</code>；总表见 <code>docs/guides/INDEX.md</code>。</p>
+
+  <h2>权威入口</h2>
+  <table>
+    <tr><th>站点</th><th>URL</th><th>优先级</th></tr>
+    <tr><td>中文舰娘百科</td><td><a href="https://zh.kcwiki.cn" target="_blank" rel="noopener">zh.kcwiki.cn</a></td><td>1</td></tr>
+    <tr><td>日文攻略 Wiki</td><td><a href="https://wikiwiki.jp/kancolle" target="_blank" rel="noopener">wikiwiki.jp/kancolle</a></td><td>2</td></tr>
+    <tr><td>English KC Wiki</td><td><a href="https://en.kancollewiki.net" target="_blank" rel="noopener">en.kancollewiki.net</a></td><td>3</td></tr>
+  </table>
+
+  <h2>Skill 附属目录</h2>
+  <table>
+    <tr><th>Skill</th><th>refs</th><th>用途</th></tr>
+    <tr><td>quest-planner</td><td><code>.opencode/skills/quest-planner/refs/</code></td><td>任务链与条件精简页</td></tr>
+    <tr><td>event-guide</td><td><code>.opencode/skills/event-guide/refs/</code></td><td>活动/海域路线</td></tr>
+    <tr><td>fleet-builder</td><td><code>.opencode/skills/fleet-builder/refs/</code></td><td>配队与带路</td></tr>
+    <tr><td>equipment-planner</td><td><code>.opencode/skills/equipment-planner/refs/</code></td><td>改修与装备评价</td></tr>
+    <tr><td>progression-planner</td><td><code>.opencode/skills/progression-planner/refs/</code></td><td>练舰价值（改造以 Data MCP 为准）</td></tr>
+    <tr><td>combat-knowledge</td><td><code>.opencode/skills/combat-knowledge/refs/</code></td><td>战斗机制精简</td></tr>
+  </table>
+
+  <h2>硬约束</h2>
+  <ul>
+    <li>只收二期内容</li>
+    <li>改造形态必须 Data MCP 核实，禁止编造改二</li>
+    <li>refs 只放精简结论，不贴整页 HTML</li>
+  </ul>
+
+  <footer>branch: feat/skill-guide-refs · era 2 · preview only</footer>
+</body>
+</html>
