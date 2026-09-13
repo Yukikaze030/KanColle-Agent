@@ -1,6 +1,6 @@
 # MCP Tools 参考
 
-共 **15** tools：Poi 8 + Data 7。勿继续拆成 30–50。
+共 **18** tools：Poi 9 + Data 9。保留细粒度查询用于兼容与补查，常规配队优先使用组合查询和攻略切片工具。
 
 ## Poi MCP
 
@@ -21,6 +21,11 @@
 参数：`instance_ids` `master_ids` `improvement` `proficiency` `locked` `equipped`
 `mode` 默认 **aggregate**。
 `fields` `limit` `cursor`
+
+### poi_query_fleet_assets
+`ships?{master_ids,stype_ids,level,damage,dock,fleet_ids,limit}`
+`equipment?{master_ids,type_ids,equipped,mode,limit}`
+一次返回定向舰船候选和装备摘要；至少提供一个选择器。装备默认 aggregate，最终分配时才请求 instances。
 
 ### poi_get_fleets
 无参数。Fleet 1–4 + 联合 + 远征状态。
@@ -61,6 +66,10 @@
 
 ### kc_equipment_rules
 `ship?` `equipment?` `category?` `mode?`=`check`|`who` `limit?`
+
+### kc_map_guide
+`map` `modules?`
+不传 `modules` 时只返回元数据与可用模块键/标题；传入 `overview/routing/enemy/air-los/bonus/fleets/quests/notes` 时仅返回所选模块。模块契约见地图 `FORMAT.md`。
 
 ### kc_air_power
 

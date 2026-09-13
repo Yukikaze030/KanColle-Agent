@@ -7,6 +7,7 @@ import {
   poiGetOverview,
   poiGetQuests,
   poiQueryEquipment,
+  poiQueryFleetAssets,
   poiQueryShips,
   poiStatus,
 } from "../src/tools.js";
@@ -15,6 +16,13 @@ import { createPoiRuntime } from "../src/plugin.js";
 import { mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
+import { createRequire } from "node:module";
+
+const require = createRequire(import.meta.url);
+const poiBridge = require("../poi/store-bridge.cjs") as {
+  readShips: (store: unknown) => Array<{ stype_id?: number; slot_items: Array<number | null> }>;
+  readEquipment: (store: unknown) => Array<{ type_id?: number }>;
+};
 
 let store: SnapshotStore;
 
@@ -65,6 +73,23 @@ describe("snapshot", () => {
   });
 });
 
+describe("Poi store bridge", () => {
+  it("retains numeric ship and equipment type ids from live masters", () => {
+    const raw = {
+      info: {
+        ships: { 10: { api_id: 10, api_ship_id: 699, api_lv: 99, api_nowhp: 50, api_maxhp: 50, api_slot: [20, -1] } },
+        equips: { 20: { api_id: 20, api_slotitem_id: 169, api_level: 0, api_alv: 7 } },
+      },
+      const: {
+        $ships: { 699: { api_name: "矢矧改二乙", api_stype: 3 } },
+        $equips: { 169: { api_name: "二式水戦改", api_type: [0, 0, 45, 45, 0] } },
+      },
+    };
+    expect(poiBridge.readShips(raw)[0]).toMatchObject({ stype_id: 3, slot_items: [20, null] });
+    expect(poiBridge.readEquipment(raw)[0]).toMatchObject({ type_id: 45 });
+  });
+});
+
 describe("poi tools", () => {
   it("status reports domains", () => {
     const r = poiStatus(store);
@@ -111,6 +136,23 @@ describe("poi tools", () => {
     expect(data.items[0].improvements["+0"]).toBe(2);
     expect(data.items[0].improvements["+6"]).toBe(1);
     expect(data.items[0].improvements.MAX).toBe(1);
+  });
+
+  it("batch-fetches compact fleet assets", () => {
+    const r = poiQueryFleetAssets(store, {
+      ships: { master_ids: [699], level: { min: 90 } },
+      equipment: { master_ids: [169] },
+    });
+    expect(r.status).toBe("ok");
+    const data = r.data as { ships: { total: number }; equipment: { total: number; mode: string } };
+    expect(data.ships.total).toBe(1);
+    expect(data.equipment.total).toBe(4);
+    expect(data.equipment.mode).toBe("aggregate");
+  });
+
+  it("rejects broad fleet asset selectors", () => {
+    expect(poiQueryFleetAssets(store, { equipment: {} }).status).toBe("error");
+    expect(poiQueryFleetAssets(store, { ships: {} }).status).toBe("error");
   });
 
   it("fleets return members", () => {

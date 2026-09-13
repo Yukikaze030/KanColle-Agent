@@ -15,13 +15,20 @@ it("exposes item schema and remodel scope over the MCP protocol", async () => {
     await server.connect(serverTransport);
     await client.connect(clientTransport);
     const tools = await client.listTools();
-    expect(tools.tools).toHaveLength(8);
+    expect(tools.tools).toHaveLength(9);
+    expect(tools.tools.some(tool => tool.name === "kc_map_guide")).toBe(true);
     const call = async (name: string, args: Record<string, unknown>) => {
       const result = await client.callTool({ name, arguments: args });
       const content = result.content as Array<{type: string; text: string}>;
       expect(result.isError).not.toBe(true);
       return JSON.parse(content[0].text);
     };
+    const guide = await call("kc_map_guide", { map: "5-3", modules: ["air-los"] }) as {
+      status: string;
+      data: { modules: Record<string, unknown> };
+    };
+    expect(guide.status).toBe("ok");
+    expect(Object.keys(guide.data.modules)).toEqual(["air-los"]);
     const item = await call("kc_search", { query: "新型兵装资材", types: ["item"], limit: 1 });
     expect(item.data[0].ref).toBe("item:94");
     const next = await call("kc_ship_remodel", { ship: "ship:145" });

@@ -158,6 +158,7 @@ function fromRaw(
       "ship_remodel",
       "equipment_rules",
       "air_power",
+      "map_guide_modules",
       ...(raw.meta?.era ? [`era:${raw.meta.era}`] : []),
       ...(raw.items ? ["items"] : []),
       ...(raw.remodel_transitions ? ["remodel_costs"] : []),

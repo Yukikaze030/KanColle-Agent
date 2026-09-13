@@ -1,5 +1,5 @@
 /**
- * Merge _routing/<id>.json into maps/<id>.md under ## 带路条件.
+ * Merge _routing/<id>.json into maps/<id>.md under routing module.
  */
 import { readdirSync, readFileSync, writeFileSync, existsSync } from "node:fs";
 import { join } from "node:path";
@@ -28,7 +28,7 @@ function toMarkdownBlock(raw, source) {
   const clean = cleanRouting(raw);
   if (!clean) return "";
   const lines = clean.split(/\r?\n/);
-  const out = ["## 带路条件", "", `> 来源：${source}（NGA 带路条件弹窗）`, ""];
+  const out = ["## [module:routing] 带路条件", "", `> 来源：${source}（NGA 带路条件弹窗）`, ""];
   for (const line of lines) {
     const s = line.trim();
     if (!s) {
@@ -72,14 +72,14 @@ for (const jf of files) {
   }
 
   let md = readFileSync(mapPath, "utf8");
-  if (/^## 带路条件/m.test(md)) {
-    md = md.replace(/^## 带路条件[\s\S]*?(?=\n## )/, block + "\n\n");
+  if (/^## \[module:routing\]/m.test(md)) {
+    md = md.replace(/^## \[module:routing\][\s\S]*?(?=\n## )/, block + "\n\n");
   } else if (/^## 带路/m.test(md)) {
     // replace existing 带路 section (no \b after CJK)
     md = md.replace(/^## 带路[\s\S]*?(?=\n## )/, block + "\n\n");
   } else {
     // insert before ## 制空 or ## 推荐编成 or ## 任务
-    const m = md.match(/\n## (制空|推荐编成|任务|出击任务|相关任务)/);
+    const m = md.match(/\n## \[module:(air-los|fleets|quests)\]/);
     if (m) {
       md = md.replace(m[0], `\n${block}\n${m[0]}`);
     } else {

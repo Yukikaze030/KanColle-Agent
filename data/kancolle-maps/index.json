@@ -5,13 +5,15 @@
   "generated_at": "2026-09-12T17:20:27.949Z",
   "count": 37,
   "heading_schema": [
-    "# <id> <name>",
-    "## 地图信息",
-    "## 带路条件",
-    "## 敌方配置",
-    "## 制空 / 索敌",
-    "## 推荐编成",
-    "## 任务配置"
+    "# [map:<id>] <id> <name>",
+    "## [module:overview] 地图信息",
+    "## [module:routing] 带路条件",
+    "## [module:enemy] 敌方配置",
+    "## [module:air-los] 制空 / 索敌",
+    "## [module:bonus] 海域倍卡 (optional)",
+    "## [module:fleets] 推荐编成",
+    "## [module:quests] 任务配置",
+    "## [module:notes] 备注"
   ],
   "items": [
     {

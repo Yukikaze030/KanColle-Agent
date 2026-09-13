@@ -34,6 +34,7 @@ Poi Redux / KCSAPI Events
 | `poi_get_overview` | 资源/桶/容量/远征入渠数/是否出击 |
 | `poi_query_ships` | 过滤舰娘；instances/aggregate；fields/cursor |
 | `poi_query_equipment` | 默认 aggregate |
+| `poi_query_fleet_assets` | 按舰种/装备类型或 master ID 批量返回配队资产；装备默认聚合 |
 | `poi_get_fleets` | 1–4 队与联合 |
 | `poi_get_quests` | 当前+观察历史；缺=unknown |
 | `poi_get_inventory` | 材料/道具 + coverage |

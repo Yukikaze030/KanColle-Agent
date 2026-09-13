@@ -56,7 +56,7 @@ function readShips(store) {
       condition: s.api_cond ?? 49,
       locked: Boolean(s.api_locked),
       damage: damageFromHp(hp, maxHp),
-      stype: undefined,
+      stype_id: Number.isInteger(master.api_stype) ? master.api_stype : undefined,
       fleet_id: s.api_fleet != null && s.api_fleet >= 0 ? s.api_fleet + 1 : null,
       dock: false,
       slot_items: (s.api_slot || []).map((id) => (id > 0 ? id : null)),
@@ -85,7 +85,9 @@ function readEquipment(store) {
       proficiency: e.api_alv ?? 0,
       locked: Boolean(e.api_locked),
       equipped_on: equippedOn.get(e.api_id) ?? null,
-      category: undefined,
+      type_id: Array.isArray(master.api_type) && Number.isInteger(master.api_type[2])
+        ? master.api_type[2]
+        : undefined,
     }
   })
 }

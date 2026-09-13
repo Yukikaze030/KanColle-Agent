@@ -8,6 +8,7 @@ import { buildIndex } from "./index-memory.js";
 import {
   kcDataStatus,
   kcAirPower,
+  kcMapGuide,
   kcEquipmentRules,
   kcGet,
   kcQuestGraph,
@@ -95,6 +96,16 @@ function createServer(ctx: ToolContext): McpServer {
       limit: z.number().int().min(1).max(100).optional(),
     },
     async (args) => toText(kcEquipmentRules(ctx, args)),
+  );
+
+  server.tool(
+    "kc_map_guide",
+    "Read selected modules from a normal-map guide. With no modules, returns metadata and available module keys/titles only; never returns the whole guide implicitly.",
+    {
+      map: z.string().regex(/^\d+-\d+$/),
+      modules: z.array(z.enum(["overview", "routing", "enemy", "air-los", "bonus", "fleets", "quests", "notes"])).max(8).optional(),
+    },
+    async (args) => toText(kcMapGuide(ctx, args)),
   );
 
   server.tool(

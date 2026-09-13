@@ -19,6 +19,7 @@ import type { MemoryIndex } from "./index-memory.js";
 import { remodelChain, searchAll } from "./index-memory.js";
 import { canShipEquip, whoCanEquip } from "./rules/equipment.js";
 import { calculateAirPowerSlot } from "./rules/air-power.js";
+import { loadMapGuide } from "./map-guide.js";
 
 export interface ToolContext {
   ds: LoadedDataset;
@@ -430,6 +431,23 @@ export function kcAirPower(
       "land-base interception/defense and route losses are not included",
     ],
   });
+}
+
+export function kcMapGuide(
+  _ctx: ToolContext,
+  args: { map: string; modules?: string[] },
+): DataResult<unknown> {
+  try {
+    const guide = loadMapGuide(args.map, args.modules ?? []);
+    const available = new Set(guide.available_modules.map(module => module.key));
+    const missing = (args.modules ?? []).filter(key => !available.has(key));
+    return missing.length
+      ? dataPartial(guide, missing.map(key => `module:${key}`))
+      : dataOk(guide);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "map_guide_error";
+    return message === "map_guide_not_found" ? dataNotFound([`map_guide:${args.map}`]) : dataError("invalid_args", message);
+  }
 }
 
 export function kcDataStatus(ctx: ToolContext): DataResult<{

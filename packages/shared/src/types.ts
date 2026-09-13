@@ -34,6 +34,7 @@ export interface ShipRecord {
   locked: boolean;
   damage: DamageState;
   stype?: ShipStype;
+  stype_id?: number;
   fleet_id?: number | null;
   dock?: boolean;
   slot_items?: Array<number | null>;
@@ -50,6 +51,7 @@ export interface EquipmentRecord {
   locked: boolean;
   equipped_on: number | null;
   category?: EquipCategory;
+  type_id?: number;
   stats?: ShipStats;
 }
 

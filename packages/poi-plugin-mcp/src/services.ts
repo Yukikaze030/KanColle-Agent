@@ -11,6 +11,7 @@ import { aggregateEquipment } from "./snapshot.js";
 export interface QueryShipsArgs {
   instance_ids?: number[];
   master_ids?: number[];
+  stype_ids?: number[];
   fleet_ids?: number[];
   level?: { min?: number; max?: number };
   locked?: boolean;
@@ -32,6 +33,10 @@ export function queryShips(snap: PlayerSnapshot, args: QueryShipsArgs) {
   if (args.master_ids?.length) {
     const set = new Set(args.master_ids);
     ships = ships.filter((s) => set.has(s.master_id));
+  }
+  if (args.stype_ids?.length) {
+    const set = new Set(args.stype_ids);
+    ships = ships.filter((s) => s.stype_id != null && set.has(s.stype_id));
   }
   if (args.fleet_ids?.length) {
     const set = new Set(args.fleet_ids);
@@ -91,6 +96,7 @@ export function queryShips(snap: PlayerSnapshot, args: QueryShipsArgs) {
 export interface QueryEquipmentArgs {
   instance_ids?: number[];
   master_ids?: number[];
+  type_ids?: number[];
   improvement?: { min?: number; max?: number };
   proficiency?: { min?: number; max?: number };
   locked?: boolean;
@@ -110,6 +116,10 @@ export function queryEquipment(snap: PlayerSnapshot, args: QueryEquipmentArgs) {
   if (args.master_ids?.length) {
     const set = new Set(args.master_ids);
     eq = eq.filter((e) => set.has(e.master_id));
+  }
+  if (args.type_ids?.length) {
+    const set = new Set(args.type_ids);
+    eq = eq.filter((e) => e.type_id != null && set.has(e.type_id));
   }
   if (args.improvement) {
     if (args.improvement.min != null) {

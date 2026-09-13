@@ -18,6 +18,7 @@ const tools = [
   "poi_get_overview",
   "poi_query_ships",
   "poi_query_equipment",
+  "poi_query_fleet_assets",
   "poi_get_fleets",
   "poi_get_quests",
   "poi_get_inventory",
@@ -30,6 +31,7 @@ const tools = [
   "kc_ship_remodel",
   "kc_equipment_rules",
   "kc_air_power",
+  "kc_map_guide",
   "kc_data_status",
 ];
 
