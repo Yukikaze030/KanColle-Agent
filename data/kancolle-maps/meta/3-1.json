@@ -1,0 +1,17 @@
+{
+  "map_id": "3-1",
+  "source_url": "https://bbs.nga.cn/read.php?pid=454453286",
+  "source_title": "3-1 モーレイ海",
+  "era": "2",
+  "tid": "23451223",
+  "fetched_at": "2026-09-12T16:54:23.725Z",
+  "has_routing": true,
+  "has_enemy": true,
+  "routing_chars": 182,
+  "enemy_chars": 432,
+  "text_len": 1778,
+  "html_len": 40773,
+  "routing": "带路条件(新窗口)R\n\n\n\t\n− 地图分析 ...\n难度不高的一张冷门地图，推图建议，路线C-F-G\nA点有弹药捞，但效率比3-2差太多了\n\n各种攻略路线以及带路：\nC-F-G路线：\n2BB/CV(不能带BBV)+2CA系/CL系+2DD/DE\n没多大难度，能打过2-4的队伍可以轻松推掉\nC-D-G路线：\n大鲸+5SS\n神奇的带路，田意难测。\n当然没多少实战价值",
+  "enemy": "敌方详细配置(新窗口)R\n− 敌方最高制空配置 ...\n战斗点\n\t敌舰配置\n\t制空均势\n\t制空优势\n\t制空确保\n\nB\n\t軽巡ヘ級flagship、軽巡ホ級elite、雷巡チ級elite、雷巡チ級elite、駆逐ロ級後期型、駆逐ロ級後期型\n\t\n\t\n\t\n\nC\n\t重巡リ級flagship、軽巡ヘ級flagship、軽巡ホ級elite、駆逐ロ級後期型、駆逐ロ級後期型、駆逐ロ級後期型\n\t\n\t\n\t\n\nD\n\t軽母ヌ級elite(1523)、重巡リ級elite、軽巡ホ級elite、軽巡ホ級elite、駆逐ロ級後期型、駆逐ロ級後期型\n\t16\n\t36\n\t72\n\nF\n\t重巡リ級flagship、重巡リ級flagship、軽巡ヘ級flagship、駆逐ロ級後期型、駆逐ロ級後期型、駆逐ロ級後期型\n\t\n\t\n\t\n\nG\n\t空母ヲ級flagship(1528)、戦艦ル級flagship、戦艦ル級flagship、駆逐ロ級後期型、駆逐ロ級後期型、輸送ワ級elite\n\t19\n\t42\n\t84",
+  "analysis": "地图分析 ...\n难度不高的一张冷门地图，推图建议，路线C-F-G\nA点有弹药捞，但效率比3-2差太多了\n\n各种攻略路线以及带路：\nC-F-G路线：\n2BB/CV(不能带BBV)+2CA系/CL系+2DD/DE\n没多大难度，能打过2-4的队伍可以轻松推掉\nC-D-G路线：\n大鲸+5SS\n神奇的带路，田意难测。\n当然没多少实战价值\n\n\n\n\n攻击机安全搭载数\n\n对空射击回避补正\n\t1.0 / 1.0\n\t0.6 / 1.0\n\t0.6 / 0.7\n\t0.5 / 0.7\n\t0.5 / 0.5\n\nC-F-G，全程空确\n\t5\n\t2\n\t2\n\t2\n\t2\n\n\n\t萌新推图\n\n\n路线：\n\t\n+ 1-C-F-G ...\n\t\n需求：\n\t2-4通关\n\n\n制空：\n\tG点84空确\n\n\n索敌：\n\t0\n\n\n− 平静的海面 ...\n本队配置：\n\n分析：\n难度大幅低于2-4\n\n\n\t北方海域警備を実施せよ！\n\n\n路线：\n\t\n+ 1-C-F-G ...\n\t\n需求：\n\t季常任务需要一个CL\n长射程空母\n\n\n制空：\n\tG点84空确\n\n\n索敌：\n\t\n\n\n− 万能带路2DD ...\n本队配置：\n\n分析：\n和低配阵容差距不大，有了长射程舰爆就可以不带BB了\n某些任务要求带CL，如果没要求可以换成CLT\n\n\n任务ID\n\t任务名称\n\t任务要求\n\t完成条件\n\t推荐配置\n\nB15\n\t'第五航空戦隊'出撃せよ！\n\t翔鹤+瑞鹤\n\tB胜\n\t\n− 翔鹤+瑞鹤+2CA/CLT+2DD ...\n\nboss点42空优，84空确\n\nB21\n\t'第十八駆逐隊'出撃せよ！\n\t阳炎+不知火+霰+霞\n\tB胜\n\t\n− 2CV+4DD ...\n\nboss点42空优，84空确\n\nB37\n\t'第二一駆逐隊'出撃せよ！\n\t初春+子日+若叶+初霜\n\tS胜\n\t\n− 2CV+4DD ...\n\nboss点42空优，84空确\n\nB51\n\t新編'第二一戦隊'北方へ出撃せよ！\n\t足柄改二+那智改二+多摩+木曾\n\tS胜\n\t\n− 2CA+1CL+1CLT+2CV ...\n\nboss点42空优，84空确\n\nB58\n\t旗艦'霞'北方海域を哨戒せよ！\n\t霞改二(乙)旗舰+3DD\n\tB胜\n\t\n− 2CV+4DD ...\n\nboss点42空优，84空确\n\nB127\n\t冬季北方海域作戦\n\t轻巡系旗舰\n\tS胜，2次\n\t\n− 2CLT(旗舰)+2CV系+2DD ...\n\nboss点42空优，84空确\n\nB162\n\t北の海から愛をこめて\n\t任意舰队\n\tA胜，1次\n\t\n− 2CV系+2CA系/CL系+2DD ...\n\nboss点42空优，84空确\n\nB175\n\t続：'鎮守府秋刀魚祭り'発動準備！\n\tCL/CT/AS/宗谷旗舰\n\tS胜，1次\n\t\n− 1CL旗舰+2CV系+1CA系/CL系+2DD ...\n\nboss点42空优，84空确\n\nB195\n\t[潜水艦任務]潜水艦、戦闘哨戒！\n\tSalmon/Scamp旗舰\n\tS胜，1次\n\t\n− USSSS旗舰+2CV系+1CA系/CL系+2DD ...\n\nboss点42空优，84空确\n想玩特殊带路可以试试1AS+5SS系"
+}

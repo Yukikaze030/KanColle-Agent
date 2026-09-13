@@ -1,0 +1,758 @@
+{
+  "schema": "kancolle-maps/1",
+  "era": "2",
+  "source": "https://bbs.nga.cn/read.php?tid=23451223",
+  "generated_at": "2026-09-12T17:20:27.949Z",
+  "count": 37,
+  "heading_schema": [
+    "# <id> <name>",
+    "## 地图信息",
+    "## 带路条件",
+    "## 敌方配置",
+    "## 制空 / 索敌",
+    "## 推荐编成",
+    "## 任务配置"
+  ],
+  "items": [
+    {
+      "map_id": "1-1",
+      "area": 1,
+      "map_no": 1,
+      "name_jp": "1-1 鎮守府正面海域",
+      "source_url": "https://bbs.nga.cn/read.php?pid=454451942",
+      "source_title": "1-1 鎮守府正面海域",
+      "era": "2",
+      "tid": "23451223",
+      "has_routing": true,
+      "has_enemy": true,
+      "routing_chars": 103,
+      "enemy_chars": 114,
+      "files": {
+        "meta": "data/kancolle-maps/meta/1-1.json",
+        "html": "data/kancolle-maps/html/1-1.html",
+        "raw": "data/kancolle-maps/raw/1-1.txt",
+        "skill_md": ".opencode/skills/fleet-builder/refs/maps/1-1.md"
+      }
+    },
+    {
+      "map_id": "1-2",
+      "area": 1,
+      "map_no": 2,
+      "name_jp": "1-2 南西諸島沖",
+      "source_url": "https://bbs.nga.cn/read.php?pid=454452006",
+      "source_title": "1-2 南西諸島沖",
+      "era": "2",
+      "tid": "23451223",
+      "has_routing": true,
+      "has_enemy": true,
+      "routing_chars": 207,
+      "enemy_chars": 164,
+      "files": {
+        "meta": "data/kancolle-maps/meta/1-2.json",
+        "html": "data/kancolle-maps/html/1-2.html",
+        "raw": "data/kancolle-maps/raw/1-2.txt",
+        "skill_md": ".opencode/skills/fleet-builder/refs/maps/1-2.md"
+      }
+    },
+    {
+      "map_id": "1-3",
+      "area": 1,
+      "map_no": 3,
+      "name_jp": "1-3 製油所地帯沿岸",
+      "source_url": "https://bbs.nga.cn/read.php?pid=454452053",
+      "source_title": "1-3 製油所地帯沿岸",
+      "era": "2",
+      "tid": "23451223",
+      "has_routing": true,
+      "has_enemy": true,
+      "routing_chars": 345,
+      "enemy_chars": 174,
+      "files": {
+        "meta": "data/kancolle-maps/meta/1-3.json",
+        "html": "data/kancolle-maps/html/1-3.html",
+        "raw": "data/kancolle-maps/raw/1-3.txt",
+        "skill_md": ".opencode/skills/fleet-builder/refs/maps/1-3.md"
+      }
+    },
+    {
+      "map_id": "1-4",
+      "area": 1,
+      "map_no": 4,
+      "name_jp": "1-4 南西諸島防衛線",
+      "source_url": "https://bbs.nga.cn/read.php?pid=454452119",
+      "source_title": "1-4 南西諸島防衛線",
+      "era": "2",
+      "tid": "23451223",
+      "has_routing": true,
+      "has_enemy": true,
+      "routing_chars": 582,
+      "enemy_chars": 309,
+      "files": {
+        "meta": "data/kancolle-maps/meta/1-4.json",
+        "html": "data/kancolle-maps/html/1-4.html",
+        "raw": "data/kancolle-maps/raw/1-4.txt",
+        "skill_md": ".opencode/skills/fleet-builder/refs/maps/1-4.md"
+      }
+    },
+    {
+      "map_id": "1-5",
+      "area": 1,
+      "map_no": 5,
+      "name_jp": "1-5 鎮守府近海",
+      "source_url": "https://bbs.nga.cn/read.php?pid=454452178",
+      "source_title": "1-5 鎮守府近海",
+      "era": "2",
+      "tid": "23451223",
+      "has_routing": true,
+      "has_enemy": true,
+      "routing_chars": 917,
+      "enemy_chars": 470,
+      "files": {
+        "meta": "data/kancolle-maps/meta/1-5.json",
+        "html": "data/kancolle-maps/html/1-5.html",
+        "raw": "data/kancolle-maps/raw/1-5.txt",
+        "skill_md": ".opencode/skills/fleet-builder/refs/maps/1-5.md"
+      }
+    },
+    {
+      "map_id": "1-6",
+      "area": 1,
+      "map_no": 6,
+      "name_jp": "1-6 鎮守府近海航路",
+      "source_url": "https://bbs.nga.cn/read.php?pid=454452236",
+      "source_title": "1-6 鎮守府近海航路",
+      "era": "2",
+      "tid": "23451223",
+      "has_routing": true,
+      "has_enemy": true,
+      "routing_chars": 248,
+      "enemy_chars": 663,
+      "files": {
+        "meta": "data/kancolle-maps/meta/1-6.json",
+        "html": "data/kancolle-maps/html/1-6.html",
+        "raw": "data/kancolle-maps/raw/1-6.txt",
+        "skill_md": ".opencode/skills/fleet-builder/refs/maps/1-6.md"
+      }
+    },
+    {
+      "map_id": "2-1",
+      "area": 2,
+      "map_no": 1,
+      "name_jp": "2-1 南西諸島近海",
+      "source_url": "https://bbs.nga.cn/read.php?pid=454452562",
+      "source_title": "2-1 南西諸島近海",
+      "era": "2",
+      "tid": "23451223",
+      "has_routing": true,
+      "has_enemy": true,
+      "routing_chars": 186,
+      "enemy_chars": 414,
+      "files": {
+        "meta": "data/kancolle-maps/meta/2-1.json",
+        "html": "data/kancolle-maps/html/2-1.html",
+        "raw": "data/kancolle-maps/raw/2-1.txt",
+        "skill_md": ".opencode/skills/fleet-builder/refs/maps/2-1.md"
+      }
+    },
+    {
+      "map_id": "2-2",
+      "area": 2,
+      "map_no": 2,
+      "name_jp": "2-2 バシー海峡",
+      "source_url": "https://bbs.nga.cn/read.php?pid=454452628",
+      "source_title": "2-2 バシー海峡",
+      "era": "2",
+      "tid": "23451223",
+      "has_routing": true,
+      "has_enemy": true,
+      "routing_chars": 541,
+      "enemy_chars": 376,
+      "files": {
+        "meta": "data/kancolle-maps/meta/2-2.json",
+        "html": "data/kancolle-maps/html/2-2.html",
+        "raw": "data/kancolle-maps/raw/2-2.txt",
+        "skill_md": ".opencode/skills/fleet-builder/refs/maps/2-2.md"
+      }
+    },
+    {
+      "map_id": "2-3",
+      "area": 2,
+      "map_no": 3,
+      "name_jp": "2-3 東部オリョール海",
+      "source_url": "https://bbs.nga.cn/read.php?pid=454452698",
+      "source_title": "2-3 東部オリョール海",
+      "era": "2",
+      "tid": "23451223",
+      "has_routing": true,
+      "has_enemy": true,
+      "routing_chars": 424,
+      "enemy_chars": 489,
+      "files": {
+        "meta": "data/kancolle-maps/meta/2-3.json",
+        "html": "data/kancolle-maps/html/2-3.html",
+        "raw": "data/kancolle-maps/raw/2-3.txt",
+        "skill_md": ".opencode/skills/fleet-builder/refs/maps/2-3.md"
+      }
+    },
+    {
+      "map_id": "2-4",
+      "area": 2,
+      "map_no": 4,
+      "name_jp": "2-4 沖ノ島海域",
+      "source_url": "https://bbs.nga.cn/read.php?pid=454452788",
+      "source_title": "2-4 沖ノ島海域",
+      "era": "2",
+      "tid": "23451223",
+      "has_routing": true,
+      "has_enemy": true,
+      "routing_chars": 1187,
+      "enemy_chars": 597,
+      "files": {
+        "meta": "data/kancolle-maps/meta/2-4.json",
+        "html": "data/kancolle-maps/html/2-4.html",
+        "raw": "data/kancolle-maps/raw/2-4.txt",
+        "skill_md": ".opencode/skills/fleet-builder/refs/maps/2-4.md"
+      }
+    },
+    {
+      "map_id": "2-5",
+      "area": 2,
+      "map_no": 5,
+      "name_jp": "2-5 沖ノ島沖",
+      "source_url": "https://bbs.nga.cn/read.php?pid=454452843",
+      "source_title": "2-5 沖ノ島沖",
+      "era": "2",
+      "tid": "23451223",
+      "has_routing": true,
+      "has_enemy": true,
+      "routing_chars": 516,
+      "enemy_chars": 605,
+      "files": {
+        "meta": "data/kancolle-maps/meta/2-5.json",
+        "html": "data/kancolle-maps/html/2-5.html",
+        "raw": "data/kancolle-maps/raw/2-5.txt",
+        "skill_md": ".opencode/skills/fleet-builder/refs/maps/2-5.md"
+      }
+    },
+    {
+      "map_id": "3-1",
+      "area": 3,
+      "map_no": 1,
+      "name_jp": "3-1 モーレイ海",
+      "source_url": "https://bbs.nga.cn/read.php?pid=454453286",
+      "source_title": "3-1 モーレイ海",
+      "era": "2",
+      "tid": "23451223",
+      "has_routing": true,
+      "has_enemy": true,
+      "routing_chars": 182,
+      "enemy_chars": 432,
+      "files": {
+        "meta": "data/kancolle-maps/meta/3-1.json",
+        "html": "data/kancolle-maps/html/3-1.html",
+        "raw": "data/kancolle-maps/raw/3-1.txt",
+        "skill_md": ".opencode/skills/fleet-builder/refs/maps/3-1.md"
+      }
+    },
+    {
+      "map_id": "3-2",
+      "area": 3,
+      "map_no": 2,
+      "name_jp": "3-2 キス島沖",
+      "source_url": "https://bbs.nga.cn/read.php?pid=454453344",
+      "source_title": "3-2 キス島沖",
+      "era": "2",
+      "tid": "23451223",
+      "has_routing": true,
+      "has_enemy": true,
+      "routing_chars": 613,
+      "enemy_chars": 486,
+      "files": {
+        "meta": "data/kancolle-maps/meta/3-2.json",
+        "html": "data/kancolle-maps/html/3-2.html",
+        "raw": "data/kancolle-maps/raw/3-2.txt",
+        "skill_md": ".opencode/skills/fleet-builder/refs/maps/3-2.md"
+      }
+    },
+    {
+      "map_id": "3-3",
+      "area": 3,
+      "map_no": 3,
+      "name_jp": "3-3 アルフォンシーノ方面",
+      "source_url": "https://bbs.nga.cn/read.php?pid=454453396",
+      "source_title": "3-3 アルフォンシーノ方面",
+      "era": "2",
+      "tid": "23451223",
+      "has_routing": true,
+      "has_enemy": true,
+      "routing_chars": 226,
+      "enemy_chars": 550,
+      "files": {
+        "meta": "data/kancolle-maps/meta/3-3.json",
+        "html": "data/kancolle-maps/html/3-3.html",
+        "raw": "data/kancolle-maps/raw/3-3.txt",
+        "skill_md": ".opencode/skills/fleet-builder/refs/maps/3-3.md"
+      }
+    },
+    {
+      "map_id": "3-4",
+      "area": 3,
+      "map_no": 4,
+      "name_jp": "3-4 北方海域全域",
+      "source_url": "https://bbs.nga.cn/read.php?pid=454453451",
+      "source_title": "3-4 北方海域全域",
+      "era": "2",
+      "tid": "23451223",
+      "has_routing": true,
+      "has_enemy": true,
+      "routing_chars": 384,
+      "enemy_chars": 748,
+      "files": {
+        "meta": "data/kancolle-maps/meta/3-4.json",
+        "html": "data/kancolle-maps/html/3-4.html",
+        "raw": "data/kancolle-maps/raw/3-4.txt",
+        "skill_md": ".opencode/skills/fleet-builder/refs/maps/3-4.md"
+      }
+    },
+    {
+      "map_id": "3-5",
+      "area": 3,
+      "map_no": 5,
+      "name_jp": "3-5 北方AL海域",
+      "source_url": "https://bbs.nga.cn/read.php?pid=454453495",
+      "source_title": "3-5 北方AL海域",
+      "era": "2",
+      "tid": "23451223",
+      "has_routing": true,
+      "has_enemy": true,
+      "routing_chars": 794,
+      "enemy_chars": 623,
+      "files": {
+        "meta": "data/kancolle-maps/meta/3-5.json",
+        "html": "data/kancolle-maps/html/3-5.html",
+        "raw": "data/kancolle-maps/raw/3-5.txt",
+        "skill_md": ".opencode/skills/fleet-builder/refs/maps/3-5.md"
+      }
+    },
+    {
+      "map_id": "4-1",
+      "area": 4,
+      "map_no": 1,
+      "name_jp": "4-1 ジャム島沖",
+      "source_url": "https://bbs.nga.cn/read.php?pid=454453876",
+      "source_title": "4-1 ジャム島沖",
+      "era": "2",
+      "tid": "23451223",
+      "has_routing": true,
+      "has_enemy": true,
+      "routing_chars": 241,
+      "enemy_chars": 552,
+      "files": {
+        "meta": "data/kancolle-maps/meta/4-1.json",
+        "html": "data/kancolle-maps/html/4-1.html",
+        "raw": "data/kancolle-maps/raw/4-1.txt",
+        "skill_md": ".opencode/skills/fleet-builder/refs/maps/4-1.md"
+      }
+    },
+    {
+      "map_id": "4-2",
+      "area": 4,
+      "map_no": 2,
+      "name_jp": "4-2 カレー洋海域",
+      "source_url": "https://bbs.nga.cn/read.php?pid=454454019",
+      "source_title": "4-2 カレー洋海域",
+      "era": "2",
+      "tid": "23451223",
+      "has_routing": true,
+      "has_enemy": true,
+      "routing_chars": 318,
+      "enemy_chars": 669,
+      "files": {
+        "meta": "data/kancolle-maps/meta/4-2.json",
+        "html": "data/kancolle-maps/html/4-2.html",
+        "raw": "data/kancolle-maps/raw/4-2.txt",
+        "skill_md": ".opencode/skills/fleet-builder/refs/maps/4-2.md"
+      }
+    },
+    {
+      "map_id": "4-3",
+      "area": 4,
+      "map_no": 3,
+      "name_jp": "4-3 リランカ島",
+      "source_url": "https://bbs.nga.cn/read.php?pid=454454084",
+      "source_title": "4-3 リランカ島",
+      "era": "2",
+      "tid": "23451223",
+      "has_routing": true,
+      "has_enemy": true,
+      "routing_chars": 361,
+      "enemy_chars": 700,
+      "files": {
+        "meta": "data/kancolle-maps/meta/4-3.json",
+        "html": "data/kancolle-maps/html/4-3.html",
+        "raw": "data/kancolle-maps/raw/4-3.txt",
+        "skill_md": ".opencode/skills/fleet-builder/refs/maps/4-3.md"
+      }
+    },
+    {
+      "map_id": "4-4",
+      "area": 4,
+      "map_no": 4,
+      "name_jp": "4-4 カスガダマ島",
+      "source_url": "https://bbs.nga.cn/read.php?pid=454454163",
+      "source_title": "4-4 カスガダマ島",
+      "era": "2",
+      "tid": "23451223",
+      "has_routing": true,
+      "has_enemy": true,
+      "routing_chars": 390,
+      "enemy_chars": 633,
+      "files": {
+        "meta": "data/kancolle-maps/meta/4-4.json",
+        "html": "data/kancolle-maps/html/4-4.html",
+        "raw": "data/kancolle-maps/raw/4-4.txt",
+        "skill_md": ".opencode/skills/fleet-builder/refs/maps/4-4.md"
+      }
+    },
+    {
+      "map_id": "4-5",
+      "area": 4,
+      "map_no": 5,
+      "name_jp": "4-5 カレー洋リランカ島沖",
+      "source_url": "https://bbs.nga.cn/read.php?pid=454454205",
+      "source_title": "4-5 カレー洋リランカ島沖",
+      "era": "2",
+      "tid": "23451223",
+      "has_routing": true,
+      "has_enemy": true,
+      "routing_chars": 996,
+      "enemy_chars": 1001,
+      "files": {
+        "meta": "data/kancolle-maps/meta/4-5.json",
+        "html": "data/kancolle-maps/html/4-5.html",
+        "raw": "data/kancolle-maps/raw/4-5.txt",
+        "skill_md": ".opencode/skills/fleet-builder/refs/maps/4-5.md"
+      }
+    },
+    {
+      "map_id": "5-1",
+      "area": 5,
+      "map_no": 1,
+      "name_jp": "5-1 南方海域前面",
+      "source_url": "https://bbs.nga.cn/read.php?pid=454454625",
+      "source_title": "5-1 南方海域前面",
+      "era": "2",
+      "tid": "23451223",
+      "has_routing": true,
+      "has_enemy": true,
+      "routing_chars": 228,
+      "enemy_chars": 528,
+      "files": {
+        "meta": "data/kancolle-maps/meta/5-1.json",
+        "html": "data/kancolle-maps/html/5-1.html",
+        "raw": "data/kancolle-maps/raw/5-1.txt",
+        "skill_md": ".opencode/skills/fleet-builder/refs/maps/5-1.md"
+      }
+    },
+    {
+      "map_id": "5-2",
+      "area": 5,
+      "map_no": 2,
+      "name_jp": "5-2 珊瑚諸島沖",
+      "source_url": "https://bbs.nga.cn/read.php?pid=454454730",
+      "source_title": "5-2 珊瑚諸島沖",
+      "era": "2",
+      "tid": "23451223",
+      "has_routing": true,
+      "has_enemy": true,
+      "routing_chars": 498,
+      "enemy_chars": 721,
+      "files": {
+        "meta": "data/kancolle-maps/meta/5-2.json",
+        "html": "data/kancolle-maps/html/5-2.html",
+        "raw": "data/kancolle-maps/raw/5-2.txt",
+        "skill_md": ".opencode/skills/fleet-builder/refs/maps/5-2.md"
+      }
+    },
+    {
+      "map_id": "5-3",
+      "area": 5,
+      "map_no": 3,
+      "name_jp": "5-3 サブ島沖海域",
+      "source_url": "https://bbs.nga.cn/read.php?pid=454454783",
+      "source_title": "5-3 サブ島沖海域",
+      "era": "2",
+      "tid": "23451223",
+      "has_routing": true,
+      "has_enemy": true,
+      "routing_chars": 892,
+      "enemy_chars": 666,
+      "files": {
+        "meta": "data/kancolle-maps/meta/5-3.json",
+        "html": "data/kancolle-maps/html/5-3.html",
+        "raw": "data/kancolle-maps/raw/5-3.txt",
+        "skill_md": ".opencode/skills/fleet-builder/refs/maps/5-3.md"
+      }
+    },
+    {
+      "map_id": "5-4",
+      "area": 5,
+      "map_no": 4,
+      "name_jp": "5-4 サーモン海域",
+      "source_url": "https://bbs.nga.cn/read.php?pid=454454829",
+      "source_title": "5-4 サーモン海域",
+      "era": "2",
+      "tid": "23451223",
+      "has_routing": true,
+      "has_enemy": true,
+      "routing_chars": 468,
+      "enemy_chars": 638,
+      "files": {
+        "meta": "data/kancolle-maps/meta/5-4.json",
+        "html": "data/kancolle-maps/html/5-4.html",
+        "raw": "data/kancolle-maps/raw/5-4.txt",
+        "skill_md": ".opencode/skills/fleet-builder/refs/maps/5-4.md"
+      }
+    },
+    {
+      "map_id": "5-5",
+      "area": 5,
+      "map_no": 5,
+      "name_jp": "5-5 サーモン海域北方",
+      "source_url": "https://bbs.nga.cn/read.php?pid=454454888",
+      "source_title": "5-5 サーモン海域北方",
+      "era": "2",
+      "tid": "23451223",
+      "has_routing": true,
+      "has_enemy": true,
+      "routing_chars": 2870,
+      "enemy_chars": 920,
+      "files": {
+        "meta": "data/kancolle-maps/meta/5-5.json",
+        "html": "data/kancolle-maps/html/5-5.html",
+        "raw": "data/kancolle-maps/raw/5-5.txt",
+        "skill_md": ".opencode/skills/fleet-builder/refs/maps/5-5.md"
+      }
+    },
+    {
+      "map_id": "5-6",
+      "area": 5,
+      "map_no": 6,
+      "name_jp": "5-6 ラバウル方面海域",
+      "source_url": "https://bbs.nga.cn/read.php?pid=454454958",
+      "source_title": "5-6 ラバウル方面海域",
+      "era": "2",
+      "tid": "23451223",
+      "has_routing": true,
+      "has_enemy": true,
+      "routing_chars": 1256,
+      "enemy_chars": 2769,
+      "files": {
+        "meta": "data/kancolle-maps/meta/5-6.json",
+        "html": "data/kancolle-maps/html/5-6.html",
+        "raw": "data/kancolle-maps/raw/5-6.txt",
+        "skill_md": ".opencode/skills/fleet-builder/refs/maps/5-6.md"
+      }
+    },
+    {
+      "map_id": "6-1",
+      "area": 6,
+      "map_no": 1,
+      "name_jp": "6-1 中部海域哨戒線",
+      "source_url": "https://bbs.nga.cn/read.php?pid=454455307",
+      "source_title": "6-1 中部海域哨戒線",
+      "era": "2",
+      "tid": "23451223",
+      "has_routing": true,
+      "has_enemy": true,
+      "routing_chars": 417,
+      "enemy_chars": 581,
+      "files": {
+        "meta": "data/kancolle-maps/meta/6-1.json",
+        "html": "data/kancolle-maps/html/6-1.html",
+        "raw": "data/kancolle-maps/raw/6-1.txt",
+        "skill_md": ".opencode/skills/fleet-builder/refs/maps/6-1.md"
+      }
+    },
+    {
+      "map_id": "6-2",
+      "area": 6,
+      "map_no": 2,
+      "name_jp": "6-2 MS諸島沖",
+      "source_url": "https://bbs.nga.cn/read.php?pid=454455364",
+      "source_title": "6-2 MS諸島沖",
+      "era": "2",
+      "tid": "23451223",
+      "has_routing": true,
+      "has_enemy": true,
+      "routing_chars": 246,
+      "enemy_chars": 644,
+      "files": {
+        "meta": "data/kancolle-maps/meta/6-2.json",
+        "html": "data/kancolle-maps/html/6-2.html",
+        "raw": "data/kancolle-maps/raw/6-2.txt",
+        "skill_md": ".opencode/skills/fleet-builder/refs/maps/6-2.md"
+      }
+    },
+    {
+      "map_id": "6-3",
+      "area": 6,
+      "map_no": 3,
+      "name_jp": "6-3 グアノ環礁沖海域",
+      "source_url": "https://bbs.nga.cn/read.php?pid=454455426",
+      "source_title": "6-3 グアノ環礁沖海域",
+      "era": "2",
+      "tid": "23451223",
+      "has_routing": true,
+      "has_enemy": true,
+      "routing_chars": 394,
+      "enemy_chars": 373,
+      "files": {
+        "meta": "data/kancolle-maps/meta/6-3.json",
+        "html": "data/kancolle-maps/html/6-3.html",
+        "raw": "data/kancolle-maps/raw/6-3.txt",
+        "skill_md": ".opencode/skills/fleet-builder/refs/maps/6-3.md"
+      }
+    },
+    {
+      "map_id": "6-4",
+      "area": 6,
+      "map_no": 4,
+      "name_jp": "6-4 中部北海域ピーコック島沖",
+      "source_url": "https://bbs.nga.cn/read.php?pid=454455513",
+      "source_title": "6-4 中部北海域ピーコック島沖",
+      "era": "2",
+      "tid": "23451223",
+      "has_routing": true,
+      "has_enemy": true,
+      "routing_chars": 5894,
+      "enemy_chars": 1277,
+      "files": {
+        "meta": "data/kancolle-maps/meta/6-4.json",
+        "html": "data/kancolle-maps/html/6-4.html",
+        "raw": "data/kancolle-maps/raw/6-4.txt",
+        "skill_md": ".opencode/skills/fleet-builder/refs/maps/6-4.md"
+      }
+    },
+    {
+      "map_id": "6-5",
+      "area": 6,
+      "map_no": 5,
+      "name_jp": "6-5 KW環礁沖海域",
+      "source_url": "https://bbs.nga.cn/read.php?pid=454455575",
+      "source_title": "6-5 KW環礁沖海域",
+      "era": "2",
+      "tid": "23451223",
+      "has_routing": true,
+      "has_enemy": true,
+      "routing_chars": 959,
+      "enemy_chars": 1216,
+      "files": {
+        "meta": "data/kancolle-maps/meta/6-5.json",
+        "html": "data/kancolle-maps/html/6-5.html",
+        "raw": "data/kancolle-maps/raw/6-5.txt",
+        "skill_md": ".opencode/skills/fleet-builder/refs/maps/6-5.md"
+      }
+    },
+    {
+      "map_id": "7-1",
+      "area": 7,
+      "map_no": 1,
+      "name_jp": "7-1 ブルネイ泊地沖",
+      "source_url": "https://bbs.nga.cn/read.php?pid=454455961",
+      "source_title": "7-1 ブルネイ泊地沖",
+      "era": "2",
+      "tid": "23451223",
+      "has_routing": true,
+      "has_enemy": true,
+      "routing_chars": 409,
+      "enemy_chars": 458,
+      "files": {
+        "meta": "data/kancolle-maps/meta/7-1.json",
+        "html": "data/kancolle-maps/html/7-1.html",
+        "raw": "data/kancolle-maps/raw/7-1.txt",
+        "skill_md": ".opencode/skills/fleet-builder/refs/maps/7-1.md"
+      }
+    },
+    {
+      "map_id": "7-2",
+      "area": 7,
+      "map_no": 2,
+      "name_jp": "7-2 タウイタウイ泊地沖",
+      "source_url": "https://bbs.nga.cn/read.php?pid=454456055",
+      "source_title": "7-2 タウイタウイ泊地沖",
+      "era": "2",
+      "tid": "23451223",
+      "has_routing": true,
+      "has_enemy": true,
+      "routing_chars": 323,
+      "enemy_chars": 712,
+      "files": {
+        "meta": "data/kancolle-maps/meta/7-2.json",
+        "html": "data/kancolle-maps/html/7-2.html",
+        "raw": "data/kancolle-maps/raw/7-2.txt",
+        "skill_md": ".opencode/skills/fleet-builder/refs/maps/7-2.md"
+      }
+    },
+    {
+      "map_id": "7-3",
+      "area": 7,
+      "map_no": 3,
+      "name_jp": "7-3 ペナン島沖",
+      "source_url": "https://bbs.nga.cn/read.php?pid=454456110",
+      "source_title": "7-3 ペナン島沖",
+      "era": "2",
+      "tid": "23451223",
+      "has_routing": true,
+      "has_enemy": true,
+      "routing_chars": 1194,
+      "enemy_chars": 519,
+      "files": {
+        "meta": "data/kancolle-maps/meta/7-3.json",
+        "html": "data/kancolle-maps/html/7-3.html",
+        "raw": "data/kancolle-maps/raw/7-3.txt",
+        "skill_md": ".opencode/skills/fleet-builder/refs/maps/7-3.md"
+      }
+    },
+    {
+      "map_id": "7-4",
+      "area": 7,
+      "map_no": 4,
+      "name_jp": "7-4 昭南本土航路",
+      "source_url": "https://bbs.nga.cn/read.php?pid=454456265",
+      "source_title": "7-4 昭南本土航路",
+      "era": "2",
+      "tid": "23451223",
+      "has_routing": true,
+      "has_enemy": true,
+      "routing_chars": 818,
+      "enemy_chars": 1385,
+      "files": {
+        "meta": "data/kancolle-maps/meta/7-4.json",
+        "html": "data/kancolle-maps/html/7-4.html",
+        "raw": "data/kancolle-maps/raw/7-4.txt",
+        "skill_md": ".opencode/skills/fleet-builder/refs/maps/7-4.md"
+      }
+    },
+    {
+      "map_id": "7-5",
+      "area": 7,
+      "map_no": 5,
+      "name_jp": "7-5 ジャワ島沖",
+      "source_url": "https://bbs.nga.cn/read.php?pid=454456331",
+      "source_title": "7-5 ジャワ島沖",
+      "era": "2",
+      "tid": "23451223",
+      "has_routing": true,
+      "has_enemy": true,
+      "routing_chars": 616,
+      "enemy_chars": 1614,
+      "files": {
+        "meta": "data/kancolle-maps/meta/7-5.json",
+        "html": "data/kancolle-maps/html/7-5.html",
+        "raw": "data/kancolle-maps/raw/7-5.txt",
+        "skill_md": ".opencode/skills/fleet-builder/refs/maps/7-5.md"
+      }
+    }
+  ]
+}

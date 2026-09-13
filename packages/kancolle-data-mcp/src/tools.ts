@@ -9,13 +9,16 @@ import {
   type DataResult,
   type MasterQuest,
   type MasterShip,
+  type MasterEquipment,
   type SearchHit,
+  type RemodelTransition,
 } from "@kancolle-agent/shared";
 import { parseRef } from "@kancolle-agent/shared";
 import type { LoadedDataset } from "./data-loader.js";
 import type { MemoryIndex } from "./index-memory.js";
 import { remodelChain, searchAll } from "./index-memory.js";
 import { canShipEquip, whoCanEquip } from "./rules/equipment.js";
+import { calculateAirPowerSlot } from "./rules/air-power.js";
 
 export interface ToolContext {
   ds: LoadedDataset;
@@ -42,10 +45,8 @@ export function kcSearch(
   args: { query: string; limit?: number; types?: string[] },
 ): DataResult<SearchHit[]> {
   try {
-    let hits = searchAll(ctx.index, args.query, args.limit ?? 5);
-    if (args.types?.length) {
-      hits = hits.filter((h) => args.types!.includes(h.type));
-    }
+    const hits = searchAll(ctx.index, args.query, args.limit ?? 5, args.types);
+    if (hits.length === 0 && args.types?.includes("item") && !ctx.ds.capabilities.includes("items")) return dataPartial([], ["items_dataset"]);
     if (hits.length === 0) return dataNotFound(["no_match"]);
     // Ranked hit list is always ok; resolution tools (get/remodel/rules) surface ambiguous.
     return dataOk(hits);
@@ -76,8 +77,16 @@ export function kcGet(
         const data: Record<string, unknown> = { ...base };
         if (include.includes("remodel") || include.includes("all")) {
           data.remodel_chain = remodel;
+          const result = kcShipRemodel(ctx, { ship: args.ref });
+          data.remodel = result.data;
+          if (result.status === "partial") return dataPartial(data, result.missing ?? ["remodel"]);
         }
         return dataOk(data);
+      }
+      case "item": {
+        if (!ctx.ds.capabilities.includes("items")) return dataPartial(null, ["items_dataset"]);
+        const item = ctx.index.itemsById.get(Number(parsed.id));
+        return item ? dataOk(item) : dataNotFound();
       }
       case "equipment": {
         const eq = ctx.index.equipmentById.get(Number(parsed.id));
@@ -110,7 +119,6 @@ export function kcGet(
         if (!m) return dataNotFound();
         return dataOk(m);
       }
-      case "item":
       case "enemy":
         return dataNotFound(["entity_type_not_in_v1_dataset"]);
       default:
@@ -124,7 +132,7 @@ export function kcGet(
 export function kcQuery(
   ctx: ToolContext,
   args: {
-    entity: "ship" | "equipment" | "quest" | "expedition" | "map";
+    entity: "ship" | "equipment" | "quest" | "expedition" | "map" | "item";
     filters?: Record<string, unknown>;
     fields?: string[];
     limit?: number;
@@ -135,7 +143,10 @@ export function kcQuery(
     let items: Array<Record<string, unknown>> = [];
     const filters = args.filters ?? {};
 
-    if (args.entity === "ship") {
+    if (args.entity === "item") {
+      if (!ctx.ds.capabilities.includes("items")) return dataPartial([], ["items_dataset"]);
+      items = ctx.ds.items as unknown as Array<Record<string, unknown>>;
+    } else if (args.entity === "ship") {
       items = ctx.ds.ships as unknown as Array<Record<string, unknown>>;
       if (typeof filters.stype === "string") {
         items = items.filter((s) => s.stype === filters.stype);
@@ -180,6 +191,8 @@ export function kcQuery(
       }
     }
 
+    if (Array.isArray(filters.ids)) items = items.filter(i => filters.ids instanceof Array && filters.ids.includes(i.id ?? i.game_id));
+    if (typeof filters.name === "string") items = items.filter(i => i.name === filters.name);
     const { offset, limit } = decodeCursor(args.cursor);
     const effectiveLimit = Math.min(100, Math.max(1, args.limit ?? limit));
     const page = items.slice(offset, offset + effectiveLimit).map((it) =>
@@ -202,12 +215,11 @@ export function kcQuestGraph(
   const quest = resolveQuest(ctx.index, args.quest);
   if (!quest) {
     // try search
-    const hits = searchAll(ctx.index, args.quest, 5).filter((h) => h.type === "quest");
+    const hits = searchAll(ctx.index, args.quest, 5, ["quest"]);
     if (hits.length === 0) return dataNotFound();
-    if (hits.length > 1 && hits[0].score < 100) {
-      return dataAmbiguous(hits.slice(0, 5));
-    }
-    return kcQuestGraph(ctx, { ...args, quest: hits[0].ref });
+    const exact = hits.filter(hit => hit.score === 100);
+    if (exact.length !== 1) return dataAmbiguous((exact.length ? exact : hits).slice(0, 5));
+    return kcQuestGraph(ctx, { ...args, quest: exact[0].ref });
   }
 
   const direction = args.direction ?? "both";
@@ -259,31 +271,48 @@ export function kcQuestGraph(
   return dataOk({ nodes: [...nodes.values()], edges });
 }
 
+export interface RemodelResult {
+  ship_ref: string;
+  chain: Array<{ ref: string; name: string; remodel_level: number | null }>;
+  transitions: RemodelTransition[];
+  scope: "next" | "family";
+  coverage: "complete" | "partial";
+}
+
 export function kcShipRemodel(
   ctx: ToolContext,
-  args: { ship: string },
-): DataResult<{ ship_ref: string; chain: Array<{ ref: string; name: string; remodel_level: number | null }> }> {
-  const hits = searchAll(ctx.index, args.ship, 10).filter((h) => h.type === "ship");
-  let ship = ctx.index.shipsById.get(Number(parseRef(args.ship)?.id ?? -1));
-  if (!ship && hits.length === 1) {
-    ship = ctx.index.shipsById.get(Number(parseRef(hits[0].ref)?.id));
-  }
-  if (!ship && hits.length > 1) {
-    if (hits[0].score >= 100) {
-      ship = ctx.index.shipsById.get(Number(parseRef(hits[0].ref)?.id));
-    } else {
-      return dataAmbiguous(hits);
-    }
+  args: { ship: string; scope?: "next" | "family" },
+): DataResult<RemodelResult> {
+  const parsed = parseRef(args.ship);
+  if (args.ship.includes(":") && parsed?.type !== "ship") return dataError("invalid_ref", "Expected ship:<master_id>");
+  const hits = searchAll(ctx.index, args.ship, 10, ["ship"]);
+  const explicitId = parsed?.type === "ship" ? Number(parsed.id) : /^\d+$/.test(args.ship) ? Number(args.ship) : null;
+  let ship = explicitId !== null ? ctx.index.shipsById.get(explicitId) : undefined;
+  if (explicitId !== null && !ship) return dataNotFound();
+  if (!ship) {
+    const exact = hits.filter(h => h.score === 100);
+    if (exact.length === 1) ship = ctx.index.shipsById.get(Number(parseRef(exact[0].ref)?.id));
+    else if (hits.length) return dataAmbiguous(exact.length ? exact : hits);
   }
   if (!ship) return dataNotFound();
 
-  const chain = remodelChain(ctx.index, ship.id).map((s) => ({
-    ref: `ship:${s.id}`,
-    name: s.name,
-    remodel_level: s.remodel_level ?? null,
+  const chain = remodelChain(ctx.index, ship.id).map(s => ({
+    ref: `ship:${s.id}`, name: s.name, remodel_level: s.remodel_level ?? null,
   }));
-
-  return dataOk({ ship_ref: `ship:${ship.id}`, chain });
+  const refs = new Set(chain.map(s => s.ref));
+  const scope = args.scope ?? "next";
+  const transitions = (ctx.ds.remodel_transitions ?? []).filter(e =>
+    scope === "next" ? e.from === `ship:${ship.id}` : refs.has(e.from) || refs.has(e.to));
+  const missing = ctx.ds.remodel_transitions === null ? ["remodel_transitions"] : [];
+  for (const edge of transitions) {
+    for (const field of edge.missing) missing.push(`${edge.from}->${edge.to}:${field}`);
+  }
+  const data: RemodelResult = {
+    ship_ref: `ship:${ship.id}`, chain, transitions,
+    scope,
+    coverage: missing.length ? "partial" : "complete",
+  };
+  return missing.length ? dataPartial(data, missing) : dataOk(data);
 }
 
 export function kcEquipmentRules(
@@ -299,53 +328,107 @@ export function kcEquipmentRules(
   const mode = args.mode ?? "check";
 
   if (mode === "who") {
-    const category =
-      args.category ??
-      (() => {
-        if (!args.equipment) return undefined;
-        const hits = searchAll(ctx.index, args.equipment, 5).filter((h) => h.type === "equipment");
-        if (hits.length === 1) {
-          const eq = ctx.index.equipmentById.get(Number(parseRef(hits[0].ref)?.id));
-          return eq?.category;
-        }
-        if (hits.length === 0) return undefined;
-        const eq = ctx.index.equipmentById.get(Number(parseRef(hits[0].ref)?.id));
-        return eq?.category;
-      })();
-    if (!category) return dataNotFound(["category_required"]);
-    const list = whoCanEquip(ctx.ds, ctx.index, category, args.limit ?? 20);
-    return dataOk({ category, ships: list });
+    if (!args.equipment) {
+      return dataPartial({ category: args.category ?? null, ships: [] }, ["equipment_required_for_exact_rules"]);
+    }
+    const parsed = parseRef(args.equipment);
+    let eq = parsed?.type === "equipment"
+      ? ctx.index.equipmentById.get(Number(parsed.id)) : undefined;
+    if (!eq) {
+      const hits = searchAll(ctx.index, args.equipment, 10, ["equipment"]);
+      if (!hits.length) return dataNotFound(["equipment"]);
+      const exact = hits.filter(hit => hit.score === 100);
+      if (exact.length !== 1) return dataAmbiguous(exact.length ? exact : hits);
+      eq = ctx.index.equipmentById.get(Number(parseRef(exact[0].ref)?.id));
+    }
+    if (!eq) return dataNotFound(["equipment"]);
+    const list = whoCanEquip(ctx.ds, ctx.index, eq, args.limit ?? 20);
+    return dataOk({ equipment_ref: `equipment:${eq.id}`, equipment_name: eq.name, category: eq.category, ships: list });
   }
 
   if (!args.ship || !args.equipment) {
     return dataError("invalid_args", "mode=check requires ship and equipment");
   }
 
-  const shipHits = searchAll(ctx.index, args.ship, 5).filter((h) => h.type === "ship");
+  const shipHits = searchAll(ctx.index, args.ship, 10, ["ship"]);
   let ship = ctx.index.shipsById.get(Number(parseRef(args.ship)?.id ?? -1));
   if (!ship) {
     if (shipHits.length === 0) return dataNotFound(["ship"]);
-    if (shipHits.length > 1 && shipHits[0].score < 100) {
-      return dataAmbiguous(shipHits);
-    }
-    ship = ctx.index.shipsById.get(Number(parseRef(shipHits[0].ref)?.id));
+    const exact = shipHits.filter(hit => hit.score === 100);
+    if (exact.length !== 1) return dataAmbiguous(exact.length ? exact : shipHits);
+    ship = ctx.index.shipsById.get(Number(parseRef(exact[0].ref)?.id));
   }
   if (!ship) return dataNotFound(["ship"]);
 
-  const eqHits = searchAll(ctx.index, args.equipment, 5).filter((h) => h.type === "equipment");
+  const eqHits = searchAll(ctx.index, args.equipment, 10, ["equipment"]);
   let eq = ctx.index.equipmentById.get(Number(parseRef(args.equipment)?.id ?? -1));
   if (!eq) {
     if (eqHits.length === 0) return dataNotFound(["equipment"]);
-    if (eqHits.length > 1 && eqHits[0].score < 100) return dataAmbiguous(eqHits);
-    eq = ctx.index.equipmentById.get(Number(parseRef(eqHits[0].ref)?.id));
+    const exact = eqHits.filter(hit => hit.score === 100);
+    if (exact.length !== 1) return dataAmbiguous(exact.length ? exact : eqHits);
+    eq = ctx.index.equipmentById.get(Number(parseRef(exact[0].ref)?.id));
   }
   if (!eq) return dataNotFound(["equipment"]);
 
-  const result = canShipEquip(ctx.ds, ship, eq.category, ship.stype_id);
+  const result = canShipEquip(ctx.ds, ship, eq);
+  return result.coverage === "partial"
+    ? dataPartial(result, [`equipment_rule:${eq.type_id ?? eq.category ?? "unknown"}`])
+    : dataOk(result);
+}
+
+export function kcAirPower(
+  ctx: ToolContext,
+  args: {
+    slots: Array<{
+      equipment: string;
+      planes: number;
+      improvement?: number;
+      proficiency?: number;
+      internal_proficiency?: number;
+    }>;
+    target_air_power?: number;
+  },
+): DataResult<unknown> {
+  const resolved: Array<{ equipment: MasterEquipment; planes: number; improvement: number; proficiency: number; internalProficiency?: number }> = [];
+  for (const slot of args.slots) {
+    const parsed = parseRef(slot.equipment);
+    let equipment = parsed?.type === "equipment"
+      ? ctx.index.equipmentById.get(Number(parsed.id)) : undefined;
+    if (!equipment) {
+      const hits = searchAll(ctx.index, slot.equipment, 10, ["equipment"]);
+      if (!hits.length) return dataNotFound([`equipment:${slot.equipment}`]);
+      const exact = hits.filter(hit => hit.score === 100);
+      if (exact.length !== 1) return dataAmbiguous(exact.length ? exact : hits);
+      equipment = ctx.index.equipmentById.get(Number(parseRef(exact[0].ref)?.id));
+    }
+    if (!equipment) return dataNotFound([`equipment:${slot.equipment}`]);
+    if (!Number.isSafeInteger(slot.planes) || slot.planes < 0
+      || !Number.isSafeInteger(slot.improvement ?? 0) || (slot.improvement ?? 0) < 0 || (slot.improvement ?? 0) > 10
+      || !Number.isSafeInteger(slot.proficiency ?? 0) || (slot.proficiency ?? 0) < 0 || (slot.proficiency ?? 0) > 7
+      || (slot.internal_proficiency !== undefined && (!Number.isSafeInteger(slot.internal_proficiency)
+        || slot.internal_proficiency < 0 || slot.internal_proficiency > 120))) {
+      return dataError("invalid_args", "planes>=0, improvement=0..10, proficiency=0..7, internal_proficiency=0..120");
+    }
+    resolved.push({ equipment, planes: slot.planes, improvement: slot.improvement ?? 0,
+      proficiency: slot.proficiency ?? 0,
+      ...(slot.internal_proficiency !== undefined ? { internalProficiency: slot.internal_proficiency } : {}) });
+  }
+  const slots = resolved.map(calculateAirPowerSlot);
+  const airPowerMin = slots.reduce((sum, slot) => sum + slot.air_power_min, 0);
+  const airPowerMax = slots.reduce((sum, slot) => sum + slot.air_power_max, 0);
+  const target = args.target_air_power;
   return dataOk({
-    ...result,
-    equipment_ref: `equipment:${eq.id}`,
-    equipment_name: eq.name,
+    air_power_min: airPowerMin,
+    air_power_max: airPowerMax,
+    exact: airPowerMin === airPowerMax,
+    target_air_power: target ?? null,
+    meets_target: target === undefined ? null : airPowerMin >= target ? true : airPowerMax < target ? false : null,
+    slots,
+    assumptions: [
+      "fleet_air_power_before_losses",
+      "displayed proficiency without internal_proficiency returns its internal-value range",
+      "land-base interception/defense and route losses are not included",
+    ],
   });
 }
 
@@ -357,6 +440,9 @@ export function kcDataStatus(ctx: ToolContext): DataResult<{
   source: string;
   counts: LoadedDataset["counts"];
   capabilities: string[];
+  era?: string;
+  provenance?: Record<string, string>;
+  warnings?: string[];
 }> {
   const { ds } = ctx;
   return dataOk({
@@ -367,5 +453,8 @@ export function kcDataStatus(ctx: ToolContext): DataResult<{
     source: ds.source,
     counts: ds.counts,
     capabilities: ds.capabilities,
+    era: ds.era,
+    provenance: ds.provenance,
+    warnings: ds.warnings,
   });
 }

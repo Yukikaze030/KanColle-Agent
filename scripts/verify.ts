@@ -9,7 +9,7 @@ const root = process.cwd();
 
 function run(cmd: string) {
   console.log(`\n$ ${cmd}`);
-  execSync(cmd, { stdio: "inherit", cwd: root, shell: "powershell.exe" });
+  execSync(cmd, { stdio: "inherit", cwd: root, shell: process.platform === "win32" ? "powershell.exe" : "/bin/sh" });
 }
 
 const tools = [
@@ -29,6 +29,7 @@ const tools = [
   "kc_quest_graph",
   "kc_ship_remodel",
   "kc_equipment_rules",
+  "kc_air_power",
   "kc_data_status",
 ];
 

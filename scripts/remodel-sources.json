@@ -1,0 +1,6 @@
+{
+  "master": "https://raw.githubusercontent.com/kcwiki/kancolle-data/37ebdc76e5016112ad362eb36f8dbedac5c043b9/api/api_start2.json",
+  "kc3-remodel": "https://raw.githubusercontent.com/KC3Kai/KC3Kai/bd2c653def167799367a686ea15bb1c94c1167c4/src/library/modules/RemodelDb.js",
+  "rules_sha256": "603920bdd248e18a47767ecf5a654c6a8e4d83c70863bd551417b3673a47a5eb",
+  "master_sha256": "d10b1e7ef94d55178d945d183211829815276c9fa6dcc4c7fa91170cb5fbbd5f"
+}
