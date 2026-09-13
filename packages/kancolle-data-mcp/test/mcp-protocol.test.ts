@@ -4,9 +4,10 @@ import { InMemoryTransport } from "@modelcontextprotocol/sdk/inMemory.js";
 import { createServer } from "../src/index.js";
 import { loadDataset } from "../src/data-loader.js";
 import { buildIndex } from "../src/index-memory.js";
+import { fileURLToPath } from "node:url";
 
 it("exposes item schema and remodel scope over the MCP protocol", async () => {
-  const ds = loadDataset(new URL("../data/official/dataset.json", import.meta.url).pathname);
+  const ds = loadDataset(fileURLToPath(new URL("../data/official/dataset.json", import.meta.url)));
   const server = createServer({ ds, index: buildIndex(ds) });
   const client = new Client({ name: "remodel-contract-test", version: "1" });
   const [clientTransport, serverTransport] = InMemoryTransport.createLinkedPair();
@@ -14,7 +15,7 @@ it("exposes item schema and remodel scope over the MCP protocol", async () => {
     await server.connect(serverTransport);
     await client.connect(clientTransport);
     const tools = await client.listTools();
-    expect(tools.tools).toHaveLength(7);
+    expect(tools.tools).toHaveLength(8);
     const call = async (name: string, args: Record<string, unknown>) => {
       const result = await client.callTool({ name, arguments: args });
       const content = result.content as Array<{type: string; text: string}>;

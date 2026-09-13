@@ -2,13 +2,14 @@ import { describe, expect, it } from "vitest";
 import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
+import { fileURLToPath } from "node:url";
 import { loadDataset } from "../src/data-loader.js";
 import { buildIndex } from "../src/index-memory.js";
 import { kcDataStatus, kcGet, kcQuery, kcSearch, kcShipRemodel } from "../src/tools.js";
 
 const official = new URL("../data/official/dataset.json", import.meta.url);
 const context = () => {
-  const ds = loadDataset(official.pathname);
+  const ds = loadDataset(fileURLToPath(official));
   return { ds, index: buildIndex(ds) };
 };
 
@@ -68,7 +69,7 @@ describe("remodel and item data contracts", () => {
     expect((detail.data as {remodel: unknown}).remodel).toEqual(kcShipRemodel(ctx, { ship: "ship:145" }).data);
   });
   it("reports legacy datasets as partial instead of free or no next remodel", () => {
-    const ds = loadDataset(new URL("../data/fixtures/kancolle.json", import.meta.url).pathname);
+    const ds = loadDataset(fileURLToPath(new URL("../data/fixtures/kancolle.json", import.meta.url)));
     const ctx = { ds, index: buildIndex(ds) };
     expect(kcShipRemodel(ctx, { ship: String(ds.ships[0].id) }).status).toBe("partial");
     expect(kcGet(ctx, { ref: "item:94" }).missing).toContain("items_dataset");

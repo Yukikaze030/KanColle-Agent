@@ -17,6 +17,20 @@ export interface EquipableRule {
   slots: Array<"normal" | "reinforcement" | "land_base">;
 }
 
+export interface MasterEquipRules {
+  source: "api_start2";
+  normal_by_stype: Record<string, number[]>;
+  normal_by_ship: Record<string, number[]>;
+  reinforcement_default_types: number[];
+  reinforcement_by_equipment: Record<string, {
+    ship_ids: number[];
+    stype_ids: number[];
+    ctype_ids: number[];
+    required_level: number;
+  }>;
+  reinforcement_denied_by_ship: Record<string, number[]>;
+}
+
 export interface RawDataset {
   ships: MasterShip[];
   items?: MasterItem[];
@@ -26,7 +40,8 @@ export interface RawDataset {
   expeditions: MasterExpedition[];
   maps: MasterMap[];
   equipment_equipable?: {
-    by_category: Record<string, EquipableRule>;
+    by_category?: Record<string, EquipableRule>;
+    master?: MasterEquipRules;
   };
   meta?: {
     name?: string;
@@ -50,6 +65,7 @@ export interface LoadedDataset extends DatasetStatus {
   expeditions: MasterExpedition[];
   maps: MasterMap[];
   equipableByCategory: Record<string, EquipableRule>;
+  masterEquipRules: MasterEquipRules | null;
 }
 
 function packageRoots(): string[] {
@@ -141,6 +157,7 @@ function fromRaw(
       "quest_graph",
       "ship_remodel",
       "equipment_rules",
+      "air_power",
       ...(raw.meta?.era ? [`era:${raw.meta.era}`] : []),
       ...(raw.items ? ["items"] : []),
       ...(raw.remodel_transitions ? ["remodel_costs"] : []),
@@ -153,6 +170,7 @@ function fromRaw(
     expeditions: raw.expeditions,
     maps: raw.maps,
     equipableByCategory: raw.equipment_equipable?.by_category ?? {},
+    masterEquipRules: raw.equipment_equipable?.master ?? null,
   };
 }
 

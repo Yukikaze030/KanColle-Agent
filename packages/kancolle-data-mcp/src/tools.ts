@@ -9,6 +9,7 @@ import {
   type DataResult,
   type MasterQuest,
   type MasterShip,
+  type MasterEquipment,
   type SearchHit,
   type RemodelTransition,
 } from "@kancolle-agent/shared";
@@ -17,6 +18,7 @@ import type { LoadedDataset } from "./data-loader.js";
 import type { MemoryIndex } from "./index-memory.js";
 import { remodelChain, searchAll } from "./index-memory.js";
 import { canShipEquip, whoCanEquip } from "./rules/equipment.js";
+import { calculateAirPowerSlot } from "./rules/air-power.js";
 
 export interface ToolContext {
   ds: LoadedDataset;
@@ -215,10 +217,9 @@ export function kcQuestGraph(
     // try search
     const hits = searchAll(ctx.index, args.quest, 5, ["quest"]);
     if (hits.length === 0) return dataNotFound();
-    if (hits.length > 1 && hits[0].score < 100) {
-      return dataAmbiguous(hits.slice(0, 5));
-    }
-    return kcQuestGraph(ctx, { ...args, quest: hits[0].ref });
+    const exact = hits.filter(hit => hit.score === 100);
+    if (exact.length !== 1) return dataAmbiguous((exact.length ? exact : hits).slice(0, 5));
+    return kcQuestGraph(ctx, { ...args, quest: exact[0].ref });
   }
 
   const direction = args.direction ?? "both";
@@ -327,53 +328,107 @@ export function kcEquipmentRules(
   const mode = args.mode ?? "check";
 
   if (mode === "who") {
-    const category =
-      args.category ??
-      (() => {
-        if (!args.equipment) return undefined;
-        const hits = searchAll(ctx.index, args.equipment, 5, ["equipment"]);
-        if (hits.length === 1) {
-          const eq = ctx.index.equipmentById.get(Number(parseRef(hits[0].ref)?.id));
-          return eq?.category;
-        }
-        if (hits.length === 0) return undefined;
-        const eq = ctx.index.equipmentById.get(Number(parseRef(hits[0].ref)?.id));
-        return eq?.category;
-      })();
-    if (!category) return dataNotFound(["category_required"]);
-    const list = whoCanEquip(ctx.ds, ctx.index, category, args.limit ?? 20);
-    return dataOk({ category, ships: list });
+    if (!args.equipment) {
+      return dataPartial({ category: args.category ?? null, ships: [] }, ["equipment_required_for_exact_rules"]);
+    }
+    const parsed = parseRef(args.equipment);
+    let eq = parsed?.type === "equipment"
+      ? ctx.index.equipmentById.get(Number(parsed.id)) : undefined;
+    if (!eq) {
+      const hits = searchAll(ctx.index, args.equipment, 10, ["equipment"]);
+      if (!hits.length) return dataNotFound(["equipment"]);
+      const exact = hits.filter(hit => hit.score === 100);
+      if (exact.length !== 1) return dataAmbiguous(exact.length ? exact : hits);
+      eq = ctx.index.equipmentById.get(Number(parseRef(exact[0].ref)?.id));
+    }
+    if (!eq) return dataNotFound(["equipment"]);
+    const list = whoCanEquip(ctx.ds, ctx.index, eq, args.limit ?? 20);
+    return dataOk({ equipment_ref: `equipment:${eq.id}`, equipment_name: eq.name, category: eq.category, ships: list });
   }
 
   if (!args.ship || !args.equipment) {
     return dataError("invalid_args", "mode=check requires ship and equipment");
   }
 
-  const shipHits = searchAll(ctx.index, args.ship, 5, ["ship"]);
+  const shipHits = searchAll(ctx.index, args.ship, 10, ["ship"]);
   let ship = ctx.index.shipsById.get(Number(parseRef(args.ship)?.id ?? -1));
   if (!ship) {
     if (shipHits.length === 0) return dataNotFound(["ship"]);
-    if (shipHits.length > 1 && shipHits[0].score < 100) {
-      return dataAmbiguous(shipHits);
-    }
-    ship = ctx.index.shipsById.get(Number(parseRef(shipHits[0].ref)?.id));
+    const exact = shipHits.filter(hit => hit.score === 100);
+    if (exact.length !== 1) return dataAmbiguous(exact.length ? exact : shipHits);
+    ship = ctx.index.shipsById.get(Number(parseRef(exact[0].ref)?.id));
   }
   if (!ship) return dataNotFound(["ship"]);
 
-  const eqHits = searchAll(ctx.index, args.equipment, 5, ["equipment"]);
+  const eqHits = searchAll(ctx.index, args.equipment, 10, ["equipment"]);
   let eq = ctx.index.equipmentById.get(Number(parseRef(args.equipment)?.id ?? -1));
   if (!eq) {
     if (eqHits.length === 0) return dataNotFound(["equipment"]);
-    if (eqHits.length > 1 && eqHits[0].score < 100) return dataAmbiguous(eqHits);
-    eq = ctx.index.equipmentById.get(Number(parseRef(eqHits[0].ref)?.id));
+    const exact = eqHits.filter(hit => hit.score === 100);
+    if (exact.length !== 1) return dataAmbiguous(exact.length ? exact : eqHits);
+    eq = ctx.index.equipmentById.get(Number(parseRef(exact[0].ref)?.id));
   }
   if (!eq) return dataNotFound(["equipment"]);
 
-  const result = canShipEquip(ctx.ds, ship, eq.category, ship.stype_id);
+  const result = canShipEquip(ctx.ds, ship, eq);
+  return result.coverage === "partial"
+    ? dataPartial(result, [`equipment_rule:${eq.type_id ?? eq.category ?? "unknown"}`])
+    : dataOk(result);
+}
+
+export function kcAirPower(
+  ctx: ToolContext,
+  args: {
+    slots: Array<{
+      equipment: string;
+      planes: number;
+      improvement?: number;
+      proficiency?: number;
+      internal_proficiency?: number;
+    }>;
+    target_air_power?: number;
+  },
+): DataResult<unknown> {
+  const resolved: Array<{ equipment: MasterEquipment; planes: number; improvement: number; proficiency: number; internalProficiency?: number }> = [];
+  for (const slot of args.slots) {
+    const parsed = parseRef(slot.equipment);
+    let equipment = parsed?.type === "equipment"
+      ? ctx.index.equipmentById.get(Number(parsed.id)) : undefined;
+    if (!equipment) {
+      const hits = searchAll(ctx.index, slot.equipment, 10, ["equipment"]);
+      if (!hits.length) return dataNotFound([`equipment:${slot.equipment}`]);
+      const exact = hits.filter(hit => hit.score === 100);
+      if (exact.length !== 1) return dataAmbiguous(exact.length ? exact : hits);
+      equipment = ctx.index.equipmentById.get(Number(parseRef(exact[0].ref)?.id));
+    }
+    if (!equipment) return dataNotFound([`equipment:${slot.equipment}`]);
+    if (!Number.isSafeInteger(slot.planes) || slot.planes < 0
+      || !Number.isSafeInteger(slot.improvement ?? 0) || (slot.improvement ?? 0) < 0 || (slot.improvement ?? 0) > 10
+      || !Number.isSafeInteger(slot.proficiency ?? 0) || (slot.proficiency ?? 0) < 0 || (slot.proficiency ?? 0) > 7
+      || (slot.internal_proficiency !== undefined && (!Number.isSafeInteger(slot.internal_proficiency)
+        || slot.internal_proficiency < 0 || slot.internal_proficiency > 120))) {
+      return dataError("invalid_args", "planes>=0, improvement=0..10, proficiency=0..7, internal_proficiency=0..120");
+    }
+    resolved.push({ equipment, planes: slot.planes, improvement: slot.improvement ?? 0,
+      proficiency: slot.proficiency ?? 0,
+      ...(slot.internal_proficiency !== undefined ? { internalProficiency: slot.internal_proficiency } : {}) });
+  }
+  const slots = resolved.map(calculateAirPowerSlot);
+  const airPowerMin = slots.reduce((sum, slot) => sum + slot.air_power_min, 0);
+  const airPowerMax = slots.reduce((sum, slot) => sum + slot.air_power_max, 0);
+  const target = args.target_air_power;
   return dataOk({
-    ...result,
-    equipment_ref: `equipment:${eq.id}`,
-    equipment_name: eq.name,
+    air_power_min: airPowerMin,
+    air_power_max: airPowerMax,
+    exact: airPowerMin === airPowerMax,
+    target_air_power: target ?? null,
+    meets_target: target === undefined ? null : airPowerMin >= target ? true : airPowerMax < target ? false : null,
+    slots,
+    assumptions: [
+      "fleet_air_power_before_losses",
+      "displayed proficiency without internal_proficiency returns its internal-value range",
+      "land-base interception/defense and route losses are not included",
+    ],
   });
 }
 

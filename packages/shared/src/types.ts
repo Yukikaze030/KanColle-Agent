@@ -231,6 +231,7 @@ export interface MasterShip {
   yomi?: string;
   stype: string;
   stype_id?: number;
+  ctype_id?: number;
   rarity?: number;
   remodel_level?: number | null;
   remodel_to?: number | null;
@@ -268,6 +269,7 @@ export interface MasterEquipment {
   type?: string;
   type_id?: number;
   category?: string;
+  description?: string;
   rarity?: number;
   stats?: ShipStats;
   improvable?: boolean;
@@ -287,10 +289,12 @@ export interface MasterQuest {
     bauxite?: number;
     item?: string;
     equipment?: MasterRef;
+    other?: Array<{ name: string; category?: string; amount?: number }>;
   };
   prerequisites?: number[];
   unlocks?: number[];
   requirements_summary?: string | null;
+  requirements?: Record<string, unknown> | null;
   alias?: string[];
 }
 
@@ -303,6 +307,14 @@ export interface MasterExpedition {
   ammo?: number;
   steel?: number;
   bauxite?: number;
+  details?: string;
+  difficulty?: number;
+  fleet_size?: number;
+  sample_fleet?: number[];
+  fuel_cost_ratio?: number;
+  ammo_cost_ratio?: number;
+  reward_items?: Array<{ type: number; amount: number }>;
+  resource_reward_levels?: number[];
   alias?: string[];
 }
 
@@ -311,6 +323,9 @@ export interface MasterMap {
   area: number;
   map: number;
   name?: string;
+  operation?: string;
+  description?: string;
+  level?: number;
   alias?: string[];
 }
 

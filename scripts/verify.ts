@@ -29,6 +29,7 @@ const tools = [
   "kc_quest_graph",
   "kc_ship_remodel",
   "kc_equipment_rules",
+  "kc_air_power",
   "kc_data_status",
 ];
 

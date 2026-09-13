@@ -7,6 +7,7 @@ import { loadDataset } from "./data-loader.js";
 import { buildIndex } from "./index-memory.js";
 import {
   kcDataStatus,
+  kcAirPower,
   kcEquipmentRules,
   kcGet,
   kcQuestGraph,
@@ -94,6 +95,22 @@ function createServer(ctx: ToolContext): McpServer {
       limit: z.number().int().min(1).max(100).optional(),
     },
     async (args) => toText(kcEquipmentRules(ctx, args)),
+  );
+
+  server.tool(
+    "kc_air_power",
+    "Calculate pre-loss main-fleet air power from exact equipment, slot size, improvement, and proficiency. Returns a range when internal proficiency is unknown; does not model land bases or route losses.",
+    {
+      slots: z.array(z.object({
+        equipment: z.string().describe("Exact equipment name or equipment:N ref"),
+        planes: z.number().int().min(0),
+        improvement: z.number().int().min(0).max(10).optional(),
+        proficiency: z.number().int().min(0).max(7).optional(),
+        internal_proficiency: z.number().int().min(0).max(120).optional(),
+      })).min(1).max(24),
+      target_air_power: z.number().int().min(0).optional(),
+    },
+    async (args) => toText(kcAirPower(ctx, args)),
   );
 
   server.tool(

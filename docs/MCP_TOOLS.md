@@ -62,6 +62,10 @@
 ### kc_equipment_rules
 `ship?` `equipment?` `category?` `mode?`=`check`|`who` `limit?`
 
+### kc_air_power
+
+输入具体装备（名称或 `equipment:N`）、搭载数、改修与显示熟练度，返回逐格及总制空值。未提供内部熟练度时返回该显示等级对应的范围；可传 `target_air_power` 得到三态 `meets_target`。当前只计算出击前本队制空，不包含航路损耗、基地航空队或防空。
+
 ### kc_data_status
 无参数。version / commit / era / counts / capabilities / provenance / warnings。provenance 将转换的来源键映射为固定提交 URL。
 

@@ -11,6 +11,7 @@ import {
   kcShipRemodel,
   type ToolContext,
 } from "../src/tools.js";
+import { canShipEquip } from "../src/rules/equipment.js";
 
 let ctx: ToolContext;
 
@@ -117,7 +118,7 @@ describe("kc_equipment_rules", () => {
       equipment: "三式水中探信仪",
       mode: "check",
     });
-    expect(r.status).toBe("ok");
+    expect(r.status).toBe("partial");
     expect((r.data as { can_equip: boolean }).can_equip).toBe(true);
   });
 
@@ -127,8 +128,23 @@ describe("kc_equipment_rules", () => {
       equipment: "甲标的",
       mode: "check",
     });
-    expect(r.status).toBe("ok");
+    expect(r.status).toBe("partial");
     expect((r.data as { can_equip: boolean }).can_equip).toBe(false);
+  });
+
+  it("does not turn an unknown category into a denial", () => {
+    const result = canShipEquip(ctx.ds, ctx.ds.ships[0], {
+      id: 999999, name: "测试侦察机", category: "recon",
+    });
+    expect(result.can_equip).toBeNull();
+    expect(result.coverage).toBe("partial");
+    expect(result.reason).toBe("unknown_category:recon");
+  });
+
+  it("requires a concrete equipment for exact who rules", () => {
+    const r = kcEquipmentRules(ctx, { category: "recon", mode: "who" });
+    expect(r.status).toBe("partial");
+    expect(r.missing).toContain("equipment_required_for_exact_rules");
   });
 });
 

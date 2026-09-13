@@ -85,6 +85,49 @@ function categoryOf(name = "") {
   return undefined;
 }
 
+function categoryFromType(typeId, name = "") {
+  const known = {
+    1: "small_main_gun", 2: "medium_main_gun", 3: "large_main_gun",
+    4: "secondary_gun", 5: "torpedo", 6: "fighter", 7: "bomber",
+    8: "attacker", 9: "carrier_recon", 10: "recon", 11: "seaplane_bomber",
+    12: "small_radar", 13: "large_radar", 14: "sonar", 15: "depth_charge",
+    17: "engine", 20: "anti_air_gun", 22: "midget_submarine",
+    24: "landing_craft", 25: "autogyro", 26: "asw_patrol_aircraft",
+    31: "aviation_personnel", 32: "depth_charge_projector", 40: "large_sonar",
+    43: "combat_ration", 45: "seaplane_fighter", 46: "special_submarine_equipment",
+    49: "land_based_recon", 50: "night_recon",
+  };
+  return known[typeId] ?? categoryOf(name) ?? `equip_type_${typeId}`;
+}
+
+const numericKeys = value => Object.keys(value ?? {}).map(Number).filter(Number.isSafeInteger);
+
+function buildMasterEquipRules(remodel) {
+  return {
+    source: "api_start2",
+    normal_by_stype: Object.fromEntries(remodel.stypes.map(s => [
+      String(s.api_id),
+      Object.entries(s.api_equip_type ?? {}).filter(([, allowed]) => allowed === 1).map(([id]) => Number(id)),
+    ])),
+    normal_by_ship: Object.fromEntries(Object.entries(remodel.equip_ship ?? {}).map(([shipId, row]) => [
+      shipId, numericKeys(row.api_equip_type),
+    ])),
+    reinforcement_default_types: [...(remodel.equip_exslot ?? [])],
+    reinforcement_by_equipment: Object.fromEntries(Object.entries(remodel.equip_exslot_ship ?? {}).map(([equipmentId, row]) => [
+      equipmentId,
+      {
+        ship_ids: numericKeys(row.api_ship_ids),
+        stype_ids: numericKeys(row.api_stypes),
+        ctype_ids: numericKeys(row.api_ctypes),
+        required_level: Number(row.api_req_level ?? 0),
+      },
+    ])),
+    reinforcement_denied_by_ship: Object.fromEntries(Object.entries(remodel.equip_limit_exslot ?? {}).map(([shipId, typeIds]) => [
+      shipId, Array.isArray(typeIds) ? typeIds.map(Number) : [],
+    ])),
+  };
+}
+
 async function main() {
   mkdirSync(OUT_DIR, { recursive: true });
   const [rawShips, rawEquips] = await loadOfficialRaw();
@@ -112,7 +155,7 @@ async function main() {
     const levels = predecessors.map(e => e.level).filter(n => n !== null);
     return {
       id: m.api_id, name: m.api_name, yomi: m.api_yomi,
-      stype: fx?.stype ?? typeNames.get(m.api_stype), stype_id: m.api_stype,
+      stype: fx?.stype ?? typeNames.get(m.api_stype), stype_id: m.api_stype, ctype_id: m.api_ctype,
       remodel_level: levels.length ? Math.min(...levels) : predecessors.length ? null : 0,
       remodel_from: predecessors.length === 1 ? Number(predecessors[0].from.split(":")[1]) : null,
       remodel_to: Number(m.api_aftershipid) || null,
@@ -120,29 +163,32 @@ async function main() {
         hp: m.api_taik?.[0], firepower: m.api_houg?.[0], torpedo: m.api_raig?.[0],
         aa: m.api_tyku?.[0], armor: m.api_souk?.[0], luck: m.api_luck?.[0],
         speed: m.api_soku, range: m.api_leng, slotCount: m.api_slot_num,
-        evasion: s.evasion, asw: s.asw, los: s.los,
+        evasion: m.api_kaih?.[0] ?? s.evasion,
+        asw: m.api_tais?.[0] ?? s.asw,
+        los: m.api_saku?.[0] ?? s.los,
       },
       slots: (m.api_maxeq ?? []).slice(0, m.api_slot_num).map(count => ({ type: "normal", count })),
       alias: fx?.alias,
     };
   });
 
-  const equipment = rawEquips.map((e) => {
-    const fx = fixture.equipment.find((x) => x.id === e.id);
+  const rawEquipById = new Map(rawEquips.map(e => [e.id, e]));
+  const equipment = remodel.equipment.map((e) => {
+    const old = rawEquipById.get(e.api_id) ?? {};
+    const fx = fixture.equipment.find((x) => x.id === e.api_id);
+    const typeId = e.api_type?.[2];
     return {
-      id: e.id,
-      name: e.name,
-      category: fx?.category ?? categoryOf(e.name),
+      id: e.api_id,
+      name: e.api_name,
+      type: remodel.equip_types.find(t => t.api_id === typeId)?.api_name,
+      type_id: typeId,
+      category: categoryFromType(typeId, e.api_name),
+      rarity: e.api_rare,
+      description: old.description,
       stats: {
-        firepower: e.firepower,
-        torpedo: e.torpedo,
-        aa: e.aa,
-        armor: e.armor,
-        bombing: e.bombing,
-        asw: e.asw,
-        los: e.los,
-        range: e.range,
-        evasion: e.evasion,
+        firepower: e.api_houg, torpedo: e.api_raig, aa: e.api_tyku,
+        armor: e.api_souk, bombing: e.api_baku, asw: e.api_tais,
+        los: e.api_saku, range: e.api_leng, evasion: e.api_houk,
       },
       improvable: fx?.improvable,
       alias: fx?.alias,
@@ -158,15 +204,15 @@ async function main() {
     prerequisites: q.prerequisite ?? [],
     unlocks: [],
     requirements_summary: q.detail
-      ? String(q.detail).replace(/<br\s*\/?>/gi, " ").slice(0, 200)
-      : q.requirements
-        ? JSON.stringify(q.requirements).slice(0, 200)
-        : null,
+      ? String(q.detail).replace(/<br\s*\/?>/gi, " ")
+      : q.requirements ? JSON.stringify(q.requirements) : null,
+    requirements: q.requirements ?? null,
     rewards: {
       fuel: q.reward_fuel,
       ammo: q.reward_ammo,
       steel: q.reward_steel,
       bauxite: q.reward_bauxite,
+      other: q.reward_other ?? [],
     },
     alias: q.wiki_id ? [q.wiki_id] : undefined,
   }));
@@ -185,7 +231,7 @@ async function main() {
   const dataset = {
     meta: {
       name: "kancolle-official-dataset",
-      version: "2.0.0-remodel",
+      version: "2.1.0-master-complete",
       commit: remodel.sources.master.split("/")[5],
       era: "2",
       era_name: "二期",
@@ -194,9 +240,9 @@ async function main() {
       quest_source: "kcwiki-quest-data",
       notes: [
         "TARGET ERA: KanColle 二期 only (post-2023-05 server migration)",
-        "Ships/equipment from kcwiki/kancolle-data",
+        "Ships/equipment/equipment rules/expeditions/maps from pinned api_start2",
+        "Equipment descriptions and aliases are overlaid from kcwiki/kancolle-data and local fixtures when IDs match",
         "Quests from kcwiki-quest-data npm",
-        "stype/equip-rules/expeditions/maps overlaid from local fixtures",
         "Remodel transitions from pinned api_start2; costs supplemented by pinned KC3Kai community rules",
         "Cost coverage describes modeled fields, not independent in-game verification; upstream rules can lag game updates",
         "Legacy remodel_level is minimum incoming edge level; use transitions[].level for a specific conversion",
@@ -208,9 +254,24 @@ async function main() {
     remodel_transitions: remodel.transitions,
     equipment,
     quests: mappedQuests,
-    expeditions: fixture.expeditions,
-    maps: fixture.maps,
-    equipment_equipable: fixture.equipment_equipable,
+    expeditions: remodel.missions.map(m => ({
+      id: m.api_id, name: m.api_name, area: String(m.api_maparea_id),
+      time_minutes: m.api_time, details: String(m.api_details ?? "").replace(/<br\s*\/?>/gi, " "),
+      difficulty: m.api_difficulty, fleet_size: m.api_deck_num,
+      sample_fleet: m.api_sample_fleet, fuel_cost_ratio: m.api_use_fuel,
+      ammo_cost_ratio: m.api_use_bull,
+      resource_reward_levels: m.api_win_mat_level,
+      reward_items: [m.api_win_item1, m.api_win_item2]
+        .filter(x => Array.isArray(x) && x[0] !== 0)
+        .map(x => ({ type: x[0], amount: x[1] })),
+      alias: m.api_disp_no ? [m.api_disp_no] : undefined,
+    })),
+    maps: remodel.maps.map(m => ({
+      id: `map:${m.api_maparea_id}-${m.api_no}`, area: m.api_maparea_id, map: m.api_no,
+      name: m.api_name, operation: m.api_opetext,
+      description: String(m.api_infotext ?? "").replace(/<br\s*\/?>/gi, " "), level: m.api_level,
+    })),
+    equipment_equipable: { master: buildMasterEquipRules(remodel) },
   };
 
   const out = join(OUT_DIR, "dataset.json");
