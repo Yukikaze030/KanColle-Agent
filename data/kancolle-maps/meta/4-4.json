@@ -1,0 +1,17 @@
+{
+  "map_id": "4-4",
+  "source_url": "https://bbs.nga.cn/read.php?pid=454454163",
+  "source_title": "4-4 カスガダマ島",
+  "era": "2",
+  "tid": "23451223",
+  "fetched_at": "2026-09-12T16:56:09.954Z",
+  "has_routing": true,
+  "has_enemy": true,
+  "routing_chars": 390,
+  "enemy_chars": 633,
+  "text_len": 2409,
+  "html_len": 39292,
+  "routing": "带路条件(新窗口)R\n\n\n\t\n− 地图分析 ...\n万能的地图，敌方有空母、有补给、有潜艇、能做东方、能练几乎所有的舰种\n还能3CVL+3DE或2DE1AO走A-E-C偷油\n\n各种攻略路线以及带路：\nA-E-I-K路线：\n唯一推荐路线，但有3种不同的带路体系\n2DD/DE + 1CL/CA/CAV + 2CV/CVB + 1个CV/CVB以外的任意舰种\n2DD/DE + 1CL+ 3个CV/CVB以外的任意舰种\n2DD/DE + 2CA/CAV + 2个任意舰种\n正常攻略任选一种就可以，注意如果只带1CV/CVB，就必须要用2CA/CAV带路\n由于敌方道中有潜艇，boss点随机刷潜艇，在前期CL、DD无法先制对潜的时候，可以带一个DE对潜。\n不过要注意DE本身比较脆容易被敌方小船炮击大破，需要配合较高的开幕输出清小船才比较稳(被敌方大船炮击更容易出中破保护是DE的优势)",
+  "enemy": "敌方详细配置(新窗口)R\n− 敌方最高制空配置 ...\n战斗点\n\t敌舰配置\n\t制空均势\n\t制空优势\n\t制空确保\n\nA\n\t重巡リ級flagship、重巡リ級flagship、軽巡ヘ級flagship、駆逐ロ級後期型、駆逐イ級、駆逐イ級\n\t\n\t\n\t\n\nB\n\t重巡リ級flagship、軽巡ヘ級flagship、駆逐ロ級後期型、駆逐ロ級後期型、潜水カ級elite\n\t\n\t\n\t\n\nE\n\t潜水ヨ級flagship、潜水カ級elite、潜水カ級、潜水カ級\n\t\n\t\n\t\n\nF\n\t空母ヲ級flagship(1528)、軽母ヌ級elite(1523)、戦艦タ級flagship、軽巡ヘ級flagship、駆逐ハ級後期型、駆逐ハ級後期型\n\t35\n\t78\n\t156\n\nG\n\t戦艦タ級flagship、戦艦タ級flagship、軽母ヌ級elite(1523)、駆逐ハ級後期型、駆逐ハ級後期型、駆逐イ級\n\t16\n\t36\n\t72\n\nH\n\t空母ヲ級flagship(1528)、戦艦ル級flagship、重巡リ級flagship、重巡リ級flagship、駆逐ハ級後期型、駆逐ロ級後期型\n\t19\n\t42\n\t84\n\nI\n\t重巡リ級flagship、重巡リ級flagship、軽巡ヘ級flagship、駆逐ハ級後期型、駆逐ハ級後期型、駆逐ハ級後期型\n\t\n\t\n\t\n\nK\n\t装甲空母姫、戦艦タ級flagship、戦艦タ級flagship、駆逐ハ級後期型、駆逐ハ級後期型、潜水ヨ級\n\t32\n\t72\n\t144",
+  "analysis": "地图分析 ...\n万能的地图，敌方有空母、有补给、有潜艇、能做东方、能练几乎所有的舰种\n还能3CVL+3DE或2DE1AO走A-E-C偷油\n\n各种攻略路线以及带路：\nA-E-I-K路线：\n唯一推荐路线，但有3种不同的带路体系\n2DD/DE + 1CL/CA/CAV + 2CV/CVB + 1个CV/CVB以外的任意舰种\n2DD/DE + 1CL+ 3个CV/CVB以外的任意舰种\n2DD/DE + 2CA/CAV + 2个任意舰种\n正常攻略任选一种就可以，注意如果只带1CV/CVB，就必须要用2CA/CAV带路\n由于敌方道中有潜艇，boss点随机刷潜艇，在前期CL、DD无法先制对潜的时候，可以带一个DE对潜。\n不过要注意DE本身比较脆容易被敌方小船炮击大破，需要配合较高的开幕输出清小船才比较稳(被敌方大船炮击更容易出中破保护是DE的优势)\n\n\n\n\n攻击机安全搭载数\n\n对空射击回避补正\n\t1.0 / 1.0\n\t0.6 / 1.0\n\t0.6 / 0.7\n\t0.5 / 0.7\n\t0.5 / 0.5\n\nA-E-I-K，全程空优~空确\n\t6\n\t3\n\t2\n\t2\n\t2\n\n\n\t萌新推图\n\n\n路线：\n\t\n+ 1-A-E-I-K ...\n\t\n需求：\n\t根据自身情况调整配置，并使其符合带路条件\n\n\n制空：\n\tK点144空确\n\n\n索敌：\n\t0\n\n\n− 空母鸡我每天能打20个 ...\n本队配置：\n\n分析：\n带路1：2DD/DE+1CL/CA/CAV+2CV+1个CV以外的任意舰种\n带路2：2DD/DE+1CL+3个CV以外的任意舰种\n带路3：2DD/DE+2CA/CAV+2个任意舰种\n可将一个DD换成DE来先制反潜，但前期开幕输出弱不太适合带2个DE\n等舰队成长起来了可以逐渐换成轻型的队伍减少消耗\n\n\n\t敵東方艦隊を撃滅せよ！\n\t\n\t敵東方中枢艦隊を撃破せよ！\n\n\n路线：\n\t\n+ 1-A-E-I-K ...\n\t\n需求：\n\t夕张改二特/阿武隈改二\n海防舰\n护卫空母\n\n\n制空：\n\tK点144空确\n\n\n索敌：\n\t0\n\n\n− 醋溜便当 ...\n本队配置：\n\n分析：\n做东方周常推荐图中的阵容，体感各方面都比4-2优秀，除了补给舰比较少。\nCVE除了调整射程、触发先制对潜的飞机外，尽量带有击坠回避的攻击机省铝\n选用DE的原因是容易先制对潜、修理时间低，而且4-4道中敌方没有空袭，DE相比DD并不会提高多少劝退率\n未改DE的血量非常完美，受到超量伤害100%触发击沉保护，甚至有概率强吃两炮不大破\n如果用一改DD可以装备高角炮+对空电探+水听兼顾对空对潜\n\n\n任务ID\n\t任务名称\n\t任务要求\n\t完成条件\n\t推荐配置\n\nB23\n\t'航空戦艦'抜錨せよ！\n\t2BBV\n\tB胜\n\t\n− 2BBV+1CVL+1CL+2DD/DE ...\n\nboss点144空确\n\nB94\n\t洋上航空戦力を拡充せよ！\n\tCV系/AV旗舰\n\tS胜\n\t\n− 2CV(旗舰)+2DD/DE+1CA系/CL+1BB系/CLT/CA系 ...\n\nboss点144空确\n\nB145\n\t改装航空軽巡〈Gotland andra〉、出撃！\n\tGotland andra旗舰+1DD\n\tS胜，1次\n\t\n− Gotland andra(旗舰)+3CVL+2DD/DE ...\n\nboss点144空确\n注意任务要求不能2DE\n没长射程舰爆可以Gotland andra旗舰+1BB系+2CV+1DD+1DE，不能1CV和CVL混搭\n\nB153\n\t改加賀型航空母艦'加賀改二'、抜錨！\n\t加贺改二(戊/护)旗舰+1CV/CVB\n\tS胜，1次\n\t\n− 2CV+1CVL+1CL/CA系+2DD/DE ...\n\nboss点144空确\n\nB165\n\t精鋭'第七駆逐隊'、出撃せよ！\n\t潮改二+曙改二\n\tS胜，1次\n\t\n− 潮改二+曙改二+3CVL+1CL ...\n\nboss点144空确\n\nB181\n\t改大和型戦艦'大和改二'、出撃せよ！\n\t大和改二/重旗舰+1CL+2DD\n\tS胜，1次\n\t\n− 大和改二旗舰+2CVL+1CL+2DD ...\n\nboss点144空确\n注意DE不能完成任务"
+}

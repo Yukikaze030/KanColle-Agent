@@ -1,0 +1,17 @@
+{
+  "map_id": "4-2",
+  "source_url": "https://bbs.nga.cn/read.php?pid=454454019",
+  "source_title": "4-2 カレー洋海域",
+  "era": "2",
+  "tid": "23451223",
+  "fetched_at": "2026-09-12T16:55:44.245Z",
+  "has_routing": true,
+  "has_enemy": true,
+  "routing_chars": 318,
+  "enemy_chars": 669,
+  "text_len": 2120,
+  "html_len": 38789,
+  "routing": "带路条件(新窗口)R\n\n\n\t\n− 地图分析 ...\n4图中相对难度比较低的一张图(4图总体难度都不高)\n一期的偷钢圣地，然而现在资源点都被藏到了地图后方。\n出门随机，概率由DD+DE的数量决定，提高我方输出/降低敌方难度比较难以平衡\n懒得考虑那么多于是就换到4-4做东方周常了(4-4的掉落质量、战果效率更高\n\n各种攻略路线以及带路：\nA-C-L / A-E-G-L / B-D-C-L路线：\n2BB/CV+1CL+1CLT/CA/CAV+2DD\n比较平衡的常规阵容，道中最多3战，进boss很少会出意外\n如果换成3BB/CV+3DD，会有更高概率走G点打补给，而且出门走A概率高一些，然而有概率道中多打一战，boss可能就不太好打了。",
+  "enemy": "敌方详细配置(新窗口)R\n− 敌方最高制空配置 ...\n战斗点\n\t敌舰配置\n\t制空均势\n\t制空优势\n\t制空确保\n\nA\n\t重巡リ級flagship、軽巡ホ級flagship、軽巡ホ級elite、軽巡ホ級elite、駆逐ロ級後期型、駆逐ロ級後期型\n\t\n\t\n\t\n\nB\n\t潜水ヨ級elite、潜水カ級、潜水カ級、潜水カ級、軽巡ト級elite、駆逐イ級後期型\n\t\n\t\n\t\n\nC\n\t軽母ヌ級flagship(1560)、重巡リ級flagship、重巡リ級flagship、軽巡ホ級flagship、駆逐ロ級後期型、駆逐ロ級後期型\n\t16\n\t35\n\t69\n\nD\n\t空母ヲ級flagship(1528)、空母ヲ級flagship(1528)、戦艦ル級flagship、軽巡ヘ級flagship、駆逐ロ級後期型、駆逐ロ級後期型\n\t38\n\t84\n\t168\n\nE\n\t軽母ヌ級flagship(1560)、重巡リ級flagship、軽巡ホ級flagship、軽巡ホ級flagship、駆逐ロ級後期型、駆逐ロ級後期型\n\t16\n\t35\n\t69\n\nG\n\t輸送ワ級flagship、輸送ワ級elite、輸送ワ級elite、軽巡ホ級flagship、駆逐ロ級後期型、駆逐ロ級後期型\n\t\n\t\n\t\n\nH\n\t潜水ヨ級elite、潜水ヨ級elite、潜水カ級、潜水カ級、潜水カ級、潜水カ級\n\t\n\t\n\t\n\nL\n\t戦艦タ級flagship、空母ヲ級flagship(1528)、輸送ワ級flagship、輸送ワ級flagship、駆逐ハ級後期型、駆逐ハ級後期型\n\t19\n\t42\n\t84",
+  "analysis": "地图分析 ...\n4图中相对难度比较低的一张图(4图总体难度都不高)\n一期的偷钢圣地，然而现在资源点都被藏到了地图后方。\n出门随机，概率由DD+DE的数量决定，提高我方输出/降低敌方难度比较难以平衡\n懒得考虑那么多于是就换到4-4做东方周常了(4-4的掉落质量、战果效率更高\n\n各种攻略路线以及带路：\nA-C-L / A-E-G-L / B-D-C-L路线：\n2BB/CV+1CL+1CLT/CA/CAV+2DD\n比较平衡的常规阵容，道中最多3战，进boss很少会出意外\n如果换成3BB/CV+3DD，会有更高概率走G点打补给，而且出门走A概率高一些，然而有概率道中多打一战，boss可能就不太好打了。\n\n\n\n\n攻击机安全搭载数\n\n对空射击回避补正\n\t1.0 / 1.0\n\t0.6 / 1.0\n\t0.6 / 0.7\n\t0.5 / 0.7\n\t0.5 / 0.5\n\nB-D-C-L，全程空优~空确\n\t6\n\t6\n\t3\n\t3\n\t3\n\n\n\t萌新推图\n\n\n路线：\n\t\n+ 1-A-C-L / 1-A-E-G-L / 1-B-D-C-L ...\n\t\n需求：\n\t7-1通关\n\n\n制空：\n\tD点84空优，168空确\n\n\n索敌：\n\t0\n\n\n− 一套配置用到老 ...\n本队配置：\n\n分析：\n很多地图的配置思路比较固定，带路用的1CL2DD(某些图只需要2DD) + 有限的大船(一般为2个) + 其余位置用CLT/CA/CAV填充\n稳定的先手炮击很重要，所以在伊势改二获得长射程舰爆，或瑞凤改二前，大船应该优先带一个BB\n\n\n\t敵東方艦隊を撃滅せよ！\n\t\n\tろ号作戦\n\n\n\t'空母機動部隊'西へ！\n\n\n路线：\n\t\n+ 1-A-C-L / 1-A-E-G-L / 1-B-D-C-L ...\n\t\n需求：\n\t月常任务需要2空母+2DD\n长射程空母\n\n\n制空：\n\tD点84空优，168空确\n\n\n索敌：\n\t0\n\n\n− 实战用demo2 ...\n本队配置1：\n\n本队配置2：\n\n分析：\n思路类似3-3的两种配置\n4-2带路要求一个CL，所以万能的矢矧是最佳人选。没有的话可以用夕张改二特代替，也没有的话任意一个二连CL也行\n道中会随机走有鱼的B点，瑞凤最好是带一个对潜>=7的舰攻，并且面板对潜>=65达到先制对潜的要求。\n\n\n任务ID\n\t任务名称\n\t任务要求\n\t完成条件\n\t推荐配置\n\nB18\n\t'航空水上打撃艦隊'出撃せよ！\n\t2BBV+2CAV\n\tB胜\n\t\n− 2BBV+2CAV+2DD ...\n\nD点84空优，168空确\n\nB31\n\t'第二戦隊'抜錨！\n\t长门+陆奥+扶桑+山城\n\tS胜，2次\n\t\n− 2BB+2BBV+2DD ...\n\nD点84空优，168空确\n\nB115\n\t精鋭駆逐隊、獅子奮迅！\n\t4DD\n\tA胜\n\t\n− 2CV系+4DD ...\n\nD点84空优，168空确\n\nB117\n\t最精鋭甲型駆逐艦、突入！敵中突破！\n\t阳炎改二/不知火改二/黑潮改二旗舰+2阳炎级/夕云级\n\tS胜，2次\n\t\n− 3DD+1CL+2CV系 ...\n\nD点84空优，168空确\n\nB145\n\t改装航空軽巡〈Gotland andra〉、出撃！\n\tGotland andra旗舰+1DD\n\tS胜，1次\n\t\n− Gotland andra(旗舰)+2CV系+1CLT+2DD ...\n\n道中84空优，168空确"
+}
