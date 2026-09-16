@@ -272,6 +272,117 @@ export function kcQuestGraph(
   return dataOk({ nodes: [...nodes.values()], edges });
 }
 
+export interface QuestProgressResult {
+  target: { id: number; name: string; wiki_id?: string };
+  nodes: Array<{
+    id: number;
+    name: string;
+    wiki_id?: string;
+    status: "available" | "active" | "claimable" | "observed_completed" | "inferred_completed" | "unknown";
+    evidence: "poi_current" | "poi_observed" | "ancestor_inference" | "none";
+  }>;
+  edges: Array<{ from: number; to: number; relation: "prerequisite" }>;
+  unresolved_ids: number[];
+  inference_note: string;
+}
+
+export function kcQuestProgress(
+  ctx: ToolContext,
+  args: {
+    quest: string;
+    player_states?: {
+      available?: number[];
+      active?: number[];
+      claimable?: number[];
+      observed_completed?: number[];
+    };
+  },
+): DataResult<QuestProgressResult> {
+  const quest = resolveQuest(ctx.index, args.quest);
+  if (!quest) {
+    const hits = searchAll(ctx.index, args.quest, 5, ["quest"]);
+    if (!hits.length) return dataNotFound();
+    const exact = hits.filter((hit) => hit.score === 100);
+    if (exact.length !== 1) return dataAmbiguous((exact.length ? exact : hits).slice(0, 5));
+    return kcQuestProgress(ctx, { ...args, quest: exact[0].ref });
+  }
+
+  const states = args.player_states ?? {};
+  const explicit = new Map<number, "available" | "active" | "claimable" | "observed_completed">();
+  for (const state of ["available", "active", "claimable", "observed_completed"] as const) {
+    for (const id of states[state] ?? []) explicit.set(id, state);
+  }
+
+  const inferredCompleted = new Set<number>();
+  const inferAncestors = (id: number, seen: Set<number>) => {
+    if (seen.has(id)) return;
+    seen.add(id);
+    for (const pre of ctx.index.questPredecessors.get(id) ?? []) {
+      inferredCompleted.add(pre);
+      inferAncestors(pre, seen);
+    }
+  };
+  for (const id of explicit.keys()) inferAncestors(id, new Set());
+
+  const chainIds = new Set<number>([quest.game_id]);
+  const edges: QuestProgressResult["edges"] = [];
+  const collectTargetAncestors = (id: number, seen: Set<number>) => {
+    if (seen.has(id)) return;
+    seen.add(id);
+    for (const pre of ctx.index.questPredecessors.get(id) ?? []) {
+      chainIds.add(pre);
+      edges.push({ from: pre, to: id, relation: "prerequisite" });
+      collectTargetAncestors(pre, seen);
+    }
+  };
+  collectTargetAncestors(quest.game_id, new Set());
+
+  const nodes = [...chainIds]
+    .map((id) => ctx.index.questsByGameId.get(id))
+    .filter((q): q is MasterQuest => Boolean(q))
+    .map((q) => {
+      const state = explicit.get(q.game_id);
+      if (state) {
+        return {
+          id: q.game_id,
+          name: q.name,
+          ...(q.wiki_id ? { wiki_id: q.wiki_id } : {}),
+          status: state,
+          evidence: state === "observed_completed" ? "poi_observed" : "poi_current",
+        } as QuestProgressResult["nodes"][number];
+      }
+      if (inferredCompleted.has(q.game_id)) {
+        return {
+          id: q.game_id,
+          name: q.name,
+          ...(q.wiki_id ? { wiki_id: q.wiki_id } : {}),
+          status: "inferred_completed",
+          evidence: "ancestor_inference",
+        } as QuestProgressResult["nodes"][number];
+      }
+      return {
+        id: q.game_id,
+        name: q.name,
+        ...(q.wiki_id ? { wiki_id: q.wiki_id } : {}),
+        status: "unknown",
+        evidence: "none",
+      } as QuestProgressResult["nodes"][number];
+    });
+
+  return dataOk({
+    target: {
+      id: quest.game_id,
+      name: quest.name,
+      ...(quest.wiki_id ? { wiki_id: quest.wiki_id } : {}),
+    },
+    nodes,
+    edges,
+    unresolved_ids: nodes.filter((node) => node.status === "unknown").map((node) => node.id),
+    inference_note:
+      "Ancestors of quests currently visible in Poi are inferred completed, matching poi-plugin-quest-2. Missing quests remain unknown; inference is not persisted game history.",
+  });
+}
+
 export interface RemodelResult {
   ship_ref: string;
   chain: Array<{ ref: string; name: string; remodel_level: number | null }>;

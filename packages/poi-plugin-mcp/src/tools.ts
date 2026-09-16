@@ -149,11 +149,13 @@ export function poiGetFleets(store: SnapshotStore): PoiResult<unknown> {
 
 export function poiGetQuests(
   store: SnapshotStore,
-  args: { state?: string; limit?: number },
+  args: { state?: string; game_ids?: number[]; mode?: "records" | "compact"; limit?: number },
 ): PoiResult<unknown> {
   const snap = store.get();
   if (!snap.player_logged_in) return withMeta(store, poiError("not_ready", "player not logged in"));
-  return withMeta(store, okResult(getQuests(snap, args)));
+  const result = getQuests(snap, args);
+  const coverage = snap.freshness.find((f) => f.domain === "quests")?.coverage;
+  return withMeta(store, coverage === "not_loaded" ? poiPartial(result, ["quests"]) : okResult(result));
 }
 
 export function poiGetInventory(store: SnapshotStore): PoiResult<unknown> {

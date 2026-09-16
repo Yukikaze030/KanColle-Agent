@@ -12,6 +12,7 @@ import {
   kcEquipmentRules,
   kcGet,
   kcQuestGraph,
+  kcQuestProgress,
   kcQuery,
   kcSearch,
   kcShipRemodel,
@@ -73,6 +74,21 @@ function createServer(ctx: ToolContext): McpServer {
       depth: z.number().int().min(1).max(5).optional(),
     },
     async (args) => toText(kcQuestGraph(ctx, args)),
+  );
+
+  server.tool(
+    "kc_quest_progress",
+    "Annotate one target quest's full prerequisite chain with compact Poi quest states. Ancestors of currently visible quests are inferred completed; missing quests stay unknown.",
+    {
+      quest: z.string().describe("quest ref, game id, wiki id, or exact name"),
+      player_states: z.object({
+        available: z.array(z.number().int().positive()).max(500).optional(),
+        active: z.array(z.number().int().positive()).max(500).optional(),
+        claimable: z.array(z.number().int().positive()).max(500).optional(),
+        observed_completed: z.array(z.number().int().positive()).max(500).optional(),
+      }).optional(),
+    },
+    async (args) => toText(kcQuestProgress(ctx, args)),
   );
 
   server.tool(

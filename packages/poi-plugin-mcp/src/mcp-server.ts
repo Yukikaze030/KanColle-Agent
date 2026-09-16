@@ -116,9 +116,11 @@ export function createPoiMcpServer(store: SnapshotStore): McpServer {
 
   server.tool(
     "poi_get_quests",
-    "Current quests + observed history. Absent quest = unknown, never assume incomplete.",
+    "Current quest states plus locally observed claim history. Use compact mode for IDs grouped by state. available=unselected, active=selected, claimable=completed awaiting reward; absent=unknown.",
     {
-      state: z.enum(["active", "observed_completed", "unknown", "available"]).optional(),
+      state: z.enum(["available", "active", "claimable", "observed_completed", "inferred_completed", "locked", "unknown"]).optional(),
+      game_ids: z.array(z.number().int().positive()).max(100).optional(),
+      mode: z.enum(["records", "compact"]).optional(),
       limit: z.number().int().min(1).max(100).optional(),
     },
     async (args) => toText(poiGetQuests(store, args)),

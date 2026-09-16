@@ -209,15 +209,40 @@ export function getFleets(snap: PlayerSnapshot) {
   };
 }
 
-export function getQuests(snap: PlayerSnapshot, args: { state?: string; limit?: number } = {}) {
+export function getQuests(
+  snap: PlayerSnapshot,
+  args: { state?: string; game_ids?: number[]; mode?: "records" | "compact"; limit?: number } = {},
+) {
   let quests = [...snap.quests];
   if (args.state) quests = quests.filter((q) => q.state === args.state);
+  if (args.game_ids?.length) {
+    const ids = new Set(args.game_ids);
+    quests = quests.filter((q) => ids.has(q.game_id));
+  }
+  const freshness = snap.freshness.find((f) => f.domain === "quests");
+  if (args.mode === "compact") {
+    const states = Object.fromEntries(
+      (["available", "active", "claimable", "observed_completed"] as const).map((state) => [
+        state,
+        quests.filter((q) => q.state === state).map((q) => q.game_id),
+      ]),
+    );
+    return {
+      total: quests.length,
+      states,
+      coverage: freshness?.coverage ?? "not_loaded",
+      updated_at: freshness?.updated_at ?? null,
+      note: "IDs not present are unknown unless Data graph inference proves an ancestor completed.",
+    };
+  }
   const { page, cursor, total } = paginate(quests, args.limit ?? DEFAULT_LIMIT);
   return {
     total,
     cursor,
     items: page,
-    note: "Quest not present in snapshot means unknown, not incomplete.",
+    coverage: freshness?.coverage ?? "not_loaded",
+    updated_at: freshness?.updated_at ?? null,
+    note: "Quest not present in snapshot means unknown, not incomplete. claimable means completed but reward not yet claimed.",
   };
 }
 

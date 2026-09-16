@@ -106,8 +106,26 @@ export class SnapshotStore {
   }
 
   setQuests(quests: QuestRecord[]): void {
-    this.snap.quests = quests;
-    this.touch("quests", "complete");
+    const previous = new Map(this.snap.quests.map((q) => [q.game_id, q]));
+    const current = new Map<number, QuestRecord>();
+    for (const quest of quests) {
+      const old = previous.get(quest.game_id);
+      current.set(quest.game_id, {
+        ...quest,
+        ...(old?.state === "observed_completed" && old.observed_at
+          ? { last_completed_at: old.observed_at }
+          : old?.last_completed_at
+            ? { last_completed_at: old.last_completed_at }
+            : {}),
+      });
+    }
+    for (const old of previous.values()) {
+      if (!current.has(old.game_id) && old.state === "observed_completed") {
+        current.set(old.game_id, old);
+      }
+    }
+    this.snap.quests = [...current.values()];
+    this.touch("quests", quests.length ? "partial" : "not_loaded");
     this.bump();
   }
 
@@ -117,6 +135,7 @@ export class SnapshotStore {
     if (existing) {
       existing.state = "observed_completed";
       existing.observed_at = now;
+      existing.last_completed_at = now;
       existing.source = "local_observed";
     } else {
       this.snap.quests.push({
@@ -124,6 +143,7 @@ export class SnapshotStore {
         name: name ?? `quest:${gameId}`,
         state: "observed_completed",
         observed_at: now,
+        last_completed_at: now,
         source: "local_observed",
       });
     }

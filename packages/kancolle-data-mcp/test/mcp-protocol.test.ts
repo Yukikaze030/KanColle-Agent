@@ -15,8 +15,9 @@ it("exposes item schema and remodel scope over the MCP protocol", async () => {
     await server.connect(serverTransport);
     await client.connect(clientTransport);
     const tools = await client.listTools();
-    expect(tools.tools).toHaveLength(9);
+    expect(tools.tools).toHaveLength(10);
     expect(tools.tools.some(tool => tool.name === "kc_map_guide")).toBe(true);
+    expect(tools.tools.some(tool => tool.name === "kc_quest_progress")).toBe(true);
     const call = async (name: string, args: Record<string, unknown>) => {
       const result = await client.callTool({ name, arguments: args });
       const content = result.content as Array<{type: string; text: string}>;
