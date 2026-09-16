@@ -23,7 +23,7 @@ function toBlock(raw, source) {
   const clean = cleanRouting(raw);
   if (!clean) return "";
   const lines = clean.split(/\r?\n/);
-  const out = ["## 带路条件", "", `> 来源：${source}（NGA「带路条件」弹窗）`, ""];
+  const out = ["## [module:routing] 带路条件", "", `> 来源：${source}（NGA「带路条件」弹窗）`, ""];
   for (const line of lines) {
     const s = line.trim();
     if (!s) {
@@ -46,8 +46,8 @@ for (const jf of files) {
   if (block.length < 60) continue;
   let md = readFileSync(mapPath, "utf8");
   // Force: if any 带路 heading exists, replace that whole section
-  if (/^## 带路/m.test(md)) {
-    md = md.replace(/^## 带路[\s\S]*?(?=\n## |$)/m, block + "\n");
+  if (/^## \[module:routing\]/m.test(md)) {
+    md = md.replace(/^## \[module:routing\][\s\S]*?(?=\n## |$)/m, block + "\n");
   } else {
     md = md.trimEnd() + "\n\n" + block + "\n";
   }

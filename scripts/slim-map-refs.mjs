@@ -141,11 +141,11 @@ function cleanAndGroup(raw) {
     .replace(/\n{3,}/g, "\n\n")
     .trim();
   const parts = [
-    enemies.length ? `## 敌方配置\n\n${enemies.join("\n")}` : "",
-    joinBlock("带路 / 路线", routing),
-    joinBlock("地图分析", analysis),
-    notesBody.length > 40 ? `## 补充\n\n${notesBody}` : "",
-    joinBlock("相关任务", quests),
+    joinBlock("[module:overview] 地图信息", analysis),
+    joinBlock("[module:routing] 带路条件", routing),
+    enemies.length ? `## [module:enemy] 敌方配置\n\n${enemies.join("\n")}` : "",
+    joinBlock("[module:quests] 任务配置", quests),
+    notesBody.length > 40 ? `## [module:notes] 备注\n\n${notesBody}` : "",
   ].filter(Boolean);
 
   return parts.join("\n\n").trim();
@@ -167,7 +167,7 @@ map: "${mapId}"
 slim: true
 ---
 
-# ${title}
+# [map:${mapId}] ${title}
 
 > NGA 梦美常规图带路 · 二期 · 改造名以 Data MCP `kc_ship_remodel` 为准
 

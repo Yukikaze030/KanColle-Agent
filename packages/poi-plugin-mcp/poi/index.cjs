@@ -99,7 +99,11 @@ function handleGameResponse(e) {
   try {
     syncFromPoi(runtime.store)
     if (typeof runtime.handleApiEvent === 'function') {
-      runtime.handleApiEvent(p, detail.body)
+      runtime.handleApiEvent(
+        p,
+        detail.body,
+        detail.postBody || detail.requestBody || detail.request || null,
+      )
     }
   } catch (err) {
     console.error(`${PLUGIN_NAME}: game.response handler error`, err)

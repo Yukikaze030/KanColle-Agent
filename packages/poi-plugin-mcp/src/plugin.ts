@@ -21,8 +21,8 @@ export interface PoiRuntime {
   token: string | null;
   start: (opts?: { port?: number; useMock?: boolean }) => Promise<void>;
   stop: () => Promise<void>;
-  /** Hook: feed a KCSAPI path + body into the normalizer. */
-  handleApiEvent: (path: string, body: unknown) => void;
+  /** Hook: feed a KCSAPI path, response body, and optional request body into the normalizer. */
+  handleApiEvent: (path: string, body: unknown, requestBody?: unknown) => void;
 }
 
 export function createPoiRuntime(tokenPath?: string): PoiRuntime {
@@ -54,7 +54,7 @@ export function createPoiRuntime(tokenPath?: string): PoiRuntime {
       if (http) await http.close();
       http = null;
     },
-    handleApiEvent(path: string, body: unknown) {
+    handleApiEvent(path: string, body: unknown, requestBody?: unknown) {
       // Minimal KCSAPI event adapter — enough for V1 tests and real integration points.
       if (path.includes("api_port/port") && body && typeof body === "object") {
         const b = body as Record<string, unknown>;
@@ -77,9 +77,14 @@ export function createPoiRuntime(tokenPath?: string): PoiRuntime {
         const slotItem = b.api_slot_item as Array<Parameters<typeof normalizeEquipment>[0]> | undefined;
         if (slotItem) store.setEquipment(slotItem.map((e) => normalizeEquipment(e)));
         store.setOnline(true, true);
-      } else if (path.includes("api_quest/clearitemget") && body && typeof body === "object") {
-        const b = body as { api_quest_id?: number };
-        if (b.api_quest_id) store.observeQuestCompleted(b.api_quest_id);
+      } else if (path.includes("api_req_quest/clearitemget") && body && typeof body === "object") {
+        const response = body as { api_quest_id?: number };
+        const request = requestBody && typeof requestBody === "object"
+          ? requestBody as { api_quest_id?: number | string }
+          : undefined;
+        const rawId = request?.api_quest_id ?? response.api_quest_id;
+        const questId = typeof rawId === "string" ? Number(rawId) : rawId;
+        if (questId && Number.isInteger(questId)) store.observeQuestCompleted(questId);
       }
     },
   } as PoiRuntime;

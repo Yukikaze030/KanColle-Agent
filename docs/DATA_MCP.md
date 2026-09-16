@@ -24,7 +24,7 @@ Normalized Service
    Data Adapter → fixtures / kancolle-data
 ```
 
-## Tools（7）
+## Tools（9）
 
 | Tool | 说明 |
 |------|------|
@@ -34,6 +34,7 @@ Normalized Service
 | `kc_quest_graph` | 前置/后续节点边 |
 | `kc_ship_remodel` | 相关形态、有向改造、等级、资源/道具/装备消耗；next/family 范围 |
 | `kc_equipment_rules` | 舰种能否装备 / 谁能装备 |
+| `kc_map_guide` | 按稳定模块键读取常规海域攻略；空选择只返回目录 |
 | `kc_air_power` | 按装备、搭载、改修与熟练度计算出击前舰队制空值；内部熟练度未知时返回范围 |
 | `kc_data_status` | 数据集版本与能力 |
 
@@ -53,9 +54,10 @@ packages/kancolle-data-mcp/data/official/dataset.json
 | 开发/建造/改修资材、火炮资材、工廠资源消耗 | 固定提交 KC3Kai `RemodelDb.js` 的计算函数 |
 | 舰娘补充属性 / 装备 | kcwiki/kancolle-data `db/ship.json` `db/equipment.json` |
 | 任务 | `kcwiki-quest-data` npm |
-| stype / 可装备规则 / 远征 / 海域 | 本地 fixtures overlay（按**名称**合并） |
+| stype / 可装备规则 / 远征 / 海域 | 固定提交 `api/api_start2.json` |
+| 常规海域攻略切片 | `fleet-builder/refs/maps/*.md`，固定标题按需读取 |
 
-本次固定快照：**舰船形态 862 · 改造转换 555 · 道具 105 · 装备 583 · 任务 446**。实际数量见 `kc_data_status`。
+本次固定快照：**舰船形态 862 · 改造转换 555 · 道具 105 · 装备 741 · 任务 446 · 远征 65 · 地图 42**。实际数量见 `kc_data_status`。
 
 ```bash
 npm run fetch:data               # 用缓存和固定来源重建，已提交缓存支持离线
@@ -101,7 +103,7 @@ KANCOLLE_DATA_PATH=/path/to/dataset.json
 2. **非改造主数据已对齐同一主表版本**：装备 741 条、远征 65 条、地图 42 条；舰船回避/对潜/索敌优先取主表。任务保留完整 `requirements`、完整说明及 `reward_other`，不再截断为 200 字或只保留四项资源。
 3. **规则与版本时效**：KC3 规则有按舰 ID 的特判和默认值，新实装可能滞后。固定提交保证可复现，不自动保证最新；应定期对照游戏 main.js 或另一实现核验。不能把重新生成时间当作上游数据更新时间。
 4. **账号可执行性尚由 Agent 计算**：Data MCP 返回成本，不扣玩家库存；多目标累计资源、已装备/锁定锅炉是否能消耗、玩家快照覆盖仍须结合 Poi 判断。本次未增加自动改造或游戏操作。
-5. **其他解析器**：装备规则、任务图现在只接受唯一精确名称或显式 ref，多个精确同名会返回 `ambiguous`；Windows file URL 已统一转换为本地路径。任务和海域保留上游 ID 与结构化字段。攻略内容仍不属于静态主表能力，必须走 refs/researcher。
+5. **其他解析器**：装备规则、任务图现在只接受唯一精确名称或显式 ref，多个精确同名会返回 `ambiguous`；Windows file URL 已统一转换为本地路径。任务和海域保留上游 ID 与结构化字段。常规图攻略可由 `kc_map_guide` 按稳定模块键读取本地 refs；缺项或最新变化仍转 researcher。
 
 ## 验证
 

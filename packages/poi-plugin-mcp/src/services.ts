@@ -11,6 +11,7 @@ import { aggregateEquipment } from "./snapshot.js";
 export interface QueryShipsArgs {
   instance_ids?: number[];
   master_ids?: number[];
+  stype_ids?: number[];
   fleet_ids?: number[];
   level?: { min?: number; max?: number };
   locked?: boolean;
@@ -32,6 +33,10 @@ export function queryShips(snap: PlayerSnapshot, args: QueryShipsArgs) {
   if (args.master_ids?.length) {
     const set = new Set(args.master_ids);
     ships = ships.filter((s) => set.has(s.master_id));
+  }
+  if (args.stype_ids?.length) {
+    const set = new Set(args.stype_ids);
+    ships = ships.filter((s) => s.stype_id != null && set.has(s.stype_id));
   }
   if (args.fleet_ids?.length) {
     const set = new Set(args.fleet_ids);
@@ -91,6 +96,7 @@ export function queryShips(snap: PlayerSnapshot, args: QueryShipsArgs) {
 export interface QueryEquipmentArgs {
   instance_ids?: number[];
   master_ids?: number[];
+  type_ids?: number[];
   improvement?: { min?: number; max?: number };
   proficiency?: { min?: number; max?: number };
   locked?: boolean;
@@ -110,6 +116,10 @@ export function queryEquipment(snap: PlayerSnapshot, args: QueryEquipmentArgs) {
   if (args.master_ids?.length) {
     const set = new Set(args.master_ids);
     eq = eq.filter((e) => set.has(e.master_id));
+  }
+  if (args.type_ids?.length) {
+    const set = new Set(args.type_ids);
+    eq = eq.filter((e) => e.type_id != null && set.has(e.type_id));
   }
   if (args.improvement) {
     if (args.improvement.min != null) {
@@ -199,15 +209,40 @@ export function getFleets(snap: PlayerSnapshot) {
   };
 }
 
-export function getQuests(snap: PlayerSnapshot, args: { state?: string; limit?: number } = {}) {
+export function getQuests(
+  snap: PlayerSnapshot,
+  args: { state?: string; game_ids?: number[]; mode?: "records" | "compact"; limit?: number } = {},
+) {
   let quests = [...snap.quests];
   if (args.state) quests = quests.filter((q) => q.state === args.state);
+  if (args.game_ids?.length) {
+    const ids = new Set(args.game_ids);
+    quests = quests.filter((q) => ids.has(q.game_id));
+  }
+  const freshness = snap.freshness.find((f) => f.domain === "quests");
+  if (args.mode === "compact") {
+    const states = Object.fromEntries(
+      (["available", "active", "claimable", "observed_completed"] as const).map((state) => [
+        state,
+        quests.filter((q) => q.state === state).map((q) => q.game_id),
+      ]),
+    );
+    return {
+      total: quests.length,
+      states,
+      coverage: freshness?.coverage ?? "not_loaded",
+      updated_at: freshness?.updated_at ?? null,
+      note: "IDs not present are unknown unless Data graph inference proves an ancestor completed.",
+    };
+  }
   const { page, cursor, total } = paginate(quests, args.limit ?? DEFAULT_LIMIT);
   return {
     total,
     cursor,
     items: page,
-    note: "Quest not present in snapshot means unknown, not incomplete.",
+    coverage: freshness?.coverage ?? "not_loaded",
+    updated_at: freshness?.updated_at ?? null,
+    note: "Quest not present in snapshot means unknown, not incomplete. claimable means completed but reward not yet claimed.",
   };
 }
 

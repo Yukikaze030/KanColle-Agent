@@ -2,7 +2,14 @@ import type { Coverage, DomainFreshness, SnapshotMeta } from "./result.js";
 import type { MasterRef } from "./refs.js";
 
 export type DamageState = "healthy" | "shouha" | "chuha" | "heavily_damaged" | "taiha" | "unknown";
-export type QuestState = "active" | "observed_completed" | "unknown" | "available";
+export type QuestState =
+  | "available"
+  | "active"
+  | "claimable"
+  | "observed_completed"
+  | "inferred_completed"
+  | "locked"
+  | "unknown";
 export type ShipStype = string;
 export type EquipCategory = string;
 
@@ -34,6 +41,7 @@ export interface ShipRecord {
   locked: boolean;
   damage: DamageState;
   stype?: ShipStype;
+  stype_id?: number;
   fleet_id?: number | null;
   dock?: boolean;
   slot_items?: Array<number | null>;
@@ -50,6 +58,7 @@ export interface EquipmentRecord {
   locked: boolean;
   equipped_on: number | null;
   category?: EquipCategory;
+  type_id?: number;
   stats?: ShipStats;
 }
 
@@ -78,8 +87,11 @@ export interface QuestRecord {
   type?: string;
   state: QuestState;
   progress?: number | null;
+  progress_flag?: 0 | 1 | 2 | null;
+  progress_label?: "none" | "50%+" | "80%+" | null;
   observed_at?: string | null;
-  source?: "local_observed" | "api" | "unknown";
+  last_completed_at?: string | null;
+  source?: "local_observed" | "api" | "graph_inference" | "unknown";
 }
 
 export interface MaterialCounts {

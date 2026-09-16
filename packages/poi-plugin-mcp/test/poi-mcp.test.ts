@@ -7,6 +7,7 @@ import {
   poiGetOverview,
   poiGetQuests,
   poiQueryEquipment,
+  poiQueryFleetAssets,
   poiQueryShips,
   poiStatus,
 } from "../src/tools.js";
@@ -15,6 +16,14 @@ import { createPoiRuntime } from "../src/plugin.js";
 import { mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
+import { createRequire } from "node:module";
+
+const require = createRequire(import.meta.url);
+const poiBridge = require("../poi/store-bridge.cjs") as {
+  readShips: (store: unknown) => Array<{ stype_id?: number; slot_items: Array<number | null> }>;
+  readEquipment: (store: unknown) => Array<{ type_id?: number }>;
+  readQuests: (store: unknown) => Array<{ game_id: number; state: string; progress: number | null }>;
+};
 
 let store: SnapshotStore;
 
@@ -62,6 +71,50 @@ describe("snapshot", () => {
       api_maxhp: 53,
     });
     expect(taiha.damage).toBe("taiha");
+  });
+});
+
+describe("Poi store bridge", () => {
+  it("retains numeric ship and equipment type ids from live masters", () => {
+    const raw = {
+      info: {
+        ships: { 10: { api_id: 10, api_ship_id: 699, api_lv: 99, api_nowhp: 50, api_maxhp: 50, api_slot: [20, -1] } },
+        equips: { 20: { api_id: 20, api_slotitem_id: 169, api_level: 0, api_alv: 7 } },
+      },
+      const: {
+        $ships: { 699: { api_name: "矢矧改二乙", api_stype: 3 } },
+        $equips: { 169: { api_name: "二式水戦改", api_type: [0, 0, 45, 45, 0] } },
+      },
+    };
+    expect(poiBridge.readShips(raw)[0]).toMatchObject({ stype_id: 3, slot_items: [20, null] });
+    expect(poiBridge.readEquipment(raw)[0]).toMatchObject({ type_id: 45 });
+  });
+
+  it("reads Poi activeQuests and quest plugin list with correct API state semantics", () => {
+    const raw = {
+      info: {
+        quests: {
+          activeQuests: {
+            101: { detail: { api_no: 101, api_title: "进行中", api_state: 2, api_progress_flag: 1 } },
+          },
+        },
+      },
+      ext: {
+        "poi-plugin-quest-info-2": {
+          _: {
+            questList: [
+              { api_no: 102, api_title: "可接", api_state: 1, api_progress_flag: 0 },
+              { api_no: 103, api_title: "待领奖", api_state: 3, api_progress_flag: 2 },
+            ],
+          },
+        },
+      },
+    };
+    expect(poiBridge.readQuests(raw)).toEqual(expect.arrayContaining([
+      expect.objectContaining({ game_id: 101, state: "active", progress: 0.5 }),
+      expect.objectContaining({ game_id: 102, state: "available", progress: null }),
+      expect.objectContaining({ game_id: 103, state: "claimable", progress: 0.8 }),
+    ]));
   });
 });
 
@@ -113,6 +166,23 @@ describe("poi tools", () => {
     expect(data.items[0].improvements.MAX).toBe(1);
   });
 
+  it("batch-fetches compact fleet assets", () => {
+    const r = poiQueryFleetAssets(store, {
+      ships: { master_ids: [699], level: { min: 90 } },
+      equipment: { master_ids: [169] },
+    });
+    expect(r.status).toBe("ok");
+    const data = r.data as { ships: { total: number }; equipment: { total: number; mode: string } };
+    expect(data.ships.total).toBe(1);
+    expect(data.equipment.total).toBe(4);
+    expect(data.equipment.mode).toBe("aggregate");
+  });
+
+  it("rejects broad fleet asset selectors", () => {
+    expect(poiQueryFleetAssets(store, { equipment: {} }).status).toBe("error");
+    expect(poiQueryFleetAssets(store, { ships: {} }).status).toBe("error");
+  });
+
   it("fleets return members", () => {
     const r = poiGetFleets(store);
     expect(r.status).toBe("ok");
@@ -129,6 +199,20 @@ describe("poi tools", () => {
     expect(data.note).toContain("unknown");
     // B128 (424) not in list → unknown, not incomplete
     expect(data.items.some((q) => q.game_id === 424)).toBe(false);
+  });
+
+  it("quest compact mode groups ids and reports coverage", () => {
+    const r = poiGetQuests(store, { mode: "compact" });
+    expect(r.status).toBe("ok");
+    const data = r.data as { states: Record<string, number[]>; coverage: string };
+    expect(data.states.active).toContain(342);
+    expect(data.coverage).toBe("complete");
+  });
+
+  it("keeps observed completion when a later partial quest sync omits it", () => {
+    store.observeQuestCompleted(999, "完成任务");
+    store.setQuests([{ game_id: 342, name: "当前任务", state: "active", source: "api" }]);
+    expect(store.get().quests.find((q) => q.game_id === 999)?.state).toBe("observed_completed");
   });
 
   it("inventory coverage complete", () => {
@@ -236,5 +320,19 @@ describe("runtime api event adapter", () => {
     const snap = runtime.store.get();
     expect(snap.resources?.fuel).toBe(100);
     expect(snap.ships[0].master_id).toBe(699);
+  });
+
+  it("records claimed quest id from the clearitemget request body", () => {
+    const runtime = createPoiRuntime();
+    runtime.store.setOnline(true, true);
+    runtime.handleApiEvent(
+      "/kcsapi/api_req_quest/clearitemget",
+      { api_bounus: [] },
+      { api_quest_id: "424" },
+    );
+    expect(runtime.store.get().quests.find((q) => q.game_id === 424)).toMatchObject({
+      state: "observed_completed",
+      source: "local_observed",
+    });
   });
 });

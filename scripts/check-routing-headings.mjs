@@ -7,7 +7,7 @@ let ok = 0;
 const miss = [];
 for (const f of files) {
   const t = readFileSync(join(dir, f), "utf8");
-  if (/^## 带路条件/m.test(t)) ok++;
+  if (/^## \[module:routing\] 带路条件/m.test(t)) ok++;
   else miss.push(f);
 }
 console.log(`with 带路条件 ${ok} of ${files.length}`);

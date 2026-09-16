@@ -8,9 +8,11 @@ import { buildIndex } from "./index-memory.js";
 import {
   kcDataStatus,
   kcAirPower,
+  kcMapGuide,
   kcEquipmentRules,
   kcGet,
   kcQuestGraph,
+  kcQuestProgress,
   kcQuery,
   kcSearch,
   kcShipRemodel,
@@ -75,6 +77,21 @@ function createServer(ctx: ToolContext): McpServer {
   );
 
   server.tool(
+    "kc_quest_progress",
+    "Annotate one target quest's full prerequisite chain with compact Poi quest states. Ancestors of currently visible quests are inferred completed; missing quests stay unknown.",
+    {
+      quest: z.string().describe("quest ref, game id, wiki id, or exact name"),
+      player_states: z.object({
+        available: z.array(z.number().int().positive()).max(500).optional(),
+        active: z.array(z.number().int().positive()).max(500).optional(),
+        claimable: z.array(z.number().int().positive()).max(500).optional(),
+        observed_completed: z.array(z.number().int().positive()).max(500).optional(),
+      }).optional(),
+    },
+    async (args) => toText(kcQuestProgress(ctx, args)),
+  );
+
+  server.tool(
     "kc_ship_remodel",
     "Directed ship remodel transitions with required level, resource/item/equipment costs, provenance keys, and missing fields. Default scope=next returns only outgoing costs; scope=family includes all related conversions. Costs are per edge; partial is not free. Resolve source URLs via kc_data_status.",
     {
@@ -95,6 +112,16 @@ function createServer(ctx: ToolContext): McpServer {
       limit: z.number().int().min(1).max(100).optional(),
     },
     async (args) => toText(kcEquipmentRules(ctx, args)),
+  );
+
+  server.tool(
+    "kc_map_guide",
+    "Read selected modules from a normal-map guide. With no modules, returns metadata and available module keys/titles only; never returns the whole guide implicitly.",
+    {
+      map: z.string().regex(/^\d+-\d+$/),
+      modules: z.array(z.enum(["overview", "routing", "enemy", "air-los", "bonus", "fleets", "quests", "notes"])).max(8).optional(),
+    },
+    async (args) => toText(kcMapGuide(ctx, args)),
   );
 
   server.tool(

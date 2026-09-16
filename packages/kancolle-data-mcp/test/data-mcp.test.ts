@@ -6,9 +6,11 @@ import {
   kcEquipmentRules,
   kcGet,
   kcQuestGraph,
+  kcQuestProgress,
   kcQuery,
   kcSearch,
   kcShipRemodel,
+  type QuestProgressResult,
   type ToolContext,
 } from "../src/tools.js";
 import { canShipEquip } from "../src/rules/equipment.js";
@@ -145,6 +147,20 @@ describe("kc_equipment_rules", () => {
     const r = kcEquipmentRules(ctx, { category: "recon", mode: "who" });
     expect(r.status).toBe("partial");
     expect(r.missing).toContain("equipment_required_for_exact_rules");
+  });
+});
+
+describe("kc_quest_progress", () => {
+  it("infers ancestors of a currently visible quest without calling absent quests incomplete", () => {
+    const r = kcQuestProgress(ctx, {
+      quest: "B128",
+      player_states: { active: [424] },
+    });
+    expect(r.status).toBe("ok");
+    const data = r.data as QuestProgressResult;
+    expect(data.nodes.find((node) => node.id === 424)?.status).toBe("active");
+    expect(data.nodes.some((node) => node.status === "inferred_completed")).toBe(true);
+    expect(data.inference_note).toContain("Missing quests remain unknown");
   });
 });
 

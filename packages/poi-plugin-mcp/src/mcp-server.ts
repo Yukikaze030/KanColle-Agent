@@ -8,6 +8,7 @@ import {
   poiGetOverview,
   poiGetQuests,
   poiQueryEquipment,
+  poiQueryFleetAssets,
   poiQueryShips,
   poiStatus,
 } from "./tools.js";
@@ -48,6 +49,7 @@ export function createPoiMcpServer(store: SnapshotStore): McpServer {
     {
       instance_ids: z.array(z.number()).optional(),
       master_ids: z.array(z.number()).optional(),
+      stype_ids: z.array(z.number().int().positive()).optional(),
       fleet_ids: z.array(z.number()).optional(),
       level: z.object({ min: z.number().optional(), max: z.number().optional() }).optional(),
       locked: z.boolean().optional(),
@@ -68,6 +70,7 @@ export function createPoiMcpServer(store: SnapshotStore): McpServer {
     {
       instance_ids: z.array(z.number()).optional(),
       master_ids: z.array(z.number()).optional(),
+      type_ids: z.array(z.number().int().nonnegative()).optional(),
       improvement: z.object({ min: z.number().optional(), max: z.number().optional() }).optional(),
       proficiency: z.object({ min: z.number().optional(), max: z.number().optional() }).optional(),
       locked: z.boolean().optional(),
@@ -81,6 +84,30 @@ export function createPoiMcpServer(store: SnapshotStore): McpServer {
   );
 
   server.tool(
+    "poi_query_fleet_assets",
+    "Batch-fetch compact ship candidates and exact equipment instances for a fleet plan. Use after Data resolves required master IDs; avoids broad inventory queries and repeated snapshot metadata.",
+    {
+      ships: z.object({
+        master_ids: z.array(z.number().int().positive()).max(100).optional(),
+        stype_ids: z.array(z.number().int().positive()).max(30).optional(),
+        level: z.object({ min: z.number().int().min(1).optional(), max: z.number().int().min(1).optional() }).optional(),
+        damage: z.array(damageEnum).optional(),
+        dock: z.boolean().optional(),
+        fleet_ids: z.array(z.number().int().positive()).max(4).optional(),
+        limit: z.number().int().min(1).max(100).optional(),
+      }).optional(),
+      equipment: z.object({
+        master_ids: z.array(z.number().int().positive()).max(100).optional(),
+        type_ids: z.array(z.number().int().nonnegative()).max(50).optional(),
+        equipped: z.enum(["any", "free", "equipped"]).optional(),
+        mode: z.enum(["aggregate", "instances"]).optional(),
+        limit: z.number().int().min(1).max(100).optional(),
+      }).optional(),
+    },
+    async (args) => toText(poiQueryFleetAssets(store, args)),
+  );
+
+  server.tool(
     "poi_get_fleets",
     "Fleets 1-4 with members, combined-fleet flags, and expedition assignment.",
     {},
@@ -89,9 +116,11 @@ export function createPoiMcpServer(store: SnapshotStore): McpServer {
 
   server.tool(
     "poi_get_quests",
-    "Current quests + observed history. Absent quest = unknown, never assume incomplete.",
+    "Current quest states plus locally observed claim history. Use compact mode for IDs grouped by state. available=unselected, active=selected, claimable=completed awaiting reward; absent=unknown.",
     {
-      state: z.enum(["active", "observed_completed", "unknown", "available"]).optional(),
+      state: z.enum(["available", "active", "claimable", "observed_completed", "inferred_completed", "locked", "unknown"]).optional(),
+      game_ids: z.array(z.number().int().positive()).max(100).optional(),
+      mode: z.enum(["records", "compact"]).optional(),
       limit: z.number().int().min(1).max(100).optional(),
     },
     async (args) => toText(poiGetQuests(store, args)),

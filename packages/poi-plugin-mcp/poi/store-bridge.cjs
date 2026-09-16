@@ -56,7 +56,7 @@ function readShips(store) {
       condition: s.api_cond ?? 49,
       locked: Boolean(s.api_locked),
       damage: damageFromHp(hp, maxHp),
-      stype: undefined,
+      stype_id: Number.isInteger(master.api_stype) ? master.api_stype : undefined,
       fleet_id: s.api_fleet != null && s.api_fleet >= 0 ? s.api_fleet + 1 : null,
       dock: false,
       slot_items: (s.api_slot || []).map((id) => (id > 0 ? id : null)),
@@ -85,7 +85,9 @@ function readEquipment(store) {
       proficiency: e.api_alv ?? 0,
       locked: Boolean(e.api_locked),
       equipped_on: equippedOn.get(e.api_id) ?? null,
-      category: undefined,
+      type_id: Array.isArray(master.api_type) && Number.isInteger(master.api_type[2])
+        ? master.api_type[2]
+        : undefined,
     }
   })
 }
@@ -196,17 +198,39 @@ function readProfile(store) {
   }
 }
 
+function questListFromStore(store) {
+  const lists = []
+  const infoQuests = store?.info?.quests
+  if (Array.isArray(infoQuests)) lists.push(infoQuests)
+  if (infoQuests?.activeQuests && typeof infoQuests.activeQuests === 'object') {
+    lists.push(Object.values(infoQuests.activeQuests).map((entry) => entry?.detail || entry))
+  }
+  for (const ext of Object.values(store?.ext || {})) {
+    if (Array.isArray(ext?._?.questList)) lists.push(ext._.questList)
+  }
+  const byId = new Map()
+  const rank = (q) => q?.api_state === 3 ? 3 : q?.api_state === 2 ? 2 : q?.api_state === 1 ? 1 : 0
+  for (const list of lists) {
+    for (const q of list) {
+      if (!q?.api_no) continue
+      const previous = byId.get(q.api_no)
+      if (!previous || rank(q) >= rank(previous)) byId.set(q.api_no, q)
+    }
+  }
+  return [...byId.values()]
+}
+
 function readQuests(store) {
-  const quests = store?.info?.quests || []
-  const list = Array.isArray(quests) ? quests : []
-  return list
+  return questListFromStore(store)
     .filter((q) => q && q.api_no)
     .map((q) => ({
       game_id: q.api_no,
       name: q.api_title || `quest:${q.api_no}`,
       type: q.api_type != null ? String(q.api_type) : undefined,
-      state: q.api_state === 3 ? 'observed_completed' : q.api_state === 2 ? 'active' : 'unknown',
-      progress: q.api_progress_flag != null ? q.api_progress_flag / 2 : null,
+      state: q.api_state === 3 ? 'claimable' : q.api_state === 2 ? 'active' : q.api_state === 1 ? 'available' : 'unknown',
+      progress: q.api_progress_flag === 2 ? 0.8 : q.api_progress_flag === 1 ? 0.5 : null,
+      progress_flag: q.api_progress_flag ?? null,
+      progress_label: q.api_progress_flag === 2 ? '80%+' : q.api_progress_flag === 1 ? '50%+' : 'none',
       source: 'api',
     }))
 }
@@ -295,6 +319,7 @@ module.exports = {
   readResources,
   readUseItems,
   readProfile,
+  questListFromStore,
   readQuests,
   readInventory,
   readRepairs,

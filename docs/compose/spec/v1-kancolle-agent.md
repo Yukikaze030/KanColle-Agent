@@ -42,7 +42,7 @@ User → Main Agent (kancolle)
 | 组件 | 包/路径 | 职责 |
 |------|---------|------|
 | Shared | `@kancolle-agent/shared` | Ref / Result / Common Types |
-| Data MCP | `@kancolle-agent/data-mcp` | 静态数据 8 tools，stdio |
+| Data MCP | `@kancolle-agent/data-mcp` | 静态数据与攻略切片 9 tools，stdio |
 | Poi Plugin | `poi-plugin-kancolle-mcp` | Snapshot + 8 MCP tools，localhost HTTP |
 | Runtime | `.opencode/` + `opencode.jsonc` | Agents / Skills / Config |
 
@@ -55,9 +55,9 @@ User → Main Agent (kancolle)
 
 ### MCP Tools（共 15）
 
-**Poi (8)**: `poi_status` `poi_get_overview` `poi_query_ships` `poi_query_equipment` `poi_get_fleets` `poi_get_quests` `poi_get_inventory` `poi_get_operations`
+**Poi (9)**: `poi_status` `poi_get_overview` `poi_query_ships` `poi_query_equipment` `poi_query_fleet_assets` `poi_get_fleets` `poi_get_quests` `poi_get_inventory` `poi_get_operations`
 
-**Data (8)**: `kc_search` `kc_get` `kc_query` `kc_quest_graph` `kc_ship_remodel` `kc_equipment_rules` `kc_air_power` `kc_data_status`
+**Data (9)**: `kc_search` `kc_get` `kc_query` `kc_quest_graph` `kc_ship_remodel` `kc_equipment_rules` `kc_map_guide` `kc_air_power` `kc_data_status`
 
 ### V1 明确不做
 
