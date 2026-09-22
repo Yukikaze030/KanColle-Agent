@@ -22,6 +22,6 @@ description: 任务卡关、前置链与奖励获取路径规划；简单任务�
 4. **未命中** → maps 任务表；仍无则 researcher（只查该任务）。
 5. 编成含改造形态 → 必须 `kc_ship_remodel` 核实，禁止编造改二。
 
-输出：任务状态 → 推荐海域/编成（附来源键）→ 条件摘要 → 下一步。
+输出：任务状态 → 推荐海域/编成（附来源键）→ 条件摘要 → 下一步。每次出现任务都必须写成 `Wiki编号 — 完整任务名称（game_id）`，例如 `B51 — 新編「第二一戦隊」北方へ出撃せよ！（game_id: 288）`；禁止只列 B51、F65 等编号。
 
 数据源：`data/kancolle-maps/`（HTML/meta 映射）+ `fleet-builder/refs/quest-sortie-configs.md` + 本 Skill `refs/`。

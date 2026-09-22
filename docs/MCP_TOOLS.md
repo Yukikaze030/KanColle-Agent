@@ -67,6 +67,12 @@
 ### kc_equipment_rules
 `ship?` `equipment?` `category?` `mode?`=`check`|`who` `limit?`
 
+### kc_improvement
+
+`equipment?` `equipment_ids?` `assistant_ship?` `owned_ship_ids?` `weekday?` `date?` `all_days?` `include_costs?` `limit?`
+
+数据固定来自 `http://fleet.diablohu.com/arsenal/` 的本地规范化缓存。默认使用东京当天；支援舰按具体 master ID/改造形态匹配，不合并同舰家族。
+
 ### kc_map_guide
 `map` `modules?`
 不传 `modules` 时只返回元数据与可用模块键/标题；传入 `overview/routing/enemy/air-los/bonus/fleets/quests/notes` 时仅返回所选模块。模块契约见地图 `FORMAT.md`。

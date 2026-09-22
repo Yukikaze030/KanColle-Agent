@@ -4,12 +4,14 @@ import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js"
 import { pathToFileURL } from "node:url";
 import { z } from "zod";
 import { loadDataset } from "./data-loader.js";
+import { loadImprovementData } from "./improvement-data.js";
 import { buildIndex } from "./index-memory.js";
 import {
   kcDataStatus,
   kcAirPower,
   kcMapGuide,
   kcEquipmentRules,
+  kcImprovement,
   kcGet,
   kcQuestGraph,
   kcQuestProgress,
@@ -115,6 +117,26 @@ function createServer(ctx: ToolContext): McpServer {
   );
 
   server.tool(
+    "kc_improvement",
+    "Query WhoCallsTheFleet daily improvement schedules and costs. Assistant ships are matched by exact master ship ID/remodel form; 金剛 and 金剛改二 are never treated as the same ship. Defaults to today's Tokyo weekday.",
+    {
+      equipment: z.string().optional().describe("Exact equipment name, ID, or equipment:N ref"),
+      equipment_ids: z.array(z.number().int().positive()).max(300).optional()
+        .describe("Optional owned equipment master IDs from Poi"),
+      assistant_ship: z.string().optional()
+        .describe("One exact remodel form, such as ship:149 or 金剛改二; never a ship family"),
+      owned_ship_ids: z.array(z.number().int().positive()).max(1000).optional()
+        .describe("Optional owned ship master IDs from Poi; filters to usable exact assistant forms"),
+      weekday: z.number().int().min(0).max(6).optional().describe("Tokyo weekday: 0=Sun ... 6=Sat"),
+      date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional().describe("Calendar date interpreted in Asia/Tokyo"),
+      all_days: z.boolean().optional().describe("Ignore weekday and return the weekly schedule"),
+      include_costs: z.boolean().optional().describe("Default true"),
+      limit: z.number().int().min(1).max(200).optional().describe("Default 50"),
+    },
+    async (args) => toText(kcImprovement(ctx, args)),
+  );
+
+  server.tool(
     "kc_map_guide",
     "Read selected modules from a normal-map guide. With no modules, returns metadata and available module keys/titles only; never returns the whole guide implicitly.",
     {
@@ -153,7 +175,8 @@ function createServer(ctx: ToolContext): McpServer {
 export async function main(): Promise<void> {
   const ds = loadDataset();
   const index = buildIndex(ds);
-  const ctx: ToolContext = { ds, index };
+  const improvements = loadImprovementData();
+  const ctx: ToolContext = { ds, index, improvements };
   const server = createServer(ctx);
   const transport = new StdioServerTransport();
   await server.connect(transport);

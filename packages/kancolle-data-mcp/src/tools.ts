@@ -20,10 +20,42 @@ import { remodelChain, searchAll } from "./index-memory.js";
 import { canShipEquip, whoCanEquip } from "./rules/equipment.js";
 import { calculateAirPowerSlot } from "./rules/air-power.js";
 import { loadMapGuide } from "./map-guide.js";
+import { tokyoWeekday, type ImprovementDataset, type ImprovementRecord } from "./improvement-data.js";
 
 export interface ToolContext {
   ds: LoadedDataset;
   index: MemoryIndex;
+  improvements?: ImprovementDataset | null;
+}
+
+function exactKey(value: string): string {
+  return value.trim().toLowerCase().replace(/\s+/g, "");
+}
+
+function resolveExactShip(ctx: ToolContext, input: string): MasterShip | null | MasterShip[] {
+  const parsed = parseRef(input);
+  if (parsed?.type === "ship") return ctx.index.shipsById.get(Number(parsed.id)) ?? null;
+  if (/^\d+$/.test(input)) return ctx.index.shipsById.get(Number(input)) ?? null;
+  const direct = ctx.index.shipsByName.get(exactKey(input)) ?? [];
+  if (direct.length === 1) return direct[0];
+  if (direct.length > 1) return direct;
+  const hits = searchAll(ctx.index, input, 10, ["ship"]).filter(hit => hit.score === 100);
+  const matches = hits.map(hit => ctx.index.shipsById.get(Number(hit.ref.split(":")[1])))
+    .filter((ship): ship is MasterShip => Boolean(ship));
+  return matches.length === 1 ? matches[0] : matches.length ? matches : null;
+}
+
+function resolveExactEquipment(ctx: ToolContext, input: string): MasterEquipment | null | MasterEquipment[] {
+  const parsed = parseRef(input);
+  if (parsed?.type === "equipment") return ctx.index.equipmentById.get(Number(parsed.id)) ?? null;
+  if (/^\d+$/.test(input)) return ctx.index.equipmentById.get(Number(input)) ?? null;
+  const direct = ctx.index.equipmentByName.get(exactKey(input)) ?? [];
+  if (direct.length === 1) return direct[0];
+  if (direct.length > 1) return direct;
+  const hits = searchAll(ctx.index, input, 10, ["equipment"]).filter(hit => hit.score === 100);
+  const matches = hits.map(hit => ctx.index.equipmentById.get(Number(hit.ref.split(":")[1])))
+    .filter((equipment): equipment is MasterEquipment => Boolean(equipment));
+  return matches.length === 1 ? matches[0] : matches.length ? matches : null;
 }
 
 function resolveQuest(index: MemoryIndex, input: string): MasterQuest | null {
@@ -561,6 +593,136 @@ export function kcMapGuide(
   }
 }
 
+export function kcImprovement(
+  ctx: ToolContext,
+  args: {
+    equipment?: string;
+    equipment_ids?: number[];
+    assistant_ship?: string;
+    owned_ship_ids?: number[];
+    weekday?: number;
+    date?: string;
+    all_days?: boolean;
+    include_costs?: boolean;
+    limit?: number;
+  },
+): DataResult<unknown> {
+  const dataset = ctx.improvements;
+  if (!dataset) return dataPartial([], ["improvement_dataset"]);
+
+  let equipmentId: number | undefined;
+  if (args.equipment) {
+    const resolved = resolveExactEquipment(ctx, args.equipment);
+    if (Array.isArray(resolved)) {
+      return dataAmbiguous(resolved.map(item => ({
+        ref: `equipment:${item.id}`,
+        name: item.name,
+        type: "equipment",
+        score: 100,
+      })));
+    }
+    if (!resolved) return dataNotFound(["equipment"]);
+    equipmentId = resolved.id;
+  }
+
+  let assistantShipId: number | undefined;
+  if (args.assistant_ship) {
+    const resolved = resolveExactShip(ctx, args.assistant_ship);
+    if (Array.isArray(resolved)) {
+      return dataAmbiguous(resolved.map(ship => ({
+        ref: `ship:${ship.id}`,
+        name: ship.name,
+        type: "ship",
+        score: 100,
+      })));
+    }
+    if (!resolved) return dataNotFound(["assistant_ship"]);
+    assistantShipId = resolved.id;
+  }
+
+  let weekday: number | null = null;
+  try {
+    weekday = args.all_days ? null : (args.weekday ?? tokyoWeekday(args.date));
+  } catch (error) {
+    return dataError("invalid_date", error instanceof Error ? error.message : String(error));
+  }
+  if (weekday !== null && (!Number.isInteger(weekday) || weekday < 0 || weekday > 6)) {
+    return dataError("invalid_weekday", "weekday must be 0 (Sunday) through 6 (Saturday)");
+  }
+
+  const equipmentIds = args.equipment_ids?.length ? new Set(args.equipment_ids) : null;
+  const ownedShipIds = args.owned_ship_ids?.length ? new Set(args.owned_ship_ids) : null;
+  let records = dataset.records.filter(record => {
+    if (equipmentId !== undefined && record.equipment_id !== equipmentId) return false;
+    if (equipmentIds && !equipmentIds.has(record.equipment_id)) return false;
+    if (weekday !== null && !record.weekdays.includes(weekday)) return false;
+    if (assistantShipId !== undefined
+      && !record.assistant_ships.some(ship => ship.ship_id === assistantShipId)) return false;
+    if (ownedShipIds && record.assistant_required
+      && !record.assistant_ships.some(ship => ownedShipIds.has(ship.ship_id))) return false;
+    return true;
+  });
+
+  const total = records.length;
+  records = records.slice(0, args.limit ?? 50);
+  const includeCosts = args.include_costs ?? true;
+  const canonicalEquipment = (id: number, sourceName: string) => {
+    const item = ctx.index.equipmentById.get(id);
+    return { ref: `equipment:${id}`, name: item?.name ?? sourceName, source_name: sourceName };
+  };
+  const canonicalShip = (id: number, sourceName: string) => {
+    const ship = ctx.index.shipsById.get(id);
+    return { ref: `ship:${id}`, name: ship?.name ?? sourceName, source_name: sourceName };
+  };
+  const stage = (value: ImprovementRecord["stages"]["low"]) => value ? {
+    ...value,
+    consumables: value.consumables.map(item => ({
+      ...canonicalEquipment(item.equipment_id, item.source_name),
+      amount: item.amount,
+    })),
+  } : null;
+
+  const items = records.map(record => {
+    const assistants = record.assistant_ships.map(ship => canonicalShip(ship.ship_id, ship.source_name));
+    return {
+      equipment: canonicalEquipment(record.equipment_id, record.source_name),
+      upgrade_to: record.upgrade_to
+        ? canonicalEquipment(record.upgrade_to.equipment_id, record.upgrade_to.source_name)
+        : null,
+      weekdays: record.weekdays,
+      weekday_names: record.weekdays.map(day => dataset.meta.weekday_names[day]),
+      assistant_required: record.assistant_required,
+      assistant_ships: assistants,
+      ...(ownedShipIds ? {
+        usable_assistant_ships: assistants.filter(ship => ownedShipIds.has(Number(ship.ref.split(":")[1]))),
+      } : {}),
+      ...(includeCosts ? {
+        resources: record.resources,
+        stages: {
+          low: stage(record.stages.low),
+          high: stage(record.stages.high),
+          upgrade: stage(record.stages.upgrade),
+        },
+      } : {}),
+    };
+  });
+
+  return dataOk({
+    total,
+    returned: items.length,
+    weekday,
+    weekday_name: weekday === null ? null : dataset.meta.weekday_names[weekday],
+    timezone: dataset.meta.timezone,
+    source: dataset.meta.source,
+    fetched_at: dataset.meta.fetched_at,
+    items,
+    notes: [
+      "Assistant ships use exact master ship IDs and exact remodel forms; ship families are never collapsed.",
+      "weekday uses Tokyo time: 0=Sunday through 6=Saturday.",
+    ],
+  });
+}
+
 export function kcDataStatus(ctx: ToolContext): DataResult<{
   name: string;
   version: string;
@@ -572,6 +734,7 @@ export function kcDataStatus(ctx: ToolContext): DataResult<{
   era?: string;
   provenance?: Record<string, string>;
   warnings?: string[];
+  improvement?: { source: string; fetched_at: string; records: number; timezone: string } | null;
 }> {
   const { ds } = ctx;
   return dataOk({
@@ -585,5 +748,11 @@ export function kcDataStatus(ctx: ToolContext): DataResult<{
     era: ds.era,
     provenance: ds.provenance,
     warnings: ds.warnings,
+    improvement: ctx.improvements ? {
+      source: ctx.improvements.meta.source,
+      fetched_at: ctx.improvements.meta.fetched_at,
+      records: ctx.improvements.records.length,
+      timezone: ctx.improvements.meta.timezone,
+    } : null,
   });
 }

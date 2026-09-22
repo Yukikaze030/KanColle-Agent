@@ -24,7 +24,7 @@ Normalized Service
    Data Adapter → fixtures / kancolle-data
 ```
 
-## Tools（9）
+## Tools（11）
 
 | Tool | 说明 |
 |------|------|
@@ -34,6 +34,7 @@ Normalized Service
 | `kc_quest_graph` | 前置/后续节点边 |
 | `kc_ship_remodel` | 相关形态、有向改造、等级、资源/道具/装备消耗；next/family 范围 |
 | `kc_equipment_rules` | 舰种能否装备 / 谁能装备 |
+| `kc_improvement` | 谁是呼叫舰队的每日改修日程、精确支援舰形态与阶段成本 |
 | `kc_map_guide` | 按稳定模块键读取常规海域攻略；空选择只返回目录 |
 | `kc_air_power` | 按装备、搭载、改修与熟练度计算出击前舰队制空值；内部熟练度未知时返回范围 |
 | `kc_data_status` | 数据集版本与能力 |
@@ -56,15 +57,19 @@ packages/kancolle-data-mcp/data/official/dataset.json
 | 任务 | `kcwiki-quest-data` npm |
 | stype / 可装备规则 / 远征 / 海域 | 固定提交 `api/api_start2.json` |
 | 常规海域攻略切片 | `fleet-builder/refs/maps/*.md`，固定标题按需读取 |
+| 每日改修 | `http://fleet.diablohu.com/arsenal/`；精确装备/舰娘 master ID、东京星期与阶段成本 |
 
 本次固定快照：**舰船形态 862 · 改造转换 555 · 道具 105 · 装备 741 · 任务 446 · 远征 65 · 地图 42**。实际数量见 `kc_data_status`。
 
 ```bash
 npm run fetch:data               # 用缓存和固定来源重建，已提交缓存支持离线
 npm run fetch:data -- --refresh  # 重新下载（改造来源仍是固定提交）
+npm run fetch:improvements       # 拉取并重建改修工厂缓存
 # 网络受限时，可提供与来源哈希一致的已下载 api_start2.json：
 KANCOLLE_MASTER_FILE=/path/to/api_start2.json npm run fetch:data
 ```
+
+`kc_improvement` 只使用 `data/official/improvements.json`，不会在查询时改查 Wiki。支援舰按 master ID 精确绑定具体形态；例如 `ship:78` 金剛与 `ship:149` 金剛改二独立匹配。默认按东京当天查询，也可传 `date`、`weekday` 或 `all_days`。玩家可执行性由 Agent 将 Poi 的装备/舰娘 master ID 分别传入 `equipment_ids`、`owned_ship_ids` 后过滤。
 
 ### 回退 fixtures
 
