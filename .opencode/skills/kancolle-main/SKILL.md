@@ -23,6 +23,7 @@ description: KanColle 玩家状态、静态事实与攻略路由；游戏请求�
 |---|---|
 | 静态属性、改造 | Data `kc_search` 定位 → `kc_get` / `kc_ship_remodel`；信息齐全即停 |
 | 玩家库存 | 必要时 Data 解析 ID → Poi 定向查询；装备默认 `aggregate` |
+| 当前一至四舰队编成 / 配装 | Poi `poi_get_fleets`，默认含普通槽与增设槽；纯查看无需地图攻略 |
 | 任务说明 / 前置 | `kc_get` / `kc_quest_graph` |
 | 任务卡关、获取路径 | `quest-planner` |
 | 通用攻略 | kcwiki-researcher；无需 Poi |
@@ -32,6 +33,12 @@ description: KanColle 玩家状态、静态事实与攻略路由；游戏请求�
 | 当前活动 | `event-guide`；必须在线 |
 | 战斗机制 | `combat-knowledge` |
 | 最新新增内容 | `kc_data_status` → Data 查询 → Wiki 在线验证 |
+
+## 当前舰队与配装
+
+- 查看当前四队直接调用 `poi_get_fleets({})`；只看某队可传 `fleet_ids=[1]`，仅需成员摘要时传 `include_equipment=false`。保持 `position` 编成顺序，普通槽看 `equipment_slots`，增设槽看 `expansion_slot`；装备使用实例 ID，并保留改修、熟练度和当前/最大搭载数。
+- `coverage`、`status` 与 `missing` 一起判读。空舰队列表或 `not_ready` 不能说成「没有舰队」；提示回母港刷新，更新插件后需重新加载插件。槽位 `unknown` 不能当空槽，增设槽 `closed` 与已开放的 `empty` 不同。
+- 若旧版接口只返回简略成员，定向调用 `poi_query_ships(fleet_ids=[1,2,3,4], mode="instances")`，收集 `slot_items` 和 `slot_ex` 的正实例 ID，再用 `poi_query_equipment(instance_ids=..., mode="instances")` 补齐；按 `cursor` 翻页，未知增设槽明确标注。不得用装备聚合推断某舰配装，也不要为查看四队拉取全库存。
 
 ## 控制上下文
 

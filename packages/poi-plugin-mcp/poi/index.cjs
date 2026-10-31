@@ -97,7 +97,6 @@ function handleGameResponse(e) {
   const detail = (e && e.detail) || e || {}
   const p = detail.path || ''
   try {
-    syncFromPoi(runtime.store)
     if (typeof runtime.handleApiEvent === 'function') {
       runtime.handleApiEvent(
         p,
@@ -105,6 +104,8 @@ function handleGameResponse(e) {
         detail.postBody || detail.requestBody || detail.request || null,
       )
     }
+    // Redux has names, fleet membership and equipment ownership missing from raw API ships.
+    syncFromPoi(runtime.store)
   } catch (err) {
     console.error(`${PLUGIN_NAME}: game.response handler error`, err)
   }

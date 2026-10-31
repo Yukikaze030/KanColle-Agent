@@ -109,9 +109,12 @@ export function createPoiMcpServer(store: SnapshotStore): McpServer {
 
   server.tool(
     "poi_get_fleets",
-    "Fleets 1-4 with members, combined-fleet flags, and expedition assignment.",
-    {},
-    async () => toText(poiGetFleets(store)),
+    "Read current fleets 1-4 in formation order, with ship status, normal/expansion-slot equipment instances (name, improvement, proficiency), aircraft counts, combined flags and expedition assignment. Defaults to all fleets with equipment; unloaded data is explicit, never an empty success.",
+    {
+      fleet_ids: z.array(z.number().int().min(1).max(4)).min(1).max(4).optional(),
+      include_equipment: z.boolean().optional(),
+    },
+    async (args) => toText(poiGetFleets(store, args)),
   );
 
   server.tool(

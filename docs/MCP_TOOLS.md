@@ -28,7 +28,11 @@
 一次返回定向舰船候选和装备摘要；至少提供一个选择器。装备默认 aggregate，最终分配时才请求 instances。
 
 ### poi_get_fleets
-无参数。Fleet 1–4 + 联合 + 远征状态。
+参数：`fleet_ids?: [1..4]`（省略取全部）、`include_equipment?: boolean`（默认 true）。
+返回 Fleet 1–4、联合角色、远征任务 ID/完成时间及按 `position` 排列的成员。
+每舰含等级、HP、疲劳、入渠、`slot_items`、`slot_ex`，以及 `equipment_slots` / `expansion_slot` 的装备实例（名称、改修、熟练度、归属舰）；普通槽还含当前/最大搭载数。
+`include_equipment=false` 省略装备明细，供成员摘要使用。
+`coverage` 按 fleets/ships/equipment 标记加载情况；无舰队数据返回 `not_ready`，缺舰船/装备实例返回 `partial` + `missing`，保留未知槽位的实例 ID。增设槽区分 `closed` / `empty` / `equipped` / `unknown`。不得把未加载的空列表解释为没有舰队。
 
 ### poi_get_quests
 参数：`state?` `limit?`

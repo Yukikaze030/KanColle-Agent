@@ -1,5 +1,6 @@
 # Install poi-plugin-kancolle-mcp into local Poi
 # Usage: powershell -File scripts/install-poi-plugin.ps1
+param([switch]$SkipBuild)
 
 $ErrorActionPreference = 'Stop'
 $repo = Split-Path -Parent $PSScriptRoot
@@ -11,26 +12,32 @@ $target = Join-Path $poiPlugins 'node_modules\poi-plugin-kancolle-mcp'
 if (-not (Test-Path $poiPlugins)) {
   throw "Poi plugins dir not found: $poiPlugins"
 }
-if (-not (Test-Path $bundle)) {
+if (-not $SkipBuild -or -not (Test-Path $bundle)) {
   Write-Host 'Building poi-plugin-kancolle-mcp...'
   Push-Location $repo
-  npm run build -w @kancolle-agent/shared
-  npm run build -w poi-plugin-kancolle-mcp
-  Pop-Location
+  try {
+    npm run build -w @kancolle-agent/shared
+    if ($LASTEXITCODE -ne 0) { throw 'Shared build failed' }
+    npm run build -w poi-plugin-kancolle-mcp
+    if ($LASTEXITCODE -ne 0) { throw 'Poi plugin build failed' }
+  } finally {
+    Pop-Location
+  }
 }
 if (-not (Test-Path $bundle)) {
   throw "Bundle missing after build: $bundle"
 }
 
 Write-Host "Installing into $target"
-if (Test-Path $target) {
-  Remove-Item $target -Recurse -Force
-}
+# Update in place: deleting the plugin also deletes its token and invalidates clients.
 New-Item -ItemType Directory -Force -Path $target | Out-Null
 
 # Package files Poi needs
 Copy-Item (Join-Path $pkg 'package.json') $target -Force
-Copy-Item (Join-Path $pkg 'poi') (Join-Path $target 'poi') -Recurse -Force
+New-Item -ItemType Directory -Force -Path (Join-Path $target 'poi') | Out-Null
+Get-ChildItem -LiteralPath (Join-Path $pkg 'poi') -File |
+  Where-Object { $_.Name -ne 'token.json' -and $_.Name -ne 'README-TOKEN.txt' } |
+  Copy-Item -Destination (Join-Path $target 'poi') -Force
 New-Item -ItemType Directory -Force -Path (Join-Path $target 'dist') | Out-Null
 Copy-Item $bundle (Join-Path $target 'dist\poi-bundle.cjs') -Force
 

@@ -7,6 +7,8 @@ description: 用玩家现有舰娘与装备配队，校验路线、装备适配�
 
 遵循已加载的 `kancolle-main` 公共约束；若未加载，先加载。
 
+查看或调整当前舰队时，先按 `kancolle-main` 的「当前舰队与配装」读取 `poi_get_fleets`，取得实际成员顺序、普通槽及增设槽装备实例。纯查看当前四队不需要先查地图攻略，也不使用候选资产查询代替当前编成；只有需要换舰、换装时再补查候选库存。
+
 1. 先调用 Data `kc_map_guide(map=<图号>)` 只取模块目录，再按问题选择模块键；普通推图先取 `overview/routing/air-los/fleets`，问敌人或任务时才补 `enemy/quests`，不得默认读取全文。
 2. Data 主表 `kc_get(map:...)` 只补地图静态字段；攻略模块缺失才读 `refs/maps/<图号>.md`，再按需查 `data/kancolle-maps/meta/<id>.json` 或 researcher。
 3. Poi 优先用 `poi_query_fleet_assets` 两阶段查询：先按 `stype_ids/type_ids` 或少量 master ID 获取舰船实例与装备聚合；选定方案后只为最终装备取 `mode=instances`。只有通用分页或特殊字段才分别使用 `poi_query_ships` / `poi_query_equipment`。

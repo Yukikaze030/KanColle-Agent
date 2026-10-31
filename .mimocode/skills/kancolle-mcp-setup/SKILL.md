@@ -5,6 +5,8 @@ description: 安装、配置、修复 KanColle Agent 的 Poi MCP 与 Data MCP。
 
 # KanColle MCP 安装与配置
 
+优先使用当前工作区中已确认的 KanColle Agent 仓库；以下旧路径仅为示例。更新插件须保留已安装目录的 `poi/token.json`，不要通过删除整个插件来更新。
+
 目标仓库（默认）：
 
 ```text
@@ -93,10 +95,10 @@ powershell -ExecutionPolicy Bypass -File `
 ```powershell
 $pkg = "C:\Users\12485\XiaomiMiMoProjects\KanColle-Agent\packages\poi-plugin-mcp"
 $dst = "$env:APPDATA\poi\plugins\node_modules\poi-plugin-kancolle-mcp"
-Remove-Item $dst -Recurse -Force -ErrorAction SilentlyContinue
+# 原地更新，保留现有 poi/token.json。
 New-Item -ItemType Directory -Force -Path "$dst\dist","$dst\poi" | Out-Null
 Copy-Item "$pkg\package.json" $dst -Force
-Copy-Item "$pkg\poi\*" "$dst\poi\" -Recurse -Force
+Get-ChildItem "$pkg\poi" -File | Where-Object { $_.Name -notin @('token.json','README-TOKEN.txt') } | Copy-Item -Destination "$dst\poi\" -Force
 Copy-Item "$pkg\dist\poi-bundle.cjs" "$dst\dist\" -Force
 ```
 
@@ -237,6 +239,8 @@ Invoke-WebRequest -Uri http://127.0.0.1:39271/mcp -Method POST `
 
 # 4) 业务调用
 # tools/call name=poi_get_overview 或 poi_status
+# 另调用 poi_get_fleets({})，核对实际四队成员和普通槽/增设槽装备。
+# 在线且已登录但 fleets=[] 不是成功：当前 Poi 来源是 info.fleets，不是 info.deck。
 ```
 
 **判定**

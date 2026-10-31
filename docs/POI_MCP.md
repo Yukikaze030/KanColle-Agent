@@ -23,7 +23,7 @@ Poi Redux / KCSAPI Events
   PlayerSnapshot (version++)
        │
        ▼
-  Player Services → MCP Tools (8)
+  Player Services → MCP Tools (9)
 ```
 
 ## Tools
@@ -35,10 +35,18 @@ Poi Redux / KCSAPI Events
 | `poi_query_ships` | 过滤舰娘；instances/aggregate；fields/cursor |
 | `poi_query_equipment` | 默认 aggregate |
 | `poi_query_fleet_assets` | 按舰种/装备类型或 master ID 批量返回配队资产；装备默认聚合 |
-| `poi_get_fleets` | 1–4 队与联合 |
+| `poi_get_fleets` | 默认一次读取 1–4 队成员、普通槽/增设槽装备实例、搭载数、联合及远征；可筛队或省略装备明细 |
 | `poi_get_quests` | 当前+观察历史；缺=unknown |
 | `poi_get_inventory` | 材料/道具 + coverage |
 | `poi_get_operations` | 远征/入渠/建造/出击/上一战 |
+
+## 当前舰队读取
+
+Poi Redux 的舰队来源为 `info.fleets`（兼容别名 `info.deck`），舰船的 `fleet_id` 按 `api_ship` 成员表反查，不依赖不存在的 `api_fleet`。装备归属同时扫描 `api_slot` 与 `api_slot_ex`。舰队成员保持顺序，支持七舰编成；`api_mission[0]` 为状态，任务 ID 取 `[1]`；联合标志取 `sortie.combinedFlag`。
+
+`poi_get_fleets({})` 在同一快照内连接舰队、舰船、装备，返回装备改修/熟练度与当前/最大搭载数。`api_onslot_max` 优先于舰船主表容量，以保留玩家的机库扩张。缺来源时返回 `not_ready` / `partial` 与 `missing`，不伪造空槽。
+
+更新插件后重新加载 KanColle MCP（禁用再启用，或重启 Poi），回母港后调用 `poi_get_fleets` 验证四队及增设槽；只验证 `poi_status` 在线不足以证明舰队读取正常。安装更新须保留现有 `poi/token.json`，避免已配置客户端认证失效。
 
 ## Token
 
