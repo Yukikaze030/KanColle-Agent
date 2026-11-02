@@ -17,6 +17,7 @@ import {
   queryShips,
   type QueryEquipmentArgs,
   type QueryShipsArgs,
+  type GetFleetsArgs,
 } from "./services.js";
 
 function withMeta<T>(store: SnapshotStore, result: PoiResult<T>): PoiResult<T> {
@@ -65,6 +66,10 @@ export function poiQueryShips(store: SnapshotStore, args: QueryShipsArgs): PoiRe
     });
   }
   const result = queryShips(snap, args);
+  if (args.fleet_ids?.length &&
+      (snap.fleets.length === 0 || snap.freshness.find((f) => f.domain === "fleets")?.coverage === "not_loaded")) {
+    return withMeta(store, poiPartial(result, ["fleets"]));
+  }
   if (result.mode === "instances" && result.total === 0 && result.items.length === 0) {
     // filters matched nothing — not an error
     return withMeta(store, okResult(result));
@@ -141,10 +146,17 @@ export function poiQueryFleetAssets(
   return missing.length ? withMeta(store, poiPartial(data, missing)) : withMeta(store, okResult(data));
 }
 
-export function poiGetFleets(store: SnapshotStore): PoiResult<unknown> {
+export function poiGetFleets(store: SnapshotStore, args: GetFleetsArgs = {}): PoiResult<unknown> {
   const snap = store.get();
   if (!snap.player_logged_in) return withMeta(store, poiError("not_ready", "player not logged in"));
-  return withMeta(store, okResult(getFleets(snap)));
+  const { missing, ...data } = getFleets(snap, args);
+  if (data.coverage.fleets === "not_loaded") {
+    return withMeta(store, {
+      status: "not_ready", data, missing,
+      warnings: ["fleets not loaded — do not interpret an empty list as no fleets; return to port in Poi"],
+    });
+  }
+  return withMeta(store, missing.length ? poiPartial(data, missing) : okResult(data));
 }
 
 export function poiGetQuests(

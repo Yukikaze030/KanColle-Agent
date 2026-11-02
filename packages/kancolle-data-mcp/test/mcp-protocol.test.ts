@@ -4,20 +4,22 @@ import { InMemoryTransport } from "@modelcontextprotocol/sdk/inMemory.js";
 import { createServer } from "../src/index.js";
 import { loadDataset } from "../src/data-loader.js";
 import { buildIndex } from "../src/index-memory.js";
+import { loadImprovementData } from "../src/improvement-data.js";
 import { fileURLToPath } from "node:url";
 
 it("exposes item schema and remodel scope over the MCP protocol", async () => {
   const ds = loadDataset(fileURLToPath(new URL("../data/official/dataset.json", import.meta.url)));
-  const server = createServer({ ds, index: buildIndex(ds) });
+  const server = createServer({ ds, index: buildIndex(ds), improvements: loadImprovementData() });
   const client = new Client({ name: "remodel-contract-test", version: "1" });
   const [clientTransport, serverTransport] = InMemoryTransport.createLinkedPair();
   try {
     await server.connect(serverTransport);
     await client.connect(clientTransport);
     const tools = await client.listTools();
-    expect(tools.tools).toHaveLength(10);
+    expect(tools.tools).toHaveLength(11);
     expect(tools.tools.some(tool => tool.name === "kc_map_guide")).toBe(true);
     expect(tools.tools.some(tool => tool.name === "kc_quest_progress")).toBe(true);
+    expect(tools.tools.some(tool => tool.name === "kc_improvement")).toBe(true);
     const call = async (name: string, args: Record<string, unknown>) => {
       const result = await client.callTool({ name, arguments: args });
       const content = result.content as Array<{type: string; text: string}>;
@@ -37,6 +39,14 @@ it("exposes item schema and remodel scope over the MCP protocol", async () => {
     expect(next.data.transitions[0].items).toContainEqual({ ref: "item:94", name: "新型兵装資材", count: 3 });
     const family = await call("kc_ship_remodel", { ship: "ship:145", scope: "family" });
     expect(family.data.transitions.length).toBeGreaterThan(1);
+    const improvement = await call("kc_improvement", {
+      equipment: "equipment:88",
+      assistant_ship: "ship:149",
+      all_days: true,
+      include_costs: false,
+    });
+    expect(improvement.status).toBe("ok");
+    expect(improvement.data.total).toBeGreaterThan(0);
   } finally {
     await client.close();
     await server.close();

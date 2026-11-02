@@ -89,19 +89,19 @@ export class SnapshotStore {
 
   setShips(ships: ShipRecord[]): void {
     this.snap.ships = ships;
-    this.touch("ships", "complete");
+    this.touch("ships", ships.length ? "complete" : "not_loaded");
     this.bump();
   }
 
-  setEquipment(equipment: EquipmentRecord[]): void {
+  setEquipment(equipment: EquipmentRecord[], coverage: Coverage = "complete"): void {
     this.snap.equipment = equipment;
-    this.touch("equipment", "complete");
+    this.touch("equipment", coverage);
     this.bump();
   }
 
   setFleets(fleets: FleetRecord[]): void {
     this.snap.fleets = fleets;
-    this.touch("fleets", "complete");
+    this.touch("fleets", fleets.length ? "complete" : "not_loaded");
     this.bump();
   }
 
@@ -217,6 +217,9 @@ export interface RawShipLike {
   api_locked?: number;
   api_fleet?: number;
   api_slot?: number[];
+  api_slot_ex?: number;
+  api_onslot?: number[];
+  api_onslot_max?: number[];
 }
 
 export interface RawEquipLike {
@@ -255,7 +258,11 @@ export function normalizeShip(
     damage,
     ...(stype ? { stype } : {}),
     fleet_id: raw.api_fleet != null && raw.api_fleet >= 0 ? raw.api_fleet + 1 : null,
-    slot_items: (raw.api_slot ?? []).map((id) => (id > 0 ? id : null)),
+    slot_items: raw.api_slot?.map((id) => (id > 0 ? id : null)),
+    slot_ex: raw.api_slot_ex != null && raw.api_slot_ex > 0 ? raw.api_slot_ex : null,
+    expansion_slot_open: raw.api_slot_ex == null ? null : raw.api_slot_ex !== 0,
+    onslot: raw.api_onslot ?? null,
+    slot_capacity: raw.api_onslot_max ?? null,
   };
 }
 

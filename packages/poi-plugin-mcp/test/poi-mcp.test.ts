@@ -184,7 +184,8 @@ describe("poi tools", () => {
   });
 
   it("fleets return members", () => {
-    const r = poiGetFleets(store);
+    // Legacy mock has no expansion-slot observations; summary remains compatible.
+    const r = poiGetFleets(store, { include_equipment: false });
     expect(r.status).toBe("ok");
     const data = r.data as { fleets: Array<{ id: number; members: unknown[] }> };
     expect(data.fleets).toHaveLength(4);

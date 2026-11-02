@@ -3,10 +3,10 @@
  * Loaded only inside Poi (Electron renderer with nodeIntegration).
  *
  * Store paths (verified against Poi app.asar):
- *   info.ships, info.equips, info.deck, info.basic
+ *   info.ships, info.equips, info.fleets, info.basic
  *   info.resources  → number[]  (lodash.map(api_material, 'api_value'); [0]=fuel)
  *   info.useitems   → object keyed by item id
- *   info.repair, info.construction, info.quests
+ *   info.repairs, info.constructions, info.quests; sortie.combinedFlag
  * NOTE: info.material does NOT exist.
  */
 /* eslint-disable no-undef */
@@ -36,10 +36,23 @@ function getPoiStore() {
   return {}
 }
 
+function fleetDecks(store) {
+  // Current Poi uses fleets; deck is a compatibility alias in older adapters.
+  const decks = store?.info?.fleets ?? store?.info?.deck
+  return Array.isArray(decks) ? decks.filter((d) => d && d.api_id > 0) : []
+}
+
 /** Read ships from Poi info.ships (object keyed by instance id). */
 function readShips(store) {
   const ships = store?.info?.ships || {}
   const constShips = store?.const?.$ships || {}
+  const fleetByShip = new Map()
+  for (const deck of fleetDecks(store)) {
+    for (const id of deck.api_ship || []) {
+      if (id > 0) fleetByShip.set(id, deck.api_id)
+    }
+  }
+  const repairing = new Set(readRepairs(store).map((d) => d.ship_instance_id))
   return Object.values(ships).map((s) => {
     const master = constShips[s.api_ship_id] || {}
     const maxHp = s.api_maxhp ?? s.api_max_hp ?? s.api_nowhp ?? 1
@@ -57,9 +70,13 @@ function readShips(store) {
       locked: Boolean(s.api_locked),
       damage: damageFromHp(hp, maxHp),
       stype_id: Number.isInteger(master.api_stype) ? master.api_stype : undefined,
-      fleet_id: s.api_fleet != null && s.api_fleet >= 0 ? s.api_fleet + 1 : null,
-      dock: false,
-      slot_items: (s.api_slot || []).map((id) => (id > 0 ? id : null)),
+      fleet_id: fleetByShip.get(s.api_id) ?? null,
+      dock: repairing.has(s.api_id),
+      slot_items: Array.isArray(s.api_slot) ? s.api_slot.map((id) => (id > 0 ? id : null)) : undefined,
+      slot_ex: s.api_slot_ex > 0 ? s.api_slot_ex : null,
+      expansion_slot_open: s.api_slot_ex == null ? null : s.api_slot_ex !== 0,
+      onslot: Array.isArray(s.api_onslot) ? s.api_onslot : null,
+      slot_capacity: s.api_onslot_max ?? master.api_maxeq ?? null,
     }
   })
 }
@@ -73,6 +90,7 @@ function readEquipment(store) {
     for (const slotId of s.api_slot || []) {
       if (slotId > 0) equippedOn.set(slotId, s.api_id)
     }
+    if (s.api_slot_ex > 0) equippedOn.set(s.api_slot_ex, s.api_id)
   }
   return Object.values(equips).map((e) => {
     const master = constEquips[e.api_slotitem_id] || {}
@@ -93,33 +111,36 @@ function readEquipment(store) {
 }
 
 function readFleets(store) {
-  const decks = store?.info?.deck || []
+  const decks = fleetDecks(store)
   const ships = store?.info?.ships || {}
   const constShips = store?.const?.$ships || {}
+  const combined = Number(store?.sortie?.combinedFlag) > 0
   return decks.map((d) => ({
     id: d.api_id,
     name: d.api_name || `Fleet ${d.api_id}`,
     members: (d.api_ship || [])
-      .filter((id) => id > 0)
-      .map((id) => {
+      .map((id, index) => ({ id, position: index + 1 }))
+      .filter(({ id }) => id > 0)
+      .map(({ id, position }) => {
         const s = ships[id]
-        if (!s) return { instance_id: id, master_id: 0, name: '?', level: 0, damage: 'unknown' }
+        if (!s) return { instance_id: id, position, master_id: 0, name: '?', level: 0, damage: 'unknown' }
         const master = constShips[s.api_ship_id] || {}
         const maxHp = s.api_maxhp ?? s.api_max_hp ?? s.api_nowhp ?? 1
         const hp = s.api_nowhp ?? maxHp
         return {
           instance_id: id,
+          position,
           master_id: s.api_ship_id,
           name: master.api_name || `ship:${s.api_ship_id}`,
           level: s.api_lv ?? 0,
           damage: damageFromHp(hp, maxHp),
         }
       }),
-    expedition_id: d.api_mission && d.api_mission[0] > 0 ? d.api_mission[0] : null,
+    expedition_id: d.api_mission && d.api_mission[0] > 0 ? d.api_mission[1] : null,
     mission_complete_at:
       d.api_mission && d.api_mission[2] > 0 ? new Date(d.api_mission[2]).toISOString() : null,
-    is_combined: false,
-    combined_role: null,
+    is_combined: combined && (d.api_id === 1 || d.api_id === 2),
+    combined_role: combined && d.api_id === 1 ? 'main' : combined && d.api_id === 2 ? 'escort' : null,
   }))
 }
 
@@ -258,7 +279,7 @@ function readInventory(store) {
 }
 
 function readRepairs(store) {
-  const docks = store?.info?.repair || []
+  const docks = store?.info?.repairs ?? store?.info?.repair ?? []
   return docks.map((d) => ({
     id: d.api_id,
     ship_instance_id: d.api_ship_id > 0 ? d.api_ship_id : null,
@@ -268,7 +289,7 @@ function readRepairs(store) {
 }
 
 function readConstructions(store) {
-  const docks = store?.info?.construction || []
+  const docks = store?.info?.constructions ?? store?.info?.construction ?? []
   return docks.map((d) => ({
     id: d.api_id,
     complete_at: d.api_complete_time > 0 ? new Date(d.api_complete_time).toISOString() : null,
@@ -300,8 +321,15 @@ function syncFromPoi(snapshotStore, poiState) {
   snapshotStore.setProfile(readProfile(store))
   snapshotStore.setResources(readResources(store))
   snapshotStore.setShips(readShips(store))
-  snapshotStore.setEquipment(readEquipment(store))
-  snapshotStore.setFleets(readFleets(store))
+  snapshotStore.setEquipment(readEquipment(store), store?.info?.equips != null ? 'complete' : 'not_loaded')
+  const fleets = readFleets(store)
+  snapshotStore.setFleets(fleets)
+  snapshotStore.setExpeditions(fleets.filter((f) => f.expedition_id > 0).map((f) => ({
+    id: f.id,
+    fleet_id: f.id,
+    expedition_master_id: f.expedition_id,
+    complete_at: f.mission_complete_at,
+  })))
   snapshotStore.setQuests(readQuests(store))
   snapshotStore.setInventory(readInventory(store))
   snapshotStore.setRepairs(readRepairs(store))

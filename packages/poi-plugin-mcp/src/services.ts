@@ -195,17 +195,84 @@ export function getOverview(snap: PlayerSnapshot) {
   };
 }
 
-export function getFleets(snap: PlayerSnapshot) {
+export interface GetFleetsArgs {
+  fleet_ids?: number[];
+  include_equipment?: boolean;
+}
+
+export function getFleets(snap: PlayerSnapshot, args: GetFleetsArgs = {}) {
+  const includeEquipment = args.include_equipment !== false;
+  const coverageOf = (domain: string) => {
+    const freshness = snap.freshness.find((f) => f.domain === domain);
+    return freshness?.coverage ?? (freshness?.updated_at ? "complete" : "not_loaded");
+  };
+  const coverage = {
+    fleets: snap.fleets.length ? coverageOf("fleets") : "not_loaded",
+    ships: coverageOf("ships"),
+    ...(includeEquipment ? { equipment: coverageOf("equipment") } : {}),
+  };
+  const missing = new Set<string>(
+    Object.entries(coverage).filter(([, value]) => value !== "complete").map(([key]) => key),
+  );
+  const ships = new Map(snap.ships.map((s) => [s.instance_id, s]));
+  const equipment = new Map(snap.equipment.map((e) => [e.instance_id, e]));
+  const fleets = snap.fleets.filter((f) => !args.fleet_ids?.length || args.fleet_ids.includes(f.id));
+  for (const id of args.fleet_ids ?? []) {
+    if (!fleets.some((f) => f.id === id)) missing.add(`fleet:${id}`);
+  }
+  const equipmentSlot = (id: number | null) => {
+    if (id == null) return { instance_id: null, status: "empty", equipment: null };
+    const item = equipment.get(id);
+    if (!item) missing.add(`equipment:${id}`);
+    return {
+      instance_id: id,
+      status: item ? "equipped" : "unknown",
+      equipment: item ? pickFields(item, [
+        "instance_id", "master_id", "master_ref", "name", "type_id", "improvement", "proficiency", "locked", "equipped_on",
+      ]) : null,
+    };
+  };
+  const result = fleets.map((f) => ({
+    id: f.id,
+    name: f.name,
+    is_combined: f.is_combined ?? false,
+    combined_role: f.combined_role ?? null,
+    expedition_id: f.expedition_id ?? null,
+    mission_complete_at: f.mission_complete_at ?? null,
+    members: f.members.map((member, index) => {
+      const ship = ships.get(member.instance_id);
+      if (!ship) missing.add(`ship:${member.instance_id}`);
+      if (includeEquipment && ship?.slot_items == null) missing.add(`ship:${member.instance_id}:slots`);
+      const slotEx = ship?.slot_ex;
+      const expansionKnown = slotEx != null || ship?.expansion_slot_open != null;
+      if (includeEquipment && !expansionKnown) missing.add(`ship:${member.instance_id}:slot_ex`);
+      return {
+        ...member,
+        position: member.position ?? index + 1,
+        ...(ship ? pickFields(ship, [
+          "master_id", "master_ref", "name", "level", "damage", "hp", "max_hp", "condition", "dock",
+          "slot_items", "slot_ex", "expansion_slot_open", "onslot", "slot_capacity",
+        ]) : {}),
+        ship_status: ship ? "loaded" : "not_loaded",
+        ...(includeEquipment ? {
+          equipment_slots: ship?.slot_items?.map((id, i) => ({
+            slot: i + 1,
+            ...equipmentSlot(id),
+            aircraft_current: ship.onslot?.[i] ?? null,
+            aircraft_capacity: ship.slot_capacity?.[i] ?? null,
+          })) ?? null,
+          expansion_slot: !expansionKnown
+            ? { instance_id: null, status: "unknown", equipment: null }
+            : slotEx != null && slotEx > 0 ? equipmentSlot(slotEx)
+              : { instance_id: null, status: ship?.expansion_slot_open ? "empty" : "closed", equipment: null },
+        } : {}),
+      };
+    }),
+  }));
   return {
-    fleets: snap.fleets.map((f) => ({
-      id: f.id,
-      name: f.name,
-      is_combined: f.is_combined ?? false,
-      combined_role: f.combined_role ?? null,
-      expedition_id: f.expedition_id ?? null,
-      mission_complete_at: f.mission_complete_at ?? null,
-      members: f.members,
-    })),
+    fleets: result,
+    coverage,
+    missing: [...missing],
   };
 }
 

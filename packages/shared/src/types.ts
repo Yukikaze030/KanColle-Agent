@@ -45,6 +45,10 @@ export interface ShipRecord {
   fleet_id?: number | null;
   dock?: boolean;
   slot_items?: Array<number | null>;
+  slot_ex?: number | null;
+  expansion_slot_open?: boolean | null;
+  onslot?: number[] | null;
+  slot_capacity?: number[] | null;
   stats?: ShipStats;
 }
 
@@ -64,6 +68,7 @@ export interface EquipmentRecord {
 
 export interface FleetMember {
   instance_id: number;
+  position?: number;
   master_id: number;
   name: string;
   level: number;
