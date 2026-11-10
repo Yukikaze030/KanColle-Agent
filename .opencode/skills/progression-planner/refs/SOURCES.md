@@ -1,6 +1,6 @@
 # progression-planner · 攻略网址（二期）
 
-era: 2 | updated: 2026-09-14
+era: 2 | updated: 2026-11-11 | summary: 培养价值存档与练级地点、经验查询入口。
 
 | 优先级 | 站点 | 基址 / 具体页 | 用途 |
 |--------|------|----------------|------|
@@ -8,8 +8,8 @@ era: 2 | updated: 2026-09-14
 | 0 | NGA 全舰娘性能简述 | https://ngabbs.com/read.php?tid=34119362 | 候选舰定位与同类比较 |
 | 0 | NGA 常见船培养推荐 | https://ngabbs.com/read.php?tid=31509174 | 通用培养候选与阶段建议 |
 | 0 | NGA 图纸船推荐 | https://ngabbs.com/read.php?tid=29107384 | 稀缺改造道具的投资价值 |
-| 1 | 中文舰娘百科 | https://zh.kcwiki.cn | 舰名评价 / 活动刚需 |
-| 2 | 日文 Wiki | https://wikiwiki.jp/kancolle | 改二 / 練習 |
+| 1 | 中文舰娘百科 · 练级指南 | https://zh.kcwiki.cn/wiki/攻略:练级指南 | 练级点、消耗与适用舰种 |
+| 2 | 日文 Wiki · 経験値 | https://wikiwiki.jp/kancolle/経験値 | 经验值与练级效率核对 |
 
 ## 使用
 
@@ -19,13 +19,13 @@ era: 2 | updated: 2026-09-14
 
 ## 落盘
 
-- [ ] `refs/ship-perf-nga.md`：恢复访问后补性能定位摘要
-- [ ] `refs/training-policy.md`：恢复访问后补常见培养梯度摘要
-- [ ] `refs/blueprint-policy.md`：恢复访问后补图纸投资梯度摘要
+- [x] `refs/ship-perf-nga.md` — 性能定位摘要
+- [x] `refs/training-policy.md` — 常见培养梯度摘要
+- [x] `refs/blueprint-policy.md` — 图纸投资梯度摘要
 
 ## 获取状态
 
-2026-09-14：普通 HTTP 与搜索缓存返回 403，但已通过用户打开的 Codex 内置浏览器读取三个原帖正文。培养帖页面显示更新至 2025-03-16；图纸帖标题为“26.05.29 凉波改二补”，正文页显示更新至 2026-06-19；全舰性能帖为持续更新的多页长文。refs 只保存决策所需摘要，不复制全文。
+现有摘要来自 2026-09-14 读取的 NGA 原帖。培养帖当时显示更新至 2025-03-16，图纸帖显示更新至 2026-06-19，全舰性能帖为多页长文。2026-11-11 公开抓取仍无法读取原帖，本地摘要沿用原核实日期。
 
 ## 本地优先约定
 

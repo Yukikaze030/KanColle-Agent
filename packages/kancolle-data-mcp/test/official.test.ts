@@ -3,7 +3,7 @@ import { existsSync } from "node:fs";
 import { join } from "node:path";
 import { loadDataset } from "../src/data-loader.js";
 import { buildIndex } from "../src/index-memory.js";
-import { kcSearch, kcGet, kcDataStatus, kcEquipmentRules, kcAirPower } from "../src/tools.js";
+import { kcSearch, kcGet, kcDataStatus, kcEquipmentRules, kcAirPower, kcShipRemodel } from "../src/tools.js";
 
 const officialPath = join(
   process.cwd(),
@@ -26,13 +26,21 @@ describe("official dataset", () => {
     expect(ds.counts.ships).toBeGreaterThan(500);
     expect(ds.counts.equipment).toBe(741);
     expect(ds.counts.quests).toBeGreaterThan(300);
-    expect(ds.counts.expeditions).toBe(65);
-    expect(ds.counts.maps).toBe(42);
+    expect(ds.counts.expeditions).toBe(63);
+    expect(ds.counts.maps).toBe(37);
 
     const ctx = { ds, index: buildIndex(ds) };
     const status = kcDataStatus(ctx);
     expect(status.status).toBe("ok");
     expect((status.data as { counts: { ships: number } }).counts.ships).toBeGreaterThan(500);
+
+    const remodel = kcShipRemodel(ctx, { ship: "ship:119" });
+    expect(remodel.status).toBe("ok");
+    expect(remodel.data?.transitions).toEqual([expect.objectContaining({
+      to: "ship:1071",
+      level: 88,
+      resources: expect.objectContaining({ development_material: 55, instant_construction: 550 }),
+    })]);
 
     // 矢矧改二乙 official master id is 668
     const search = kcSearch(ctx, { query: "矢矧改二乙" });

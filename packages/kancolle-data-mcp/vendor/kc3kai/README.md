@@ -1,8 +1,8 @@
 # KC3Kai remodel rules
 
 `RemodelDb.js` is an unmodified MIT-licensed source snapshot from KC3Kai/KC3Kai,
-commit `bd2c653def167799367a686ea15bb1c94c1167c4` (2026-08-28).
-Source: https://github.com/KC3Kai/KC3Kai/blob/bd2c653def167799367a686ea15bb1c94c1167c4/src/library/modules/RemodelDb.js
+commit `86db000bea84a1ee94fef4f61bd5173737359f5c` (2026-10-15).
+Source: https://github.com/KC3Kai/KC3Kai/blob/86db000bea84a1ee94fef4f61bd5173737359f5c/src/library/modules/RemodelDb.js
 Copyright and license are retained in LICENSE.
 
 The build-time importer uses only calcDevMat/calcTorch/calcGunMat/calcScrew/

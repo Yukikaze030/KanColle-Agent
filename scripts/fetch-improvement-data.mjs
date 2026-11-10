@@ -1,7 +1,7 @@
 /**
  * Fetch and normalize the daily improvement schedule from WhoCallsTheFleet.
  *
- * Source: http://fleet.diablohu.com/arsenal/
+ * Source: https://fleet.diablohu.com/arsenal/
  * Usage: node scripts/fetch-improvement-data.mjs
  */
 import { mkdirSync, writeFileSync } from "node:fs";
@@ -10,7 +10,7 @@ import { fileURLToPath } from "node:url";
 import * as cheerio from "cheerio";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
-const SOURCE_URL = "http://fleet.diablohu.com/arsenal/";
+const SOURCE_URL = "https://fleet.diablohu.com/arsenal/";
 const OUT = join(ROOT, "packages", "kancolle-data-mcp", "data", "official", "improvements.json");
 const WEEKDAYS = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
 
@@ -118,7 +118,10 @@ function stableKey(row) {
   });
 }
 
-const response = await fetch(SOURCE_URL, { headers: { "user-agent": "KanColle-Agent data importer" } });
+const response = await fetch(SOURCE_URL, {
+  headers: { "user-agent": "KanColle-Agent data importer" },
+  signal: AbortSignal.timeout(120_000),
+});
 if (!response.ok) throw new Error(`Improvement source returned HTTP ${response.status}`);
 const html = await response.text();
 const $ = cheerio.load(html);

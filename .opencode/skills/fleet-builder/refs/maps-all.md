@@ -52,5 +52,4 @@ slimmed: true
 
 ## 备注
 
-- `6-5`：源帖该楼抓取内容偏薄，仅作占位；需要时用调试 Chrome 重抓 pid。
 - 完整原始文本：`maps/_raw-post.txt`（未精简）。

@@ -11,7 +11,7 @@ const ctx: ToolContext = { ds, index: buildIndex(ds), improvements };
 
 describe("kc_improvement", () => {
   it("loads the WhoCallsTheFleet schedule", () => {
-    expect(improvements?.meta.source).toBe("http://fleet.diablohu.com/arsenal/");
+    expect(improvements?.meta.source).toBe("https://fleet.diablohu.com/arsenal/");
     expect(improvements?.records.length).toBeGreaterThan(500);
   });
 

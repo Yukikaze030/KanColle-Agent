@@ -75,7 +75,7 @@
 
 `equipment?` `equipment_ids?` `assistant_ship?` `owned_ship_ids?` `weekday?` `date?` `all_days?` `include_costs?` `limit?`
 
-数据固定来自 `http://fleet.diablohu.com/arsenal/` 的本地规范化缓存。默认使用东京当天；支援舰按具体 master ID/改造形态匹配，不合并同舰家族。
+数据固定来自 `https://fleet.diablohu.com/arsenal/` 的本地规范化缓存。默认使用东京当天；支援舰按具体 master ID/改造形态匹配，不合并同舰家族。
 
 ### kc_map_guide
 `map` `modules?`

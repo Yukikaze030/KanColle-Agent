@@ -1,12 +1,12 @@
 # combat-knowledge · 攻略网址（二期）
 
-era: 2 | updated: 2026-09-12
+era: 2 | updated: 2026-11-11 | summary: 按术语查现行战斗公式与触发条件。
 
 | 优先级 | 站点 | 基址 | 检索建议 |
 |--------|------|------|----------|
-| 1 | 中文舰娘百科 | https://zh.kcwiki.cn | 制空 / 索敵 / 弾着 / 特攻 |
-| 2 | 日文 Wiki | https://wikiwiki.jp/kancolle | 戦闘 / 計算式 |
-| 3 | English | https://en.kancollewiki.net | air superiority / cut-in |
+| 1 | 中文舰娘百科 · 战斗主页 | https://zh.kcwiki.cn/wiki/战斗主页 | 制空 / 索敌 / 弹着 / 特攻 |
+| 2 | 日文 Wiki · 戦闘について | https://wikiwiki.jp/kancolle/戦闘について | 戦闘 / 計算式 |
+| 3 | English KC Wiki · Combat | https://en.kancollewiki.net/Combat | air superiority / cut-in |
 
 ## 使用
 

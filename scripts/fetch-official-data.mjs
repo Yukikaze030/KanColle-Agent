@@ -28,8 +28,8 @@ const FIXTURE = join(
 );
 
 const SOURCES = {
-  ship: "https://raw.githubusercontent.com/kcwiki/kancolle-data/master/db/ship.json",
-  equipment: "https://raw.githubusercontent.com/kcwiki/kancolle-data/master/db/equipment.json",
+  ship: "https://raw.githubusercontent.com/kcwiki/kancolle-data/7b92cdb8e4601fdec45ddd00489c7c6da9fa346d/db/ship.json",
+  equipment: "https://raw.githubusercontent.com/kcwiki/kancolle-data/4604fbccc6a7f0a3bf2ae5304778dda3c75a07f1/db/equipment.json",
 };
 
 import { fetchJson } from "./fetch-json.mjs";

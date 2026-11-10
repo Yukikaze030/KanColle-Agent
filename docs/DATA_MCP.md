@@ -51,23 +51,27 @@ packages/kancolle-data-mcp/data/official/dataset.json
 
 | 实体 | 来源 |
 |------|------|
-| 舰娘主属性、改造关系、道具、部分特殊消耗 | 固定提交 `api/api_start2.json` |
-| 开发/建造/改修资材、火炮资材、工廠资源消耗 | 固定提交 KC3Kai `RemodelDb.js` 的计算函数 |
-| 舰娘补充属性 / 装备 | kcwiki/kancolle-data `db/ship.json` `db/equipment.json` |
-| 任务 | `kcwiki-quest-data` npm |
+| 舰娘主属性、改造关系、道具、部分特殊消耗 | `api/api_start2.json`，[2026-10-15 快照](https://github.com/kcwiki/kancolle-data/commit/7b92cdb8e4601fdec45ddd00489c7c6da9fa346d) |
+| 开发/建造/改修资材、火炮资材、工廠资源消耗 | KC3Kai `RemodelDb.js`，[2026-10-15 规则](https://github.com/KC3Kai/KC3Kai/commit/86db000bea84a1ee94fef4f61bd5173737359f5c) |
+| 舰娘补充属性 / 装备描述 | 舰娘补充表与主表同一提交，装备补充表固定至 [2026-11-03](https://github.com/kcwiki/kancolle-data/commit/4604fbccc6a7f0a3bf2ae5304778dda3c75a07f1) |
+| 任务 | [`kcwiki-quest-data@0.8.0`](https://registry.npmjs.org/kcwiki-quest-data/0.8.0) |
 | stype / 可装备规则 / 远征 / 海域 | 固定提交 `api/api_start2.json` |
 | 常规海域攻略切片 | `fleet-builder/refs/maps/*.md`，固定标题按需读取 |
-| 每日改修 | `http://fleet.diablohu.com/arsenal/`；精确装备/舰娘 master ID、东京星期与阶段成本 |
+| 每日改修 | [是谁呼叫舰队 · 改修工厂](https://fleet.diablohu.com/arsenal/)，精确装备/舰娘 master ID、东京星期与阶段成本 |
 
-本次固定快照：**舰船形态 862 · 改造转换 555 · 道具 105 · 装备 741 · 任务 446 · 远征 65 · 地图 42**。实际数量见 `kc_data_status`。
+固定快照包含 **舰船形态 866 · 改造转换 559 · 道具 105 · 装备 741 · 任务 446 · 远征 63 · 地图 37**。10 月主表只包含常规海域，前一份快照中的 5 张活动地图与 2 条活动支援任务已随上游移出。实际数量见 `kc_data_status`。
+
+2026-11-11 核对时，改修工厂的 710 条记录与原快照逐条一致。任务包仍为 `0.8.0`，新实装任务缺失或资料不全时查 [任务来源](../.opencode/skills/quest-planner/refs/SOURCES.md)。
 
 ```bash
 npm run fetch:data               # 用缓存和固定来源重建，已提交缓存支持离线
-npm run fetch:data -- --refresh  # 重新下载（改造来源仍是固定提交）
+npm run fetch:data -- --refresh  # 重新下载主表与舰船、装备补充表，均使用固定提交
 npm run fetch:improvements       # 拉取并重建改修工厂缓存
 # 网络受限时，可提供与来源哈希一致的已下载 api_start2.json：
 KANCOLLE_MASTER_FILE=/path/to/api_start2.json npm run fetch:data
 ```
+
+GitHub raw 下载失败时，刷新脚本通过 Contents API 请求同一固定提交。
 
 `kc_improvement` 只使用 `data/official/improvements.json`，不会在查询时改查 Wiki。支援舰按 master ID 精确绑定具体形态；例如 `ship:78` 金剛与 `ship:149` 金剛改二独立匹配。默认按东京当天查询，也可传 `date`、`weekday` 或 `all_days`。玩家可执行性由 Agent 将 Poi 的装备/舰娘 master ID 分别传入 `equipment_ids`、`owned_ship_ids` 后过滤。
 
@@ -105,7 +109,7 @@ KANCOLLE_DATA_PATH=/path/to/dataset.json
 ### 仍有缺陷 / 后续优先级
 
 1. **装备适配已切换到固定 `api_start2` 主表**：普通槽使用舰种规则与舰船覆盖规则，增设槽使用 `api_mst_equip_exslot*`。规则无法判定时返回 `partial` 与 `can_equip: null`，不再把未知当作禁止。需要玩家等级的增设槽条件仍需结合 Poi 判断。
-2. **非改造主数据已对齐同一主表版本**：装备 741 条、远征 65 条、地图 42 条；舰船回避/对潜/索敌优先取主表。任务保留完整 `requirements`、完整说明及 `reward_other`，不再截断为 200 字或只保留四项资源。
+2. **非改造主数据已对齐同一主表版本**。装备、远征和地图从主表取条目，舰船回避、对潜、索敌优先取主表。任务保留上游的 `requirements`、说明及 `reward_other`。
 3. **规则与版本时效**：KC3 规则有按舰 ID 的特判和默认值，新实装可能滞后。固定提交保证可复现，不自动保证最新；应定期对照游戏 main.js 或另一实现核验。不能把重新生成时间当作上游数据更新时间。
 4. **账号可执行性尚由 Agent 计算**：Data MCP 返回成本，不扣玩家库存；多目标累计资源、已装备/锁定锅炉是否能消耗、玩家快照覆盖仍须结合 Poi 判断。本次未增加自动改造或游戏操作。
 5. **其他解析器**：装备规则、任务图现在只接受唯一精确名称或显式 ref，多个精确同名会返回 `ambiguous`；Windows file URL 已统一转换为本地路径。任务和海域保留上游 ID 与结构化字段。常规图攻略可由 `kc_map_guide` 按稳定模块键读取本地 refs；缺项或最新变化仍转 researcher。

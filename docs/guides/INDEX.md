@@ -1,6 +1,6 @@
 # 攻略网址总索引（二期 only）
 
-> era: 2 | updated: 2026-09-12 | 所有链接仅作入口；正文以精简 MD 与在线二期页为准。
+> era: 2 | updated: 2026-11-11 | 专项来源索引与本地资料入口。存档日期见各正文。
 
 ## 权威入口
 
@@ -14,13 +14,14 @@
 
 | 主题 | Skill | 附属文档 | 推荐检索 |
 |------|-------|----------|----------|
-| 任务链/前置 | quest-planner | `.opencode/skills/quest-planner/refs/` | `site:zh.kcwiki.cn 任务` |
-| 海域/活动路线 | event-guide, fleet-builder | 各自 `refs/` | `site:wikiwiki.jp/kancolle 海域` |
+| 任务链/前置 | quest-planner | [任务来源](../../.opencode/skills/quest-planner/refs/SOURCES.md) | 新实装任务、任务链工具 |
+| 活动时效/路线 | event-guide | [活动来源](../../.opencode/skills/event-guide/refs/SOURCES.md) | 运营公告、季节活动、限定出击 |
 | **常规图带路/出击配置** | fleet-builder | `fleet-builder/refs/maps-routing.md` | https://bbs.nga.cn/read.php?tid=23451223 |
-| 改修/装备价值 | equipment-planner | `.opencode/skills/equipment-planner/refs/` | `site:zh.kcwiki.cn 改修` |
-| 练舰/改造价值 | progression-planner | `.opencode/skills/progression-planner/refs/` | 改二是否存在→Data MCP |
+| 常规图在线核对 | fleet-builder | [海域来源](../../.opencode/skills/fleet-builder/refs/SOURCES.md) | 二期制空与带路索引 |
+| 改修/装备价值 | equipment-planner | [装备来源](../../.opencode/skills/equipment-planner/refs/SOURCES.md) | HTTPS 改修工厂与机制页 |
+| 练舰/改造价值 | progression-planner | [培养来源](../../.opencode/skills/progression-planner/refs/SOURCES.md) | 二期练级指南与经验表 |
 | **舰娘性能概述** | progression-planner | `progression-planner/refs/ship-perf-nga.md` | **MCP 优先**；NGA tid=34119362 可选 |
-| 战斗公式 | combat-knowledge | `.opencode/skills/combat-knowledge/refs/` | 二期公式页 |
+| 战斗公式 | combat-knowledge | [战斗来源](../../.opencode/skills/combat-knowledge/refs/SOURCES.md) | 中日英战斗索引 |
 | 路由/系统 | kancolle-main | 本文件 + SKILL | — |
 
 ## 落盘文档
